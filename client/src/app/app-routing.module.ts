@@ -4,10 +4,8 @@ import { PlayerMainComponent } from './player-main/player-main.component';
 
 
 const routes: Routes = [
-  {
-    path: 'player',
-    component: PlayerMainComponent
-  }
+  { path: 'player', component: PlayerMainComponent },
+  { path: '', redirectTo: '/player', pathMatch: 'full' }
 ];
 
 @NgModule({
