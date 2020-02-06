@@ -5,13 +5,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
+import { LoginMainComponent } from './login-main/login-main.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     PlayerMainComponent,
-    GamemasterMainComponent
+    GamemasterMainComponent,
+    LoginMainComponent
   ],
   imports: [
     BrowserModule,
