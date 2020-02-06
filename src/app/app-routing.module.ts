@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
-import { LoginMainComponent } from './login-main/login-main.component'
+import { LoginMainComponent } from './login-main/login-main.component';
 
 
 const routes: Routes = [
