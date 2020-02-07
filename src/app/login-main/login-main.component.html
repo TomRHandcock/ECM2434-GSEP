@@ -2,12 +2,12 @@
   <section id='loginSection'>
     <form id='loginForm'>
       <div id="loginFields">
-        <input type="text" name="email" placeholder="Email">
-        <input type="password" name="password" placeholder="Password">
+        <input type="text" name="email" placeholder="Email" [(ngModel)]="loginEmail">
+        <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword">
       </div>
       <div id="loginExtras">
-        <input type="submit" name="loginSubmit" value="Login">
-        <input type="button" name="createAccount" value="Create Account">
+        <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
+        <input type="button" (click)="onCreatePressed()" name="createAccount" value="Create Account">
         <div id='links'><a>Privacy Policy</a> · <a>Help logging in</a></div>
       </div>
     </form>
