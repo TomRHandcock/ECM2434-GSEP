@@ -7,6 +7,8 @@ import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
 import { LoginMainComponent } from './login-main/login-main.component';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 // Firebase modules
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -22,7 +24,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
