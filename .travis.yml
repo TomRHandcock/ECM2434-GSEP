@@ -1,0 +1,12 @@
+dist: bionic
+language: node_js
+node_js:
+  - node
+before_install:
+  - sudo apt -y install chromium-browser
+addons:
+  apt:
+    update: true
+script:
+  - npm run lint
+  - npm run test
