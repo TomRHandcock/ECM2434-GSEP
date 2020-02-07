@@ -1,8 +1,13 @@
 body {
-  min-height: 100vh;
   padding: 0;
   margin: 0;
   background-color: #0078b5; //Older broswers
   background: linear-gradient(to bottom, #0078b5 0%,#006abc 100%); //Newer broswers, gradient!
+  min-height: 100vh;
   font-family: 'Karla', sans-serif;
+}
+
+app-root {
+  display: block;
+  height: 100vh;
 }

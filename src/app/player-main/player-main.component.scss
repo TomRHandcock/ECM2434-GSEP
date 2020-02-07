@@ -1,25 +1,34 @@
+:host {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 5fr 5fr 1fr 1fr;
+  grid-gap: 0.5em;
+  margin: 0.5em;
+}
+
 .element {
-  margin: 1% 1% 0 1%;
   border: 2px solid white;
   background-color: #ADCBE9;
 }
 
-.menuButton {
-  height: 8%;
-  margin-top: 1%;
-  margin-bottom: 1%;
-  width: 48%;
-  background-color: #0078B5;
-  font-size: 24px;
+.button-bar {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 0.5em;
 }
 
-.nextLocation {
-  font-size: 24px;
+.menu-button {
+  display: table-cell;
+  color: #ffffff;
   background-color: #0078B5;
-  height: 5vh;
+  font-size: 1.2em;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.3em;
 }
 
-.nextClue {
-  color: #0078B5;
-  height: 25vh;
+.next-location {
+  font-size: 1.5em;
+  background-color: #0078B5;
 }
+
