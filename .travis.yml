@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - node
+# Based on: https://medium.com/faun/configuring-travis-ci-for-angular-application-34afee1715f
 addons:
   apt:
     sources:
