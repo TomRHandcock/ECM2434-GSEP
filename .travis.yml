@@ -2,7 +2,6 @@ dist: bionic
 language: node_js
 node_js:
   - node
-# Based on: https://medium.com/faun/configuring-travis-ci-for-angular-application-34afee1715f
 before_install:
   - sudo apt -y install chromium-browser
 addons:
@@ -10,5 +9,5 @@ addons:
     update: true
 script:
   - npm run lint
-  - npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
-  - npm run e2e -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
+  - npm run test
+  - npm run e2e
