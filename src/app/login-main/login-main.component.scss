@@ -3,16 +3,102 @@ main {
 }
 
 #loginSection {
-  background-color: white;
-  margin: 30vh auto 0 auto;
-  border-radius: 20px;
+  background-color: #eaeaea;
+  border-radius: 10px;
+  position: relative;
 
   @media screen and (max-width: 701px) {
-    width: 95vw;
-    height: 70vh;
+    margin: 15vh auto 0 auto;
+    width: 90vw;
+    min-height: 400px;
+    height: 50vh;
   }
-  @media screen and (min-width: 701px) {
+
+  @media screen and (min-width: 701px) and (max-width: 1024px) {
+    margin: 20vh auto 0 auto;
+    width: 50vw;
+    height: 40vh;
+  }
+
+  @media screen and (min-width: 1025px) {
+    margin: 30vh auto 0 auto;
     width: 20vw;
     height: 50vh;
   }
+}
+
+#loginForm {
+  width: 100%;
+  height: 100%;
+  display: grid;
+
+  @media screen and (min-width: 1025px) {
+    grid-template-columns: 50px auto 50px;
+    grid-template-rows: 75px auto 150px;
+  }
+
+  @media screen and (max-width: 400px) {
+    grid-template-columns: 20px auto 20px;
+    grid-template-rows: 75px auto 150px;
+  }
+
+  @media screen and (min-width: 401px) and (max-width: 1024px) {
+    grid-template-columns: 50px auto 50px;
+    grid-template-rows: 75px auto 150px;
+  }
+}
+
+#loginFields {
+  grid-row: 2/3;
+  grid-column: 2/3;
+  text-align: center;
+}
+
+#loginFields > input {
+  margin-bottom: 20px;
+  border: 3px solid #cccccc;
+  border-radius: 7px;
+  line-height: 28px;
+  font-size: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'karla', sans-serif;
+  color: #0078b5;
+  padding: 5px 10px;
+
+}::placeholder {
+  color: #cccccc;
+}
+
+//The buttons and links at the bottom of the form
+#loginExtras {
+  grid-column: 2/3;
+  grid-row: 3/4;
+}
+
+//The buttons
+#loginExtras > input {
+  background-color: #0078b5;
+  border: 0;
+  width: 100%;
+  color: white;
+  font-family: 'karla', sans-serif;
+  font-size: 24px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  padding: 5px 0;
+}
+
+#links {
+  text-align: center;
+  margin: 10px auto 0 auto;
+}
+
+#links > a {
+  color: #0078b5;
+  cursor: pointer;
+}
+
+#links > a:hover {
+  text-decoration: underline;
 }
