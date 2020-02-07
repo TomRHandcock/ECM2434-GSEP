@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "exe-marks-the-spot": {
+      "hosting": {
+        "ecm2434-client": [
+          "exe-marks-the-spot"
+        ]
+      }
+    }
+  }
+}

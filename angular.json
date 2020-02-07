@@ -122,8 +122,13 @@
               "devServerTarget": "ecm2434-client:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
-    }},
+    }
+  },
   "defaultProject": "ecm2434-client"
 }
