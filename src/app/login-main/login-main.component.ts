@@ -33,7 +33,7 @@ export class LoginMainComponent implements OnInit {
   onLoginPressed() {
     this.authentication.auth.signInWithEmailAndPassword(this.loginEmail,this.loginPassword).then(
       (credential) => {
-        console.log("Logged in as: " + credential.user.email);
+        window.location.assign('./player');
       },
       (reason) => {
         console.log("Login failed: " + reason);
@@ -49,7 +49,7 @@ export class LoginMainComponent implements OnInit {
     if(this.createPassword == this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         (credential) => {
-          console.log("Created account: " + credential.user.email);
+          window.location.assign('./player');
         },
         (reason) => {
           console.log("Creation of account failed with reason: " + reason);
