@@ -1,14 +1,29 @@
 <main>
-  <section id='loginSection'>
+  <!-- This is for the login form -->
+  <section id='loginSection' [ngStyle]="{display: (creatingAccount ? 'none' : 'grid')}">
     <form id='loginForm'>
-      <div id="loginFields">
+      <div class="fields">
         <input type="text" name="email" placeholder="Email" [(ngModel)]="loginEmail">
         <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword">
       </div>
-      <div id="loginExtras">
+      <div class="formExtras">
         <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
         <input type="button" (click)="onCreatePressed()" name="createAccount" value="Create Account">
-        <div id='links'><a>Privacy Policy</a> · <a>Help logging in</a></div>
+        <div class='links'><a>Privacy Policy</a> · <a>Help logging in</a></div>
+      </div>
+    </form>
+  </section>
+  <!-- This is for the account creation form -->
+  <section id='createSection' [ngStyle]="{display: (creatingAccount ? 'grid' : 'none')}">
+    <form id='createForm'>
+      <div class="fields">
+        <input type="text" name="email" placeholder="Email" [(ngModel)]="createEmail">
+        <input type="password" name="password" placeholder="Password" [(ngModel)]="createPassword">
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" [(ngModel)]="createConfirmPassword">
+      </div>
+      <div class="formExtras">
+        <input type="button" (click)="onCreationPressed()" name="createSubmit" value="Create Account">
+        <div class='links'><a>Privacy Policy</a> · <a>Help logging in</a></div>
       </div>
     </form>
   </section>

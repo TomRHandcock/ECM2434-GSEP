@@ -12,6 +12,10 @@ export class LoginMainComponent implements OnInit {
 
   loginEmail:string;
   loginPassword:string;
+  creatingAccount:boolean = false;
+  createEmail:string;
+  createPassword:string;
+  createConfirmPassword:string;
   constructor(public authentication: AngularFireAuth) {
   }
 
@@ -38,7 +42,20 @@ export class LoginMainComponent implements OnInit {
   }
 
   onCreatePressed() {
+    this.creatingAccount = true;
+  }
 
+  onCreationPressed() {
+    if(this.createPassword == this.createConfirmPassword) {
+      this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
+        (credential) => {
+          console.log("Created account: " + credential.user.email);
+        },
+        (reason) => {
+          console.log("Creation of account failed with reason: " + reason);
+        }
+      )
+    }
   }
 
 }
