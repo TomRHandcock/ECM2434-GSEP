@@ -10,13 +10,16 @@ import { Router } from '@angular/router';
 
 export class LoginMainComponent implements OnInit {
 
-  loginEmail:string;
-  loginPassword:string;
-  creatingAccount:boolean = false;
-  createEmail:string;
-  createPassword:string;
-  createConfirmPassword:string;
+  loginEmail: string;
+  loginPassword: string;
+  creatingAccount: boolean;
+  createEmail: string;
+  createPassword: string;
+  createConfirmPassword: string;
+
   constructor(public authentication: AngularFireAuth) {
+    // Alex - Intellij wanted me to do this for some reason...
+    this.creatingAccount = false;
   }
 
   ngOnInit() {
@@ -27,16 +30,16 @@ export class LoginMainComponent implements OnInit {
    * login using just the email and password, if the login is successful then
    * the user will be redirected to the "player view" screen, if the login
    * is unsuccessful then an error message will be displayed.
-   * 
+   *
    * @author TomRHandcock
    */
   onLoginPressed() {
-    this.authentication.auth.signInWithEmailAndPassword(this.loginEmail,this.loginPassword).then(
+    this.authentication.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
       (credential) => {
         window.location.assign('./player');
       },
       (reason) => {
-        console.log("Login failed: " + reason);
+        console.log('Login failed: ' + reason);
       }
     );
   }
@@ -46,15 +49,15 @@ export class LoginMainComponent implements OnInit {
   }
 
   onCreationPressed() {
-    if(this.createPassword == this.createConfirmPassword) {
+    if (this.createPassword === this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         (credential) => {
           window.location.assign('./player');
         },
         (reason) => {
-          console.log("Creation of account failed with reason: " + reason);
+          console.log('Creation of account failed with reason: ' + reason);
         }
-      )
+      );
     }
   }
 

@@ -6,9 +6,20 @@
   margin: 0.5em;
 }
 
+td {
+  border: 2px solid #006abc;
+}
+.row-heading {
+  width: 33%;
+}
+.row-value {
+  width: 67%;
+}
+
 .element {
   border: 2px solid white;
   background-color: #ADCBE9;
+  text-align: center;
 }
 
 .button-bar {
