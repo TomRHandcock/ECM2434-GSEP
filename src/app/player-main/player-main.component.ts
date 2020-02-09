@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 // @ts-ignore
-import { faCamera, faGlobe, faBars, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faGlobe, faBars, faHome, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-player-main',
@@ -12,16 +12,14 @@ export class PlayerMainComponent implements OnInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
-  showProgressIcon = faBars;
+  menuIcon = faBars;
+  closeIcon = faArrowLeft;
   homeIcon = faHome;
 
-  screen: string;
-  score: number;
+  screen = 'home';
+  score = 0;
 
-  constructor() {
-    this.screen = 'home';
-    this.score = 0;
-  }
+  showMenu = false;
 
   /**
    * Sets the screen to the progress page
@@ -39,6 +37,14 @@ export class PlayerMainComponent implements OnInit {
    */
   returnHome() {
     this.screen = 'home';
+  }
+
+  /**
+   * Show or hide the navbar menu
+   * @author George White
+   */
+  toggleMenu() {
+    this.showMenu = !this.showMenu;
   }
 
   ngOnInit() {

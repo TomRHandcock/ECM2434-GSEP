@@ -1,39 +1,55 @@
+<nav class="navbar">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="toggleMenu()">
+    <fa-icon *ngIf="showMenu" [icon]="closeIcon"></fa-icon>
+    <fa-icon *ngIf="!showMenu" [icon]="menuIcon"></fa-icon>
+  </button>
+  <div class="navbar-brand">
+    Team C
+  </div>
+  <div class="progress" (click)="openProgress()">
+    Score: {{this.score}}
+  </div>
+</nav>
+
+<div *ngIf="showMenu" class="menu">
+  <ul>
+    <li>Return to Game</li>
+    <li (click)="openProgress(); showMenu = false">Our Progress</li>
+    <li>I'm Lost</li>
+    <li>Help and Support</li>
+    <li>Settings</li>
+  </ul>
+</div>
+
 <ng-container [ngSwitch]="this.screen">
    <!-- The home screen -->
-  <ng-container *ngSwitchCase="'home'">
+  <main *ngSwitchCase="'home'" class="container home-container">
     <!-- The map -->
     <section class="element" id="mapSection">Map will go here</section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
-      <div class="next-location"><b>Next Location:</b></div>
+      <h2 class="next-location">Next Location</h2>
       <div class="next-clue">This is some placeholder text that will represent where the description and next clue is for the next location.</div>
     </section>
 
-    <!-- The button bar below the description -->
-    <div class="button-bar">
-      <div class="element menu-button">
-        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
-        Scan QR code
-      </div>
-      <div class="element menu-button" (click)="openProgress()">
-        <fa-icon [icon]="showProgressIcon"></fa-icon>
-        Progress
-      </div>
+    <div role="button" class="button">
+      <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
+      Scan QR code
     </div>
 
     <!-- The bottom buttons -->
     <div class="button-bar" id="playerButtonBar">
-      <div class="element menu-button">Request Hint</div>
-      <div class="element menu-button">
+      <div role="button" class="button">Request Hint</div>
+      <div role="button" class="button">
         <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
         UoE Website
       </div>
     </div>
-  </ng-container>
+  </main>
 
   <!-- The progress screen -->
-  <ng-container *ngSwitchCase="'progress'">
-    <h1>Your Current Progress:</h1>
+  <main *ngSwitchCase="'progress'" class="container progress-container">
+    <h1>Your Current Progress</h1>
     <!-- TODO - there is a massive gap between above and below - <br> has the same effect? -->
     <!-- The table of entries -->
     <table class="element">
@@ -53,9 +69,9 @@
       </tr>
     </table>
 
-    <div class="element menu-button" id="progressBack" (click)="returnHome()">
+    <div role="button" class="button" id="progressBack" (click)="returnHome()">
       <fa-icon [icon]="homeIcon"></fa-icon>
       Back to Home
     </div>
-  </ng-container>
+  </main>
 </ng-container>
