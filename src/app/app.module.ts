@@ -17,7 +17,6 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { QRCodeModule } from 'angularx-qrcode';
 
-
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
   authDomain: 'exe-marks-the-spot.firebaseapp.com',

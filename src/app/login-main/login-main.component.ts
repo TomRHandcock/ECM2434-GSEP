@@ -20,6 +20,8 @@ export class LoginMainComponent implements OnInit {
   loginError : LoginError = LoginError.None;
 
   constructor(public authentication: AngularFireAuth) {
+    // Alex - Intellij wanted me to do this for some reason...
+    this.creatingAccount = false;
   }
 
   ngOnInit() {
@@ -30,7 +32,7 @@ export class LoginMainComponent implements OnInit {
    * login using just the email and password, if the login is successful then
    * the user will be redirected to the "player view" screen, if the login
    * is unsuccessful then an error message will be displayed.
-   * 
+   *
    * @author TomRHandcock
    */
   onLoginPressed() {
@@ -94,7 +96,7 @@ export class LoginMainComponent implements OnInit {
           window.location.assign('./player');
         },
         (reason) => {
-          console.log("Creation of account failed with reason: " + reason);
+          console.log('Creation of account failed with reason: ' + reason);
         }
       ).catch(reason => {
         switch(reason.code) {
@@ -102,7 +104,7 @@ export class LoginMainComponent implements OnInit {
             alert("Invalid email");
             break;
         }
-      }); 
+      });
     }
     else {
     }
