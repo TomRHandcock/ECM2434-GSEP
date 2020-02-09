@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-login-main',
@@ -16,6 +17,8 @@ export class LoginMainComponent implements OnInit {
   createEmail:string;
   createPassword:string;
   createConfirmPassword:string;
+  loginError : LoginError = LoginError.None;
+
   constructor(public authentication: AngularFireAuth) {
   }
 
@@ -31,22 +34,61 @@ export class LoginMainComponent implements OnInit {
    * @author TomRHandcock
    */
   onLoginPressed() {
-    this.authentication.auth.signInWithEmailAndPassword(this.loginEmail,this.loginPassword).then(
-      (credential) => {
-        window.location.assign('./player');
-      },
-      (reason) => {
-        console.log("Login failed: " + reason);
+    try {
+      this.authentication.auth.signInWithEmailAndPassword(this.loginEmail,this.loginPassword).then(
+        () => {
+          window.location.assign('./player');
+       }
+      ).catch((reason) => {
+        switch(reason.code) {
+          case "auth/invalid-email":
+            alert("Invalid email");
+            this.loginError = LoginError.InvalidEmail;
+            break;
+          case "auth/argument-error":
+            alert("Ensure all fields have been filled in");
+            this.loginError = LoginError.ArgumentError;
+            break;
+          case "auth/wrong-password":
+            alert("Wrong password");
+            this.loginError = LoginError.PasswordIncorrect;
+            break;
+          case "auth/user-not-found":
+            alert("No user with that email address");
+            this.loginError = LoginError.EmailNotFound;
+            break;
+        }
+      });
+    }
+    catch(error) {
+      console.log(error);
+      switch(error.code) {
+        case "auth/argument-error":
+          alert("Please ensure all fields are filled");
+          break;
       }
-    );
+    }
   }
 
+  /**
+   * Called when user presses the first account creation form button,
+   * the function simply changes a boolean value which in turn hides
+   * the login form and shows the creation form.
+   * @author TomRHandcock
+   */
   onCreatePressed() {
     this.creatingAccount = true;
   }
 
+  /**
+   * Callback for when the account creation form is submitted, it first
+   * verifies the inputted user credentials and then creates the user
+   * account via Firebase. Upon successfully creating the account the
+   * user is automatically logged in and redirected to the player view.
+   * @author TomRHandcock
+   */
   onCreationPressed() {
-    if(this.createPassword == this.createConfirmPassword) {
+    if(this.createPassword == this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         (credential) => {
           window.location.assign('./player');
@@ -54,8 +96,24 @@ export class LoginMainComponent implements OnInit {
         (reason) => {
           console.log("Creation of account failed with reason: " + reason);
         }
-      )
+      ).catch(reason => {
+        switch(reason.code) {
+          case "auth/invalid-email":
+            alert("Invalid email");
+            break;
+        }
+      }); 
+    }
+    else {
     }
   }
 
+}
+
+export enum LoginError{
+  None,
+  EmailNotFound = "Email not found",
+  PasswordIncorrect = "Password Incorrect",
+  InvalidEmail = "Invalid Email",
+  ArgumentError = "Argument Error"
 }

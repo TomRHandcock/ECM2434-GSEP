@@ -3,8 +3,12 @@
   <section id='loginSection' [ngStyle]="{display: (creatingAccount ? 'none' : 'grid')}">
     <form id='loginForm'>
       <div class="fields">
-        <input type="text" name="email" placeholder="Email" [(ngModel)]="loginEmail">
-        <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword">
+        <p class="loginFeedback" *ngIf="(loginError == 'Password Incorrect')">Incorrect password</p>
+        <p class="loginFeedback" *ngIf="(loginError == 'Email not found')">User not found</p>
+        <p class="loginFeedback" *ngIf="(loginError == 'Argument Error')">Ensure all fields are filled</p>
+        <p class="loginFeedback" *ngIf="(loginError == 'Invalid Email')">Invalid Email</p>
+        <input type="email" name="email" placeholder="Email" [(ngModel)]="loginEmail" pattern="[a-z|A-Z|0-9]+@[a-z|A-Z|0-9]+\.[a-z|.]{2,}$" required>
+        <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword" required>
       </div>
       <div class="formExtras">
         <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
