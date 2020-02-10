@@ -1,3 +1,22 @@
+<nav class="navbar">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="toggleMenu()">
+    <fa-icon *ngIf="showMenu" [icon]="closeIcon"></fa-icon>
+    <fa-icon *ngIf="!showMenu" [icon]="menuIcon"></fa-icon>
+  </button>
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('team');">
+    Teams
+  </button>
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('question')">
+    Questions
+  </button>
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('location')">
+    Locations
+  </button>
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('QRgen')">
+    QR Generation
+  </button>
+</nav>
+
 <div class="container" id="container">
   <div class="element map" id="playerMap">Map will go here</div>
   <div class="element scoreboard" id="scoreboard">Scoreboard</div>

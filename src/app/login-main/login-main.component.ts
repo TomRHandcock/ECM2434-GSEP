@@ -11,13 +11,13 @@ import { NgStyle } from '@angular/common';
 
 export class LoginMainComponent implements OnInit {
 
-  loginEmail:string;
-  loginPassword:string;
-  creatingAccount:boolean = false;
-  createEmail:string;
-  createPassword:string;
-  createConfirmPassword:string;
-  loginError : LoginError = LoginError.None;
+  loginEmail: string;
+  loginPassword: string;
+  creatingAccount = false;
+  createEmail: string;
+  createPassword: string;
+  createConfirmPassword: string;
+  loginError: LoginError = LoginError.None;
 
   constructor(public authentication: AngularFireAuth) {
     // Alex - Intellij wanted me to do this for some reason...
@@ -37,36 +37,35 @@ export class LoginMainComponent implements OnInit {
    */
   onLoginPressed() {
     try {
-      this.authentication.auth.signInWithEmailAndPassword(this.loginEmail,this.loginPassword).then(
+      this.authentication.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
         () => {
           window.location.assign('./player');
        }
       ).catch((reason) => {
-        switch(reason.code) {
-          case "auth/invalid-email":
-            alert("Invalid email");
+        switch (reason.code) {
+          case 'auth/invalid-email':
+            alert('Invalid email');
             this.loginError = LoginError.InvalidEmail;
             break;
-          case "auth/argument-error":
-            alert("Ensure all fields have been filled in");
+          case 'auth/argument-error':
+            alert('Ensure all fields have been filled in');
             this.loginError = LoginError.ArgumentError;
             break;
-          case "auth/wrong-password":
-            alert("Wrong password");
+          case 'auth/wrong-password':
+            alert('Wrong password');
             this.loginError = LoginError.PasswordIncorrect;
             break;
-          case "auth/user-not-found":
-            alert("No user with that email address");
+          case 'auth/user-not-found':
+            alert('No user with that email address');
             this.loginError = LoginError.EmailNotFound;
             break;
         }
       });
-    }
-    catch(error) {
+    } catch (error) {
       console.log(error);
-      switch(error.code) {
-        case "auth/argument-error":
-          alert("Please ensure all fields are filled");
+      switch (error.code) {
+        case 'auth/argument-error':
+          alert('Please ensure all fields are filled');
           break;
       }
     }
@@ -90,7 +89,7 @@ export class LoginMainComponent implements OnInit {
    * @author TomRHandcock
    */
   onCreationPressed() {
-    if(this.createPassword == this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
+    if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         (credential) => {
           window.location.assign('./player');
@@ -99,23 +98,22 @@ export class LoginMainComponent implements OnInit {
           console.log('Creation of account failed with reason: ' + reason);
         }
       ).catch(reason => {
-        switch(reason.code) {
-          case "auth/invalid-email":
-            alert("Invalid email");
+        switch (reason.code) {
+          case 'auth/invalid-email':
+            alert('Invalid email');
             break;
         }
       });
-    }
-    else {
+    } else {
     }
   }
 
 }
 
-export enum LoginError{
+export enum LoginError {
   None,
-  EmailNotFound = "Email not found",
-  PasswordIncorrect = "Password Incorrect",
-  InvalidEmail = "Invalid Email",
-  ArgumentError = "Argument Error"
+  EmailNotFound = 'Email not found',
+  PasswordIncorrect = 'Password Incorrect',
+  InvalidEmail = 'Invalid Email',
+  ArgumentError = 'Argument Error'
 }

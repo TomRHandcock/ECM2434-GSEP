@@ -1,45 +1,91 @@
 :host {
-  height: 100%;
-  display: grid;
-  grid-template-rows: 5fr 5fr 1fr 1fr;
-  grid-gap: 0.5em;
-  margin: 0.5em;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 }
 
-td {
-  border: 2px solid #006abc;
+.container {
+  display: grid;
+  grid-gap: 0.5em;
+  grid-template-rows: 1fr 1fr auto auto;
+  padding: 0.5em;
+  flex-grow: 1;
 }
-.row-heading {
-  width: 33%;
+
+.navbar {
+  display: flex;
+  flex-wrap: nowrap;
+  background: white;
+  align-items: center;
+  height: 3em;
 }
-.row-value {
-  width: 67%;
+
+.navbar div {
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+}
+
+.navbar-brand {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.menu {
+  margin-top: 3em;
+  background: white;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+.menu ul {
+  padding: 0;
+  margin: 0;
+}
+
+.menu ul li {
+  list-style: none;
+  border-top: 0.2em solid lightgrey;
+  padding: 1em;
 }
 
 .element {
-  border: 2px solid white;
+  background-color: white;
+  border: 0.2em solid white;
+  border-radius: 0.3em;
+  padding: 0.5em;
+}
+
+.container h1 {
+  text-align: center;
+  flex-grow: 1;
+  color: white;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.button {
   background-color: #ADCBE9;
+  border: 0.2em solid white;
+  border-radius: 0.3em;
+  padding: 0.5em;
   text-align: center;
 }
 
 .button-bar {
   display: grid;
-  grid-auto-flow: column;
   grid-gap: 0.5em;
+  grid-template-columns: 1fr 1fr;
 }
 
-.menu-button {
+.button-bar .button {
   display: table-cell;
-  color: #ffffff;
-  background-color: #0078B5;
-  font-size: 1.2em;
-  vertical-align: middle;
-  text-align: center;
-  padding: 0.3em;
 }
-
-.next-location {
-  font-size: 1.5em;
-  background-color: #0078B5;
-}
-
