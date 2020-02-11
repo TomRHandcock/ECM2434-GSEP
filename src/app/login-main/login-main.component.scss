@@ -17,13 +17,17 @@ section {
   @media screen and (min-width: 701px) and (max-width: 1024px) {
     margin: 20vh auto 0 auto;
     width: 50vw;
+    max-width: 400px;
     height: 40vh;
+    min-height: 450px;
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 30vh auto 0 auto;
+    margin: 20vh auto 0 auto;
     width: 20vw;
+    min-width: 350px;
     height: 50vh;
+    min-height: 450px;
   }
 }
 
@@ -88,7 +92,7 @@ form {
 }
 
 //The buttons
-.formExtras > input {
+input[type="button"], input[type="submit"] {
   background-color: #0078b5;
   border: 0;
   width: 100%;
@@ -113,4 +117,13 @@ form {
 
 .links > a:hover {
   text-decoration: underline;
+}
+
+.privacyText {
+  padding: 10px;
+}
+
+.privacyTitle {
+  font-size: 26px;
+  text-align: center;
 }

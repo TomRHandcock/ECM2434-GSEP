@@ -3,6 +3,12 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { NgStyle } from '@angular/common';
 
+enum Screen {
+  CREATING_ACCOUNT,
+  PRIVACY_POLICY,
+  LOGIN
+}
+
 @Component({
   selector: 'app-login-main',
   templateUrl: './login-main.component.html',
@@ -10,21 +16,31 @@ import { NgStyle } from '@angular/common';
 })
 
 export class LoginMainComponent implements OnInit {
+  // So HTML can access it
+  Screens = Screen;
 
+  screen: Screen;
   loginEmail: string;
   loginPassword: string;
-  creatingAccount = false;
   createEmail: string;
   createPassword: string;
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
 
   constructor(public authentication: AngularFireAuth) {
-    // Alex - Intellij wanted me to do this for some reason...
-    this.creatingAccount = false;
+    this.screen = Screen.LOGIN;
   }
 
   ngOnInit() {
+  }
+
+  /**
+   * Changes the screen to a new screen
+   * @param newScreen - the new screen to change to
+   * @author AlexWesterman
+   */
+  changeScreen(newScreen: Screen) {
+    this.screen = newScreen;
   }
 
   /**
@@ -72,30 +88,22 @@ export class LoginMainComponent implements OnInit {
   }
 
   /**
-   * Called when user presses the first account creation form button,
-   * the function simply changes a boolean value which in turn hides
-   * the login form and shows the creation form.
-   * @author TomRHandcock
-   */
-  onCreatePressed() {
-    this.creatingAccount = true;
-  }
-
-  /**
    * Callback for when the account creation form is submitted, it first
    * verifies the inputted user credentials and then creates the user
    * account via Firebase. Upon successfully creating the account the
    * user is automatically logged in and redirected to the player view.
-   * @author TomRHandcock
+   * @author TomRHandcock, AlexWesterman
    */
   onCreationPressed() {
+    // Check passwords have been entered and match
     if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         (credential) => {
+          // Go to the player view
           window.location.assign('./player');
         },
         (reason) => {
-          console.log('Creation of account failed with reason: ' + reason);
+          alert('Creation of account failed with reason: ' + reason);
         }
       ).catch(reason => {
         switch (reason.code) {
@@ -105,6 +113,7 @@ export class LoginMainComponent implements OnInit {
         }
       });
     } else {
+      alert('Passwords must be non-empty and match');
     }
   }
 

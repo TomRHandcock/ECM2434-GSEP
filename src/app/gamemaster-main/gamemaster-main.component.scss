@@ -14,3 +14,18 @@
   width: 25%;
   float: right;
 }
+
+.navbar {
+  display: flex;
+  flex-wrap: nowrap;
+  background: white;
+  align-items: center;
+  height: 3em;
+}
+
+.navbar button {
+  border: none;
+  background: none;
+  font-size: 1.2em;
+  padding: 0.5em 0.7em;
+}
