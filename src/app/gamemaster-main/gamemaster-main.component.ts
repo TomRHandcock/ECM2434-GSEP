@@ -54,23 +54,26 @@ export class GamemasterMainComponent implements OnInit {
   }
 }
 
-
-
-/*
- * This is the constructing component for QR Codes. A random number
- * is created and used for the QR Code (changes upon refresh) which
- * is then displayed on screen within <qrcode> html tags.
- *
- * @author OGWSaunders
- */
 export class QRCodeComponent {
   public myQrData = 'default';
   randInteger: number = null;
+
   constructor() {
     // Debug: console.log("Reached QRCode Constructor");
 
-    // assign a random max. of 1 billion (9 digits)
-    this.randInteger = Math.floor(Math.random() * Math.floor(999999999));
+    this.createQrCode(999999999);
     this.myQrData = '[' + (this.randInteger).toString() + ']';
+  }
+
+  /**
+   * Constructing QR Codes. A random number
+   * is created and used for the QR Code used
+   * within <qrcode> html tags.
+   *
+   * @param maxNum - upper limit for random number
+   * @author OGWSaunders
+   */
+  createQrCode(maxNum: number) {
+    this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
 }
