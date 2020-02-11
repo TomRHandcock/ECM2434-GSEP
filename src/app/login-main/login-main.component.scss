@@ -92,7 +92,7 @@ form {
 }
 
 //The buttons
-.formExtras > input {
+input[type="button"], input[type="submit"] {
   background-color: #0078b5;
   border: 0;
   width: 100%;
@@ -117,4 +117,13 @@ form {
 
 .links > a:hover {
   text-decoration: underline;
+}
+
+.privacyText {
+  padding: 10px;
+}
+
+.privacyTitle {
+  font-size: 26px;
+  text-align: center;
 }
