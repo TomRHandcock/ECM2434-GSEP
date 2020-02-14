@@ -31,7 +31,17 @@ export class LoginMainComponent implements OnInit {
     this.screen = Screen.LOGIN;
   }
 
+  /**
+   * Runs when the page is loaded
+   * @author TomRHandcock
+   */
   ngOnInit() {
+    //This function will redirect an already logged in user to the player screen
+    this.authentication.auth.onAuthStateChanged((user) => {
+      if(user) {
+        window.location.assign("./player");
+      }
+    })
   }
 
   /**
