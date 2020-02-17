@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 // @ts-ignore
 import { faCamera, faGlobe, faBars, faHome, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-player-main',
@@ -20,6 +22,8 @@ export class PlayerMainComponent implements OnInit {
   score = 0;
 
   showMenu = false;
+
+  constructor(private router: Router, private afAuth: AngularFireAuth) { }
 
   /**
    * Sets the screen to the progress page
@@ -45,6 +49,14 @@ export class PlayerMainComponent implements OnInit {
    */
   toggleMenu() {
     this.showMenu = !this.showMenu;
+  }
+
+  /**
+   * Sign the user out of their account.
+   * @author George White
+   */
+  signOut() {
+    this.afAuth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 
   ngOnInit() {
