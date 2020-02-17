@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase, AngularFireList, SnapshotAction} from '@angular/fire/database';
 import {Observable, throwError} from 'rxjs';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 enum Screen {
   OVERVIEW,
@@ -30,7 +32,9 @@ export class GamemasterMainComponent implements OnInit {
 
   dbData: string;
 
-  constructor(public db: AngularFireDatabase) {
+  constructor(public db: AngularFireDatabase,
+              private router: Router,
+              private afAuth: AngularFireAuth) {
     // Debug: console.log("Reached GameMasterMain Constructor");
 
     // myQrData is shown on the Code
@@ -65,6 +69,14 @@ export class GamemasterMainComponent implements OnInit {
    */
   toggleMenu() {
     this.showMenu = !this.showMenu;
+  }
+
+  /**
+   * Sign the user out of their account.
+   * @author George White
+   */
+  signOut() {
+    this.afAuth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 }
 

@@ -15,6 +15,9 @@
   <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.QR)">
     QR Generation
   </button>
+  <button class="navbar-toggler" type="button" (click)="signOut()">
+    Sign out
+  </button>
 </nav>
 
 <div class="container" id="container" [ngSwitch]="this.screen">
