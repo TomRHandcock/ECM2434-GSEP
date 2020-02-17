@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase, AngularFireList, SnapshotAction} from '@angular/fire/database';
 import {Observable, throwError} from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 enum Screen {
   OVERVIEW,
@@ -30,7 +31,7 @@ export class GamemasterMainComponent implements OnInit {
 
   dbData: string;
 
-  constructor(public db: AngularFireDatabase) {
+  constructor(public db: AngularFireDatabase, public auth: AngularFireAuth) {
     // Debug: console.log("Reached GameMasterMain Constructor");
 
     // myQrData is shown on the Code
@@ -48,6 +49,28 @@ export class GamemasterMainComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.auth.auth.onAuthStateChanged((loggedInUser) => {
+      if (loggedInUser) {
+        // There is a user logged in
+        // Check the logged in user's id against the id's of all known gamemasters
+        let gamemaster = false;
+        this.db.list('/player/').valueChanges().subscribe((gamemasters) => {
+          gamemasters.forEach((item: User, index ) => {
+            if (loggedInUser.uid === item.uid) {
+              console.log('Gamemaster');
+              gamemaster = true;
+            }
+          });
+          // If user is a gamemaster, do nothing else redirect them
+          if (!gamemaster) {
+            window.location.assign('./player');
+          }
+        });
+      } else {
+        // No user is logged in, redirect them to login page
+        window.location.assign('./login');
+      }
+    });
   }
 
   /**
@@ -90,4 +113,9 @@ export class QRCodeComponent {
   createQrCode(maxNum: number) {
     this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
+}
+
+export class User {
+  uid: string;
+  displayName: string;
 }
