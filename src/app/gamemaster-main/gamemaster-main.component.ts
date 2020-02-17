@@ -1,6 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import {throwError} from 'rxjs';
+import {AngularFireDatabase, AngularFireList, SnapshotAction} from '@angular/fire/database';
+import {Observable, throwError} from 'rxjs';
+
+enum Screen {
+  OVERVIEW,
+  QUESTIONS,
+  LOCATIONS,
+  TEAMS,
+  QR
+}
 
 @Component({
   selector: 'app-gamemaster-main',
@@ -16,17 +25,26 @@ export class GamemasterMainComponent implements OnInit {
   menuIcon = faBars;
 
   showMenu: boolean;
-  screen: string;
+  Screens = Screen;
+  screen: Screen;
 
-  constructor() {
+  dbData: string;
+
+  constructor(public db: AngularFireDatabase) {
     // Debug: console.log("Reached GameMasterMain Constructor");
 
     // myQrData is shown on the Code
     this.qrComponent = new QRCodeComponent();
     this.myQrData = this.qrComponent.myQrData;
 
-    this.screen = 'overview';
+    this.screen = this.Screens.OVERVIEW;
     this.showMenu = true;
+
+    db.list('/')
+      .valueChanges()
+      .subscribe(res => {
+        console.log(res);
+      });
    }
 
   ngOnInit() {
@@ -37,11 +55,7 @@ export class GamemasterMainComponent implements OnInit {
    * @param screen - the screen to change to
    * @author AlexWesterman
    */
-  changeScreen(screen: string) {
-    if (!screen || !(screen === 'overview' || screen === 'team' || screen === 'question' || screen === 'QRcode')) {
-      throwError(screen + ' is not a valid screen type');
-    }
-
+  changeScreen(screen: Screen) {
     this.screen = screen;
   }
 

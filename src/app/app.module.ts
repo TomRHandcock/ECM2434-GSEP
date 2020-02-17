@@ -40,6 +40,7 @@ const firebaseConfig = {
     FormsModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
+    AngularFireDatabaseModule,
     FontAwesomeModule,
     QRCodeModule
   ],

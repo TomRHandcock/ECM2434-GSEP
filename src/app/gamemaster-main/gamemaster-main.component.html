@@ -3,24 +3,49 @@
     <fa-icon *ngIf="showMenu" [icon]="closeIcon"></fa-icon>
     <fa-icon *ngIf="!showMenu" [icon]="menuIcon"></fa-icon>
   </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('team');">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.TEAMS);">
     Teams
   </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('question')">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.QUESTIONS)">
     Questions
   </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('location')">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.LOCATIONS)">
     Locations
   </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen('QRgen')">
+  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.QR)">
     QR Generation
   </button>
 </nav>
 
-<div class="container" id="container">
-  <div class="element map" id="playerMap">Map will go here</div>
-  <div class="element scoreboard" id="scoreboard">Scoreboard</div>
-  <div class="qrcode">
-    <qrcode [qrdata]="myQrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-  </div>
+<div class="container" id="container" [ngSwitch]="this.screen">
+  <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
+    <div class="element map" id="playerMap">Map will go here</div>
+    <div class="element scoreboard" id="scoreboard">Scoreboard</div>
+    <div class="qrcode">
+      <qrcode [qrdata]="myQrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+    </div>
+  </section>
+
+  <section id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
+  </section>
+
+  <section id="QRView" *ngSwitchCase="this.Screens.QR">
+  </section>
+
+  <section id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
+    <table>
+      <thead>
+        <td>Name</td>
+        <td>Index</td>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of this.dbData">
+          <td>{{question}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
+  </section>
 </div>
