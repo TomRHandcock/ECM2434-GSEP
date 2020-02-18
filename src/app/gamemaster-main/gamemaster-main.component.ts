@@ -6,6 +6,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 
 enum Screen {
+  NONE,
   OVERVIEW,
   QUESTIONS,
   LOCATIONS,
@@ -39,7 +40,7 @@ export class GamemasterMainComponent implements OnInit {
     this.qrComponent = new QRCodeComponent();
     this.myQrData = this.qrComponent.myQrData;
 
-    this.screen = this.Screens.OVERVIEW;
+    this.screen = this.Screens.NONE;
     this.showMenu = true;
 
     db.list('/')
@@ -65,6 +66,9 @@ export class GamemasterMainComponent implements OnInit {
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
             window.location.assign('./player');
+          } else {
+            // User is a gamemaster, load the UI
+            this.changeScreen(this.Screens.OVERVIEW);
           }
         });
       } else {
