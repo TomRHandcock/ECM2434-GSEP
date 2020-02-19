@@ -41,7 +41,9 @@ export class GamemasterMainComponent implements OnInit {
   showMenu: boolean;
   Screens = Screen;
   screen: Screen;
+
   questions: { [loc: string]: Array<Question> };
+  locations: Array<any>;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
@@ -52,6 +54,7 @@ export class GamemasterMainComponent implements OnInit {
     this.showMenu = true;
 
     this.questions = this.getQuestionsFromDatabase();
+    this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
    }
 
   ngOnInit() {
@@ -101,15 +104,26 @@ export class GamemasterMainComponent implements OnInit {
   }
 
   /**
-   * Requests a 'table' from the database
-   * @param request - the 'table' to request
-   * @return Observable<unknown[]>
+   * Requests a 'table' from the database and format it as an array of a class
+   * @param table - the 'table' to request
+   * @param cls - the class to return the list of
+   * @return Array<cls[]> - the table representation
    * @author AlexWesterman
    */
-  getTableDatabase(request: DatabaseTables) {
-    // Simply return that 'table'
-    const path = request.toString().toLowerCase();
-    return this.db.list('/' + path).valueChanges();
+  getTableFromDatabase(table: DatabaseTables, cls: any) {
+    const path = table.toString().toLowerCase();
+    const contents = Array<typeof cls>();
+
+    // Isn't quite working yet....
+    this.db.list('/' + path + '/').valueChanges().subscribe((locations) => {
+      locations.forEach((item: Location, index) => {
+        contents.push(item);
+      });
+    });
+
+    console.log(contents);
+
+    return contents;
   }
 
   /**
@@ -153,8 +167,6 @@ export class GamemasterMainComponent implements OnInit {
         locQs.splice(i, 1);
       }
     }
-
-    console.log(locQs);
   }
 
   /**
@@ -167,9 +179,31 @@ export class GamemasterMainComponent implements OnInit {
     return num.toString();
   }
 
+  /**
+   * Adds a new question to a given location
+   * @param location - the location to add the question in to
+   * @author AlexWesterman
+   */
   addNewQuestion(location: string) {
     const loc = this.questions[location];
     loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
+  }
+
+  /**
+   * Deletes a given location
+   * @param location - the location to delete
+   * @author AlexWesterman
+   */
+  deleteLocation(location: string) {
+    this.locations.splice(this.locations.indexOf(location), 1);
+  }
+
+  /**
+   * Adds a new location
+   * @author AlexWesterman
+   */
+  addNewLocation() {
+    this.locations[this.locations.length] = {name: '', latitude: 0, longitude: 0, qrCode: ''};
   }
 }
 
