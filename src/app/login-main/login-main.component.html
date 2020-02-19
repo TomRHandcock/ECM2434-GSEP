@@ -1,7 +1,7 @@
 <main xmlns="http://www.w3.org/1999/html" [ngSwitch]="this.screen">
   <!-- This is for the login form -->
-  <section id='loginSection' *ngSwitchCase="this.Screens.LOGIN">
-    <form id='loginForm'>
+  <section id="loginSection" *ngSwitchCase="this.Screens.LOGIN">
+    <form id="loginForm">
       <div class="fields">
         <p class="loginFeedback" *ngIf="loginError == 'Password Incorrect'">Incorrect password</p>
         <p class="loginFeedback" *ngIf="loginError == 'Email not found'">User not found</p>
@@ -13,15 +13,15 @@
       <div class="formExtras">
         <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
         <input type="button" (click)="changeScreen(this.Screens.PRIVACY_POLICY)" name="createAccount" value="Create Account">
-        <div class='links'>
+        <div class="links">
           <a>Help logging in</a>
         </div>
       </div>
     </form>
   </section>
   <!-- This is for the account creation form -->
-  <section id='createSection' *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
-    <form id='createForm'>
+  <section id="createSection" *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
+    <form id="createForm">
       <div class="fields">
         <input type="text" name="email" placeholder="Email" [(ngModel)]="createEmail">
         <input type="password" name="password" placeholder="Password" [(ngModel)]="createPassword">
@@ -29,7 +29,7 @@
       </div>
       <div class="formExtras">
         <input type="button" (click)="onCreationPressed()" name="createSubmit" value="Create Account">
-        <div class='links'>
+        <div class="links">
           <a>Help logging in</a>
         </div>
       </div>

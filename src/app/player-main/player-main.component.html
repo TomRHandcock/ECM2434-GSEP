@@ -1,76 +1,93 @@
-<nav class="navbar">
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="toggleMenu()">
-    <fa-icon *ngIf="showMenu" [icon]="closeIcon"></fa-icon>
-    <fa-icon *ngIf="!showMenu" [icon]="menuIcon"></fa-icon>
-  </button>
+<nav class="navbar" role="navigation">
   <div class="navbar-brand">
-    Team C
+    <div class="navbar-item">
+      <span class="navbar-header">Team C</span>
+    </div>
+    <a class="navbar-burger" role="button" aria-label="Toggle navigation" (click)="showMenu = !showMenu">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
   </div>
-  <div class="progress" (click)="openProgress()">
-    Score: {{this.score}}
+  <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
+    <div class="navbar-end">
+      <a class="navbar-item" (click)="openProgress(); showMenu = false">Our Progress</a>
+      <a class="navbar-item" style="color:red">I'm Lost</a>
+      <a class="navbar-item" style="color:red">Help and Support</a>
+      <a class="navbar-item" style="color:red">Settings</a>
+      <a class="navbar-item" (click)="signOut()">Sign out</a>
+    </div>
   </div>
 </nav>
 
-<div *ngIf="showMenu" class="menu">
-  <ul>
-    <li (click)="openProgress(); showMenu = false">Our Progress</li>
-    <li style="color:red">I'm Lost</li>
-    <li style="color:red">Help and Support</li>
-    <li style="color:red">Settings</li>
-    <li (click)="signOut()">Sign out</li>
-  </ul>
-</div>
-
 <ng-container [ngSwitch]="this.screen">
    <!-- The home screen -->
-  <main *ngSwitchCase="'home'" class="container home-container">
+  <main *ngSwitchCase="'home'" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
     <section class="element" id="mapSection">Map will go here</section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
-      <h2 class="next-location">Next Location</h2>
-      <div class="next-clue">This is some placeholder text that will represent where the description and next clue is for the next location.</div>
+      <h4 class="subtitle is-4 is-marginless next-location">Next Location</h4>
+      <div class="next-clue">
+        This is some placeholder text that will represent where the description and next clue is for the next location.
+      </div>
     </section>
 
-    <div role="button" class="button">
-      <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
-      Scan QR code
-    </div>
+    <button class="button is-primary">
+      <span class="icon is-small">
+        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
+      </span>
+      <span>Scan QR code</span>
+    </button>
 
     <!-- The bottom buttons -->
     <div class="button-bar" id="playerButtonBar">
-      <div role="button" class="button">Request Hint</div>
-      <div role="button" class="button">
-        <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
-        UoE Website
-      </div>
+      <button class="button is-primary">
+        <span>Request Hint</span>
+      </button>
+      <button class="button is-primary">
+        <span class="icon is-small">
+          <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
+        </span>
+        <span>UoE Website</span>
+      </button>
     </div>
   </main>
 
   <!-- The progress screen -->
-  <main *ngSwitchCase="'progress'" class="container progress-container">
-    <h1>Your Current Progress</h1>
+  <main *ngSwitchCase="'progress'" class="container progress-container has-navbar-fixed-top">
+    <div class="columns">
+      <div class="column is-full">
+        <h1 class="title is-1">Your Current Progress</h1>
+      </div>
+    </div>
     <!-- TODO - there is a massive gap between above and below - <br> has the same effect? -->
     <!-- The table of entries -->
-    <table class="element">
-      <tr>
-        <td class="row-heading">Score</td>
-        <td class="row-value">{{this.score}}</td>
-      </tr>
+    <div class="columns">
+      <table class="table column is-full flex-grow">
+        <tbody>
+          <tr>
+            <td class="row-heading">Score</td>
+            <td class="row-value">{{this.score}}</td>
+          </tr>
 
-      <!-- Some example entries that we may choose to implement -->
-      <tr>
-        <td class="row-heading">Locations Complete</td>
-        <td class="row-value">0</td>
-      </tr>
-      <tr>
-        <td class="row-heading">Hints Used</td>
-        <td class="row-value">0</td>
-      </tr>
-    </table>
+          <!-- Some example entries that we may choose to implement -->
+          <tr>
+            <td class="row-heading">Locations Complete</td>
+            <td class="row-value">0</td>
+          </tr>
+          <tr>
+            <td class="row-heading">Hints Used</td>
+            <td class="row-value">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div role="button" class="button" id="progressBack" (click)="returnHome()">
-      <fa-icon [icon]="homeIcon"></fa-icon>
+    <div role="button" class="is-primary button" id="progressBack" (click)="returnHome()">
+      <span class="icon is-small">
+        <fa-icon [icon]="homeIcon"></fa-icon>
+      </span>
       Back to Home
     </div>
   </main>

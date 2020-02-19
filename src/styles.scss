@@ -1,7 +1,12 @@
-$primary : #0078B5;
+@charset 'utf8';
+@import '../node_modules/bulma/bulma.sass';
+
+$primary: #0078B5;
 $primaryText: #FFFFFF;
 $secondary: #EAEAEA;
 $secondaryText: #0078B5;
+
+$family-sans-serif: 'Karla', sans-serif;
 
 body {
   padding: 0;
@@ -9,5 +14,5 @@ body {
   background-color: #0078b5; //Older browsers
   background: linear-gradient(to bottom, #0078b5 0%,#006abc 100%); //Newer browsers, gradient!
   min-height: 100vh;
-  font-family: 'Karla', sans-serif;
+  font-family: $family-sans-serif;
 }

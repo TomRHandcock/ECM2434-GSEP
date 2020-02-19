@@ -44,14 +44,6 @@ export class PlayerMainComponent implements OnInit {
   }
 
   /**
-   * Show or hide the navbar menu
-   * @author George White
-   */
-  toggleMenu() {
-    this.showMenu = !this.showMenu;
-  }
-
-  /**
    * Sign the user out of their account.
    * @author George White
    */
