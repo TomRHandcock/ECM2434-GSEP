@@ -52,10 +52,22 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of this.locations">
-          <td class="editCell" contenteditable='true'>{{item.name}}</td>
-          <td class="editCell" contenteditable='true'>{{item.latitude}}</td>
-          <td class="editCell" contenteditable='true'>{{item.longitude}}</td>
-          <td class="editCell" contenteditable='true'>{{item.qrCode}}</td>
+          <td class="editCell"
+            contenteditable="true"
+            [(textContent)]="item.name">
+          </td>
+          <td class="editCell"
+            contenteditable="true"
+            [(textContent)]="item.latitude">
+          </td>
+          <td class="editCell"
+            contenteditable="true"
+            [(textContent)]="item.longitude">
+          </td>
+          <td class="editCell"
+            contenteditable="true"
+            [(textContent)]="item.qrCode">
+          </td>
           <td class="editCell" (click)="this.deleteLocation(this.numToString(item.name))">
             <fa-icon [icon]="deleteIcon"></fa-icon>
           </td>
