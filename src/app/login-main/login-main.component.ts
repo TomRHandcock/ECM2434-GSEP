@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { NgStyle } from '@angular/common';
 
 enum Screen {
   CREATING_ACCOUNT,
@@ -108,7 +106,7 @@ export class LoginMainComponent implements OnInit {
     // Check passwords have been entered and match
     if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
-        (credential) => {
+        () => {
           // Go to the player view
           window.location.assign('./player');
         },
