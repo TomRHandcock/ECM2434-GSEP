@@ -39,25 +39,31 @@
     </div>
   </section>
 
-  <section id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
-    <table class="questionTable">
-      <tr>
-        <th>Name</th>
-        <th>Latitude</th>
-        <th>Longitude</th>
-        <th>QR Code</th>
-        <th></th>
-      </tr>
-      <tr *ngFor="let item of this.locations">
-        <th class="editCell" contenteditable='true'>{{item.name}}</th>
-        <th class="editCell" contenteditable='true'>{{item.latitude}}</th>
-        <th class="editCell" contenteditable='true'>{{item.longitude}}</th>
-        <th class="editCell" contenteditable='true'>{{item.qrCode}}</th>
-        <th class="editCell" (click)="this.deleteLocation(this.numToString(item.name))">
-          <fa-icon [icon]="deleteIcon"></fa-icon>
-        </th>
-      </tr>
-      <td colspan="6" class="addNewQs" (click)="this.addNewLocation()">Add New Location</td>
+  <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
+    <table class="table questionTable is-fullwidth">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>QR Code</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of this.locations">
+          <td class="editCell" contenteditable='true'>{{item.name}}</td>
+          <td class="editCell" contenteditable='true'>{{item.latitude}}</td>
+          <td class="editCell" contenteditable='true'>{{item.longitude}}</td>
+          <th class="editCell" contenteditable='true'>{{item.qrCode}}</th>
+          <td class="editCell" (click)="this.deleteLocation(this.numToString(item.name))">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <td colspan="6" class="addNewQs" (click)="this.addNewLocation()">Add New Location</td>
+      </tfoot>
     </table>
   </section>
 
