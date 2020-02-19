@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faBars, faArrowLeft, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import {AngularFireDatabase, AngularFireList, SnapshotAction} from '@angular/fire/database';
-import {Observable, throwError} from 'rxjs';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {Router} from '@angular/router';
-import {FirebaseListObservable} from '@angular/fire/database-deprecated';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 enum Screen {
   NONE,
@@ -38,7 +36,7 @@ export class GamemasterMainComponent implements OnInit {
   menuIcon = faBars;
   deleteIcon = faTrashAlt;
 
-  showMenu: boolean;
+  showMenu = false;
   Screens = Screen;
   screen: Screen;
   questions: { [loc: string]: Array<Question> };
@@ -49,7 +47,6 @@ export class GamemasterMainComponent implements OnInit {
     this.myQrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
-    this.showMenu = true;
 
     this.questions = this.getQuestionsFromDatabase();
    }
@@ -61,7 +58,7 @@ export class GamemasterMainComponent implements OnInit {
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
         this.db.list('/player/').valueChanges().subscribe((gamemasters) => {
-          gamemasters.forEach((item: User, index ) => {
+          gamemasters.forEach((item: User ) => {
             if (loggedInUser.uid === item.uid) {
               console.log('Gamemaster');
               gamemaster = true;
@@ -92,7 +89,7 @@ export class GamemasterMainComponent implements OnInit {
     const questions: {[loc: string]: Array<Question>} = {};
 
     this.db.list('/location').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location, index) => {
+      locations.forEach((item: Location) => {
         questions[item.name] = item.questions;
       });
     });
@@ -119,14 +116,6 @@ export class GamemasterMainComponent implements OnInit {
    */
   changeScreen(screen: Screen) {
     this.screen = screen;
-  }
-
-  /**
-   * Show or hide the navbar menu
-   * @author George White
-   */
-  toggleMenu() {
-    this.showMenu = !this.showMenu;
   }
 
   /**
