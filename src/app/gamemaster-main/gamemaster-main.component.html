@@ -36,17 +36,30 @@
   </section>
 
   <section id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
-    <table>
-      <thead>
-        <td>Name</td>
-        <td>Index</td>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of this.dbData">
-          <td>{{question}}</td>
+    <div class="location" *ngFor="let item of this.questions | keyvalue">
+      Loc: {{item.key}}
+      <table class="questionTable">
+        <tr>
+          <th>Question</th>
+          <th>Answer 1 (Correct)</th>
+          <th>Answer 2</th>
+          <th>Answer 3</th>
+          <th>Answer 4</th>
+          <th></th>
         </tr>
-      </tbody>
-    </table>
+        <tr *ngFor="let questions of item.value">
+          <th class="editCell" contenteditable='true'>{{questions.question}}</th>
+          <th class="editCell" contenteditable='true' style="color: lightgreen">{{questions.answer.correct}}</th>
+          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect0}}</th>
+          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect1}}</th>
+          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect2}}</th>
+          <th class="editCell" (click)="this.deleteQuestion(this.numToString(item.key), questions.question)">
+            <fa-icon [icon]="deleteIcon"></fa-icon>
+          </th>
+        </tr>
+        <td colspan="6" class="addNewQs" (click)="this.addNewQuestion(this.numToString(item.key))">Add New Question</td>
+      </table>
+    </div>
   </section>
 
   <section id="teamsView" *ngSwitchCase="this.Screens.TEAMS">

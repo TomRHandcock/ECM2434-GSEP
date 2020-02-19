@@ -5,6 +5,41 @@
   background-color: #ADCBE9;
 }
 
+.location {
+  color: white;
+  font-size: 50px;
+}
+
+.questionTable {
+  color: white;
+  border-spacing: 10px;
+  font-size: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 90%;
+  border: 2px solid white;
+}
+
+.addNewQs {
+  font-size: 30px;
+  text-align: center;
+}
+
+.addNewQs:hover {
+  filter: brightness(0.75);
+}
+
+.questionTable th, .questionTable td {
+  border: 2px solid white;
+  padding: 5px;
+}
+
+.editCell:hover {
+  filter: brightness(0.75);
+}
+
 .map {
   width: 70%;
   float: left;

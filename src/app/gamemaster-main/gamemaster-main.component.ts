@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase, AngularFireList, SnapshotAction} from '@angular/fire/database';
 import {Observable, throwError} from 'rxjs';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {FirebaseListObservable} from '@angular/fire/database-deprecated';
 
 enum Screen {
   NONE,
@@ -13,6 +14,15 @@ enum Screen {
   TEAMS,
   QR
 }
+
+// All the keys in the database
+enum DatabaseTables {
+  Player,
+  Location,
+  Gamemaster,
+  Team
+}
+
 
 @Component({
   selector: 'app-gamemaster-main',
@@ -26,16 +36,14 @@ export class GamemasterMainComponent implements OnInit {
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
+  deleteIcon = faTrashAlt;
 
   showMenu: boolean;
   Screens = Screen;
   screen: Screen;
-
-  dbData: string;
+  questions: { [loc: string]: Array<Question> };
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
-    // Debug: console.log("Reached GameMasterMain Constructor");
-
     // myQrData is shown on the Code
     this.qrComponent = new QRCodeComponent();
     this.myQrData = this.qrComponent.myQrData;
@@ -43,11 +51,7 @@ export class GamemasterMainComponent implements OnInit {
     this.screen = this.Screens.NONE;
     this.showMenu = true;
 
-    db.list('/')
-      .valueChanges()
-      .subscribe(res => {
-        console.log(res);
-      });
+    this.questions = this.getQuestionsFromDatabase();
    }
 
   ngOnInit() {
@@ -65,7 +69,7 @@ export class GamemasterMainComponent implements OnInit {
           });
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
-            window.location.assign('./player');
+            // window.location.assign('./player');
           } else {
             // User is a gamemaster, load the UI
             this.changeScreen(this.Screens.OVERVIEW);
@@ -76,6 +80,36 @@ export class GamemasterMainComponent implements OnInit {
         window.location.assign('./login');
       }
     });
+  }
+
+  /**
+   * Returns all questions stored in the database, nested by location
+   * @return [loc: string]: Array<Question> - the (location,questions) pair for each location
+   * @author AlexWesterman
+   */
+  getQuestionsFromDatabase() {
+    // This will loop through each location and get the questions
+    const questions: {[loc: string]: Array<Question>} = {};
+
+    this.db.list('/location').valueChanges().subscribe((locations) => {
+      locations.forEach((item: Location, index) => {
+        questions[item.name] = item.questions;
+      });
+    });
+
+    return questions;
+  }
+
+  /**
+   * Requests a 'table' from the database
+   * @param request - the 'table' to request
+   * @return Observable<unknown[]>
+   * @author AlexWesterman
+   */
+  getTableDatabase(request: DatabaseTables) {
+    // Simply return that 'table'
+    const path = request.toString().toLowerCase();
+    return this.db.list('/' + path).valueChanges();
   }
 
   /**
@@ -101,6 +135,41 @@ export class GamemasterMainComponent implements OnInit {
    */
   signOut() {
     this.auth.auth.signOut().then(() => this.router.navigate(['login']));
+  }
+
+  /**
+   * Deletes a question locally (does NOT delete from the database)
+   * @param location - the location the question belongs to
+   * @param question - the question to delete
+   * @author AlexWesterman
+   */
+  deleteQuestion(location: string, question: string) {
+    const locQs = this.questions[location];
+
+    // Find and delete the question
+    for (let i = 0; i < locQs.length; i++) {
+      const q = locQs[i];
+      if (q.question === question) {
+        locQs.splice(i, 1);
+      }
+    }
+
+    console.log(locQs);
+  }
+
+  /**
+   * Converts a number to a string, for use in HTML
+   * @param num - the number to convert
+   * @return the converted string
+   * @author AlexWesterman
+   */
+  numToString(num: number) {
+    return num.toString();
+  }
+
+  addNewQuestion(location: string) {
+    const loc = this.questions[location];
+    loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
   }
 }
 
@@ -131,4 +200,33 @@ export class QRCodeComponent {
 export class User {
   uid: string;
   displayName: string;
+}
+
+// Class definitions, relating to the database
+export class GameMaster {
+  ID: string;
+}
+
+export class Player {
+  public ID: string;
+  public team: number;
+}
+
+export class Location {
+  latitude: number;
+  longitude: number;
+  name: string;
+  qrCode: string;
+  questions: Question[];
+}
+
+export class Question {
+  question: string;
+  answer: { [ans: string]: any };
+}
+
+export class Team {
+  ID: number;
+  name: string;
+  score: number;
 }
