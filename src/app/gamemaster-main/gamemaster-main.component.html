@@ -1,26 +1,36 @@
-<nav class="navbar">
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="toggleMenu()">
-    <fa-icon *ngIf="showMenu" [icon]="closeIcon"></fa-icon>
-    <fa-icon *ngIf="!showMenu" [icon]="menuIcon"></fa-icon>
-  </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.TEAMS);">
-    Teams
-  </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.QUESTIONS)">
-    Questions
-  </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.LOCATIONS)">
-    Locations
-  </button>
-  <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="changeScreen(this.Screens.QR)">
-    QR Generation
-  </button>
-  <button class="navbar-toggler" type="button" (click)="signOut()">
-    Sign out
-  </button>
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-brand">
+    <div class="navbar-item">
+      <span class="navbar-header">Gamemaster</span>
+    </div>
+    <a role="button" class="navbar-burger" aria-label="Menu" aria-expanded="false" (click)="showMenu = !showMenu">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
+    <div class="navbar-end">
+      <a class="navbar-item" (click)="changeScreen(this.Screens.TEAMS);">
+        Teams
+      </a>
+      <a class="navbar-item" (click)="changeScreen(this.Screens.QUESTIONS)">
+        Questions
+      </a>
+      <a class="navbar-item" (click)="changeScreen(this.Screens.LOCATIONS)">
+        Locations
+      </a>
+      <a class="navbar-item" (click)="changeScreen(this.Screens.QR)">
+        QR Generation
+      </a>
+      <a class="navbar-item" (click)="signOut()">
+        Sign out
+      </a>
+    </div>
+  </div>
 </nav>
 
-<div class="container" id="container" [ngSwitch]="this.screen">
+<div class="container" [ngSwitch]="this.screen">
   <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <div class="element map" id="playerMap">Map will go here</div>
     <div class="element scoreboard" id="scoreboard">Scoreboard</div>
@@ -54,29 +64,49 @@
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
   </section>
 
-  <section id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
+  <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
     <div class="location" *ngFor="let item of this.questions | keyvalue">
-      Loc: {{item.key}}
-      <table class="questionTable">
-        <tr>
-          <th>Question</th>
-          <th>Answer 1 (Correct)</th>
-          <th>Answer 2</th>
-          <th>Answer 3</th>
-          <th>Answer 4</th>
-          <th></th>
-        </tr>
-        <tr *ngFor="let questions of item.value">
-          <th class="editCell" contenteditable='true'>{{questions.question}}</th>
-          <th class="editCell" contenteditable='true' style="color: lightgreen">{{questions.answer.correct}}</th>
-          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect0}}</th>
-          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect1}}</th>
-          <th class="editCell" contenteditable='true' style="color: lightcoral">{{questions.answer.incorrect2}}</th>
-          <th class="editCell" (click)="this.deleteQuestion(this.numToString(item.key), questions.question)">
-            <fa-icon [icon]="deleteIcon"></fa-icon>
-          </th>
-        </tr>
-        <td colspan="6" class="addNewQs" (click)="this.addNewQuestion(this.numToString(item.key))">Add New Question</td>
+      <h4 class="subtitle is-4">Loc: {{item.key}}</h4>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Answer 1 (Correct)</th>
+            <th>Answer 2</th>
+            <th>Answer 3</th>
+            <th>Answer 4</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let questions of item.value">
+            <td contenteditable="true" 
+              [(textContent)]="questions.question">
+            </td>
+            <td contenteditable="true"
+              [(textContent)]="questions.answer.correct"
+              style="color: green">
+            </td>
+            <td contenteditable="true"
+              [(textContent)]="questions.answer.incorrect0"
+              style="color: coral">
+            </td>
+            <td contenteditable="true"
+              [(textContent)]="questions.answer.incorrect1"
+              style="color: coral">
+            </td>
+            <td contenteditable="true"
+              [(textContent)]="questions.answer.incorrect2"
+              style="color: coral">
+            </td>
+            <td (click)="deleteQuestion(numToString(item.key), questions.question)">
+              <fa-icon [icon]="deleteIcon"></fa-icon>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <td colspan="6" class="addNewQs" (click)="addNewQuestion(numToString(item.key))">Add New Question...</td>
+        </tfoot>
       </table>
     </div>
   </section>
