@@ -15,10 +15,10 @@ enum Screen {
 
 // All the keys in the database
 enum DatabaseTables {
-  Player,
-  Location,
-  Gamemaster,
-  Team
+  Player = 'player',
+  Location = 'location',
+  Gamemaster = 'gamemaster',
+  Team = 'team'
 }
 
 
@@ -111,14 +111,16 @@ export class GamemasterMainComponent implements OnInit {
    * @param cls - the class to return the list of
    * @return Array<cls[]> - the table representation
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   getTableFromDatabase(table: DatabaseTables, cls: any) {
-    // const path = table.toString().toLowerCase();
+    // Get the path for the table
+    const path = table.toString().toLowerCase();
     const contents = Array<typeof cls>();
 
-    // Isn't quite working yet....
-    this.db.list('/location').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location) => {
+    // Get the table results and build an array of them
+    this.db.list('/' + path).valueChanges().subscribe((records) => {
+      records.forEach((item: any) => {
         contents.push(item);
       });
     });
