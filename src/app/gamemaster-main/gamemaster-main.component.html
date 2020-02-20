@@ -63,7 +63,7 @@
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.longitude">
-          </td>
+          </td> 
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.qrCode">
@@ -80,6 +80,9 @@
   </section>
 
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
+    <div id="qrPicture" class="qr qrPic"></div>
+    <div id="qrString" class="qr box"></div>
+    <button class="button is-primary qr" style="text-align: center;">Generate New QR Code</button>
   </section>
 
   <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
@@ -98,7 +101,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let questions of item.value">
-            <td contenteditable="true" 
+            <td contenteditable="true"
               [(textContent)]="questions.question">
             </td>
             <td contenteditable="true"
@@ -123,7 +126,7 @@
           </tr>
         </tbody>
         <tfoot>
-          <td colspan="6" class="addNewQs" (click)="addNewQuestion(numToString(item.key))">Add New Question...</td>
+          <td [colSpan]="6" class="addNewQs" (click)="addNewQuestion(numToString(item.key))">Add New Question...</td>
         </tfoot>
       </table>
     </div>
@@ -131,13 +134,28 @@
 
   <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
     <table class="table teamsTable is-fullwidth">
+      <colgroup>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
       <thead>
         <th>ID <fa-icon [icon]="sortIcon"></fa-icon></th>
         <th>Team Name <fa-icon [icon]="sortIcon"></fa-icon></th>
         <th>Score <fa-icon [icon]="sortIcon"></fa-icon></th>
-        <th>Actions</th>
-        <tr></tr>
+        <th class="is-1">Actions</th>
       </thead>
+      <tr *ngFor="let team of this.teams" class="is-hoverable">
+        <td [(textContent)]="team.id"></td>
+        <td contenteditable="true" [(textContent)]="team.name"></td>
+        <td contenteditable="true" [(textContent)]="team.score"></td>
+        <td>
+          <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
+          <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>
+          <fa-icon class="teamEdit" [icon]="deleteIcon"></fa-icon>
+        </td>
+      </tr>
     </table>
   </section>
 </div>

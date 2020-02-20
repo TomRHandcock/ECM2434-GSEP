@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -15,10 +15,10 @@ enum Screen {
 
 // All the keys in the database
 enum DatabaseTables {
-  Player,
-  Location,
-  Gamemaster,
-  Team
+  Player = 'player',
+  Location = 'location',
+  Gamemaster = 'gamemaster',
+  Team = 'team'
 }
 
 
@@ -34,8 +34,10 @@ export class GamemasterMainComponent implements OnInit {
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
+  editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
+  mapIcon = faMapMarkerAlt;
 
   showMenu = false;
   Screens = Screen;
@@ -43,7 +45,7 @@ export class GamemasterMainComponent implements OnInit {
 
   questions: { [loc: string]: Array<Question> };
   locations: Array<any>;
-  teams: Array<Team>;
+  teams: Array<any>;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
@@ -54,6 +56,8 @@ export class GamemasterMainComponent implements OnInit {
 
     this.questions = this.getQuestionsFromDatabase();
     this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
+    this.teams = this.getTableFromDatabase(DatabaseTables.Team, Team);
+    console.log(this.teams);
    }
 
   ngOnInit() {
@@ -62,16 +66,17 @@ export class GamemasterMainComponent implements OnInit {
         // There is a user logged in
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
-        this.db.list('/player/').valueChanges().subscribe((gamemasters) => {
-          gamemasters.forEach((item: User ) => {
-            if (loggedInUser.uid === item.uid) {
-              console.log('Gamemaster');
+        this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
+          gamemasters.forEach((item: string) => {
+            console.log(loggedInUser.uid, item);
+            console.log(1);
+            if (loggedInUser.uid === item) {
               gamemaster = true;
             }
           });
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
-            // window.location.assign('./player');
+            window.location.assign('./player');
           } else {
             // User is a gamemaster, load the UI
             this.changeScreen(this.Screens.OVERVIEW);
@@ -108,19 +113,19 @@ export class GamemasterMainComponent implements OnInit {
    * @param cls - the class to return the list of
    * @return Array<cls[]> - the table representation
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   getTableFromDatabase(table: DatabaseTables, cls: any) {
+    // Get the path for the table
     const path = table.toString().toLowerCase();
     const contents = Array<typeof cls>();
 
-    // Isn't quite working yet....
-    this.db.list('/' + path + '/').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location, index) => {
+    // Get the table results and build an array of them
+    this.db.list('/' + path).valueChanges().subscribe((records) => {
+      records.forEach((item: any) => {
         contents.push(item);
       });
     });
-
-    console.log(contents);
 
     return contents;
   }
