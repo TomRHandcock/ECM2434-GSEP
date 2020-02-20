@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -34,8 +34,10 @@ export class GamemasterMainComponent implements OnInit {
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
+  editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
+  mapIcon = faMapMarkerAlt;
 
   showMenu = false;
   Screens = Screen;
