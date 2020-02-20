@@ -129,6 +129,15 @@
     </div>
   </section>
 
-  <section id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
+  <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
+    <table class="table teamsTable is-fullwidth">
+      <thead>
+        <th>ID <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th>Team Name <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th>Score <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th>Actions</th>
+        <tr></tr>
+      </thead>
+    </table>
   </section>
 </div>

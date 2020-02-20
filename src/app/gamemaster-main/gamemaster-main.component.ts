@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt, faSort } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -35,6 +35,7 @@ export class GamemasterMainComponent implements OnInit {
   closeIcon = faArrowLeft;
   menuIcon = faBars;
   deleteIcon = faTrashAlt;
+  sortIcon = faSort;
 
   showMenu = false;
   Screens = Screen;
@@ -42,6 +43,7 @@ export class GamemasterMainComponent implements OnInit {
 
   questions: { [loc: string]: Array<Question> };
   locations: Array<any>;
+  teams: Array<Team>;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
