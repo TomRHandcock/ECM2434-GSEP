@@ -63,7 +63,7 @@
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.longitude">
-          </td>
+          </td> 
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.qrCode">
@@ -129,6 +129,23 @@
     </div>
   </section>
 
-  <section id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
+  <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
+    <table class="table teamsTable is-fullwidth is-hoverable">
+      <colgroup>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+        <th>ID <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th>Team Name <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th>Score <fa-icon [icon]="sortIcon"></fa-icon></th>
+        <th class="is-1">Actions</th>
+      </thead>
+      <tr *ngFor="let team of this.teams">
+        <td [(textContent)]="team.id"></td>
+      </tr>
+    </table>
   </section>
 </div>
