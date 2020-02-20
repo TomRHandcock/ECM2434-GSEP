@@ -64,16 +64,17 @@ export class GamemasterMainComponent implements OnInit {
         // There is a user logged in
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
-        this.db.list('/player/').valueChanges().subscribe((gamemasters) => {
-          gamemasters.forEach((item: User ) => {
-            if (loggedInUser.uid === item.uid) {
-              console.log('Gamemaster');
+        this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
+          gamemasters.forEach((item: string) => {
+            console.log(loggedInUser.uid, item);
+            console.log(1);
+            if (loggedInUser.uid === item) {
               gamemaster = true;
             }
           });
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
-            // window.location.assign('./player');
+            window.location.assign('./player');
           } else {
             // User is a gamemaster, load the UI
             this.changeScreen(this.Screens.OVERVIEW);
@@ -112,17 +113,15 @@ export class GamemasterMainComponent implements OnInit {
    * @author AlexWesterman
    */
   getTableFromDatabase(table: DatabaseTables, cls: any) {
-    const path = table.toString().toLowerCase();
+    // const path = table.toString().toLowerCase();
     const contents = Array<typeof cls>();
 
     // Isn't quite working yet....
-    this.db.list('/' + path + '/').valueChanges().subscribe((locations) => {
-      locations.forEach((item, index) => {
+    this.db.list('/location').valueChanges().subscribe((locations) => {
+      locations.forEach((item: Location) => {
         contents.push(item);
       });
     });
-
-    console.log(contents);
 
     return contents;
   }
