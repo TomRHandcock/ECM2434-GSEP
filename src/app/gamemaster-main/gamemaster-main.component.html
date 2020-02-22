@@ -148,8 +148,8 @@
       </thead>
       <tr *ngFor="let team of this.teams" class="is-hoverable">
         <td [(textContent)]="team.ID"></td>
-        <td contenteditable="true" [(textContent)]="team.name"></td>
-        <td contenteditable="true" [(textContent)]="team.score"></td>
+        <td contenteditable="true" [(textContent)]="team.name" (keyup)="this.updateTeam(team.ID)"></td>
+        <td contenteditable="true" [(textContent)]="team.score" (keyup)="this.updateTeam(team.ID)"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="qrCodeIcon"></fa-icon>
@@ -157,6 +157,9 @@
           <fa-icon class="teamEdit" [icon]="deleteIcon" (click)="this.deleteTeam(team.ID)" ></fa-icon>
         </td>
       </tr>
+      <tfoot>
+        <td style="text-align: center; cursor: pointer;" colspan="6" (click)="this.addNewTeam()">+ Add a new team</td>
+      </tfoot>
     </table>
   </section>
 </div>

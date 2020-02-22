@@ -186,6 +186,15 @@ export class GamemasterMainComponent implements OnInit {
     return num.toString();
   }
 
+
+  /**
+   * Adds a new team to the database
+   * @author TomRHandcock
+   */
+  addNewTeam() {
+    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: "", score: 0});
+  }
+
   /**
    * Adds a new question to a given location
    * @param location - the location to add the question in to
@@ -194,6 +203,19 @@ export class GamemasterMainComponent implements OnInit {
   addNewQuestion(location: string) {
     const loc = this.questions[location];
     loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
+  }
+
+  updateTeam(id) {
+    console.log("Updating teams");
+    this.teams.forEach((item,index)=> {
+      if(id == item.ID) {
+        console.log("Found match")
+        //this.db.object('/team/' + id).set({ID: item.ID, name: item.name, score: item.score});
+        this.db.database.ref('/team/'+id).set({ID: item.ID, name: item.name, score: item.score}).then((res) => {
+          console.log(res);
+        })
+      }
+    });
   }
 
   /**
