@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -38,6 +38,7 @@ export class GamemasterMainComponent implements OnInit {
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
   mapIcon = faMapMarkerAlt;
+  qrCodeIcon = faQrcode;
 
   showMenu = false;
   Screens = Screen;
@@ -56,7 +57,7 @@ export class GamemasterMainComponent implements OnInit {
 
     this.questions = this.getQuestionsFromDatabase();
     this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
-    this.teams = this.getTableFromDatabase(DatabaseTables.Team, Team);
+    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams});
     console.log(this.teams);
    }
 
@@ -145,6 +146,16 @@ export class GamemasterMainComponent implements OnInit {
    */
   signOut() {
     this.auth.auth.signOut().then(() => this.router.navigate(['login']));
+  }
+
+
+  /**
+   * Deletes a team in the database.
+   * @param id The ID of the team to delete
+   * @author TomRHandcock
+   */
+  deleteTeam(id: number) {
+    this.db.object("/team/" + id).remove();
   }
 
   /**

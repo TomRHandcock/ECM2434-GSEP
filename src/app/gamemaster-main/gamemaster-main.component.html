@@ -147,13 +147,14 @@
         <th class="is-1">Actions</th>
       </thead>
       <tr *ngFor="let team of this.teams" class="is-hoverable">
-        <td [(textContent)]="team.id"></td>
+        <td [(textContent)]="team.ID"></td>
         <td contenteditable="true" [(textContent)]="team.name"></td>
         <td contenteditable="true" [(textContent)]="team.score"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
+          <fa-icon class="teamEdit" [icon]="qrCodeIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>
-          <fa-icon class="teamEdit" [icon]="deleteIcon"></fa-icon>
+          <fa-icon class="teamEdit" [icon]="deleteIcon" (click)="this.deleteTeam(team.ID)" ></fa-icon>
         </td>
       </tr>
     </table>
