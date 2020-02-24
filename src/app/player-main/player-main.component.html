@@ -20,7 +20,10 @@
   </div>
 </nav>
 
-<ng-container [ngSwitch]="this.screen">
+
+
+<ng-container #switch [ngSwitch]="this.screen">
+
    <!-- The home screen -->
   <main *ngSwitchCase="'home'" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
@@ -33,7 +36,7 @@
       </div>
     </section>
 
-    <button class="button is-primary">
+    <button (click)="openQrScanner()" class="button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
       </span>
@@ -88,7 +91,32 @@
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
-      Back to Home
+      <span>Back to Home</span>
+    </div>
+  </main>
+
+  <main *ngSwitchCase="'qrScanner'" class="container qrScanner-container has-navbar-fixed-top">
+    
+    <button (click)="openCamera()" class="button is-primary">
+      <span class="icon is-small">
+        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
+      </span>
+      <span>Open Camera</span>
+    </button>
+
+    <qr-scanner id="QrScanner"
+      [debug]="false"
+      [canvasWidth]="1080"
+      [canvasHeight]="720"
+      [stopAfterScan]="true"
+      [updateTime]="500">  
+    </qr-scanner>
+
+    <div role="button" class="is-primary button" id="qrScannerBack" (click)="returnHome()" (load)="qrCodeOnInit()">
+      <span class="icon is-small">
+        <fa-icon [icon]="homeIcon"></fa-icon>
+      </span>
+      <span>Back to Home</span>
     </div>
   </main>
 </ng-container>

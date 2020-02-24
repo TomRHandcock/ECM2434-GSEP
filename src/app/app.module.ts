@@ -14,7 +14,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+
 import { QRCodeModule } from 'angularx-qrcode';
+import { NgQrScannerModule } from 'angular2-qrscanner';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
@@ -41,7 +43,8 @@ const firebaseConfig = {
     AngularFireAuthModule,
     AngularFireDatabaseModule,
     FontAwesomeModule,
-    QRCodeModule
+    QRCodeModule,
+    NgQrScannerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
