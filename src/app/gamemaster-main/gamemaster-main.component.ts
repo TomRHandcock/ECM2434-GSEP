@@ -30,7 +30,7 @@ enum DatabaseTables {
 
 export class GamemasterMainComponent implements OnInit {
   qrComponent: QRCodeComponent = null;
-  myQrData: string = null;
+  qrData: string = null;
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
@@ -51,7 +51,7 @@ export class GamemasterMainComponent implements OnInit {
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
     this.qrComponent = new QRCodeComponent();
-    this.myQrData = this.qrComponent.myQrData;
+    this.qrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
 
@@ -148,7 +148,6 @@ export class GamemasterMainComponent implements OnInit {
     this.auth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 
-
   /**
    * Deletes a team in the database.
    * @param id The ID of the team to delete
@@ -185,7 +184,6 @@ export class GamemasterMainComponent implements OnInit {
   numToString(num: number) {
     return num.toString();
   }
-
 
   /**
    * Adds a new team to the database
@@ -230,6 +228,15 @@ export class GamemasterMainComponent implements OnInit {
   addNewLocation() {
     this.locations[this.locations.length] = {name: '', latitude: 0, longitude: 0, qrCode: ''};
   }
+
+  /**
+   * Generates a new QR code
+   * @author AlexWesterman
+   */
+  generateQRCode() {
+    this.qrComponent = new QRCodeComponent();
+    this.qrData = this.qrComponent.myQrData;
+  }
 }
 
 export class QRCodeComponent {
@@ -254,11 +261,6 @@ export class QRCodeComponent {
   createQrCode(maxNum: number) {
     this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
-}
-
-export class User {
-  uid: string;
-  displayName: string;
 }
 
 // Class definitions, relating to the database
