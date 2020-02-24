@@ -30,7 +30,7 @@ enum DatabaseTables {
 
 export class GamemasterMainComponent implements OnInit {
   qrComponent: QRCodeComponent = null;
-  myQrData: string = null;
+  qrData: string = null;
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
@@ -51,13 +51,13 @@ export class GamemasterMainComponent implements OnInit {
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
     this.qrComponent = new QRCodeComponent();
-    this.myQrData = this.qrComponent.myQrData;
+    this.qrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
 
     this.questions = this.getQuestionsFromDatabase();
     this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
-    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams});
+    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams; });
     console.log(this.teams);
    }
 
@@ -148,14 +148,13 @@ export class GamemasterMainComponent implements OnInit {
     this.auth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 
-
   /**
    * Deletes a team in the database.
    * @param id The ID of the team to delete
    * @author TomRHandcock
    */
   deleteTeam(id: number) {
-    this.db.object("/team/" + id).remove();
+    this.db.object('/team/' + id).remove();
   }
 
   /**
@@ -186,13 +185,12 @@ export class GamemasterMainComponent implements OnInit {
     return num.toString();
   }
 
-
   /**
    * Adds a new team to the database
    * @author TomRHandcock
    */
   addNewTeam() {
-    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: "", score: 0});
+    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: '', score: 0});
   }
 
   /**
@@ -206,14 +204,14 @@ export class GamemasterMainComponent implements OnInit {
   }
 
   updateTeam(id) {
-    console.log("Updating teams");
-    this.teams.forEach((item,index)=> {
-      if(id == item.ID) {
-        console.log("Found match")
-        //this.db.object('/team/' + id).set({ID: item.ID, name: item.name, score: item.score});
-        this.db.database.ref('/team/'+id).set({ID: item.ID, name: item.name, score: item.score}).then((res) => {
+    console.log('Updating teams');
+    this.teams.forEach((item, index) => {
+      if (id === item.ID) {
+        console.log('Found match');
+        // this.db.object('/team/' + id).set({ID: item.ID, name: item.name, score: item.score});
+        this.db.database.ref('/team/' + id).set({ID: item.ID, name: item.name, score: item.score}).then((res) => {
           console.log(res);
-        })
+        });
       }
     });
   }
@@ -233,6 +231,15 @@ export class GamemasterMainComponent implements OnInit {
    */
   addNewLocation() {
     this.locations[this.locations.length] = {name: '', latitude: 0, longitude: 0, qrCode: ''};
+  }
+
+  /**
+   * Generates a new QR code
+   * @author AlexWesterman
+   */
+  generateQRCode() {
+    this.qrComponent = new QRCodeComponent();
+    this.qrData = this.qrComponent.myQrData;
   }
 }
 
@@ -258,11 +265,6 @@ export class QRCodeComponent {
   createQrCode(maxNum: number) {
     this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
-}
-
-export class User {
-  uid: string;
-  displayName: string;
 }
 
 // Class definitions, relating to the database

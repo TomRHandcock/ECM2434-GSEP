@@ -63,7 +63,7 @@
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.longitude">
-          </td> 
+          </td>
           <td class="editCell"
             contenteditable="true"
             [(textContent)]="item.qrCode">
@@ -80,14 +80,26 @@
   </section>
 
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
-    <div id="qrPicture" class="qr qrPic"></div>
-    <div id="qrString" class="qr box"></div>
-    <button class="button is-primary qr" style="text-align: center;">Generate New QR Code</button>
+    <table class="qr">
+      <tr id="qrCode" *ngIf="this.qrData">
+        <qrcode [qrdata]="this.qrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+      </tr>
+      <tr id="qrString">{{this.qrData}}</tr>
+
+      <tr>
+        <button id="qrButton" class="button is-primary">
+          <span class="icon is-small">
+            <fa-icon [icon]="qrCodeIcon"></fa-icon>
+          </span>
+          <span (click)="this.generateQRCode()">Generate New QR Code</span>
+        </button>
+      </tr>
+    </table>
   </section>
 
   <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
     <div class="location" *ngFor="let item of this.questions | keyvalue">
-      <h4 class="subtitle is-4">Loc: {{item.key}}</h4>
+      <h4 class="subtitle is-4">Location: {{item.key}}</h4>
       <table class="table is-fullwidth">
         <thead>
           <tr>
