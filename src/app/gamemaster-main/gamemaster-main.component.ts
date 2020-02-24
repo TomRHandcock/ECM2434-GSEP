@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -15,10 +15,10 @@ enum Screen {
 
 // All the keys in the database
 enum DatabaseTables {
-  Player,
-  Location,
-  Gamemaster,
-  Team
+  Player = 'player',
+  Location = 'location',
+  Gamemaster = 'gamemaster',
+  Team = 'team'
 }
 
 
@@ -30,11 +30,15 @@ enum DatabaseTables {
 
 export class GamemasterMainComponent implements OnInit {
   qrComponent: QRCodeComponent = null;
-  myQrData: string = null;
+  qrData: string = null;
 
   closeIcon = faArrowLeft;
   menuIcon = faBars;
+  editIcon = faPen;
   deleteIcon = faTrashAlt;
+  sortIcon = faSort;
+  mapIcon = faMapMarkerAlt;
+  qrCodeIcon = faQrcode;
 
   showMenu = false;
   Screens = Screen;
@@ -42,16 +46,19 @@ export class GamemasterMainComponent implements OnInit {
 
   questions: { [loc: string]: Array<Question> };
   locations: Array<any>;
+  teams: Array<any>;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
     this.qrComponent = new QRCodeComponent();
-    this.myQrData = this.qrComponent.myQrData;
+    this.qrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
 
     this.questions = this.getQuestionsFromDatabase();
     this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
+    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams; });
+    console.log(this.teams);
    }
 
   ngOnInit() {
@@ -107,14 +114,16 @@ export class GamemasterMainComponent implements OnInit {
    * @param cls - the class to return the list of
    * @return Array<cls[]> - the table representation
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   getTableFromDatabase(table: DatabaseTables, cls: any) {
-    // const path = table.toString().toLowerCase();
+    // Get the path for the table
+    const path = table.toString().toLowerCase();
     const contents = Array<typeof cls>();
 
-    // Isn't quite working yet....
-    this.db.list('/location').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location) => {
+    // Get the table results and build an array of them
+    this.db.list('/' + path).valueChanges().subscribe((records) => {
+      records.forEach((item: any) => {
         contents.push(item);
       });
     });
@@ -137,6 +146,15 @@ export class GamemasterMainComponent implements OnInit {
    */
   signOut() {
     this.auth.auth.signOut().then(() => this.router.navigate(['login']));
+  }
+
+  /**
+   * Deletes a team in the database.
+   * @param id The ID of the team to delete
+   * @author TomRHandcock
+   */
+  deleteTeam(id: number) {
+    this.db.object('/team/' + id).remove();
   }
 
   /**
@@ -168,6 +186,14 @@ export class GamemasterMainComponent implements OnInit {
   }
 
   /**
+   * Adds a new team to the database
+   * @author TomRHandcock
+   */
+  addNewTeam() {
+    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: '', score: 0});
+  }
+
+  /**
    * Adds a new question to a given location
    * @param location - the location to add the question in to
    * @author AlexWesterman
@@ -175,6 +201,15 @@ export class GamemasterMainComponent implements OnInit {
   addNewQuestion(location: string) {
     const loc = this.questions[location];
     loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
+  }
+
+  /**
+   * This method updates the team details in the database
+   * @param id The Team id of the team to update
+   * @author TomRHandcock
+   */
+  updateTeam(id) {
+    this.db.object('/team/' + id).set(this.teams[id]);
   }
 
   /**
@@ -192,6 +227,15 @@ export class GamemasterMainComponent implements OnInit {
    */
   addNewLocation() {
     this.locations[this.locations.length] = {name: '', latitude: 0, longitude: 0, qrCode: ''};
+  }
+
+  /**
+   * Generates a new QR code
+   * @author AlexWesterman
+   */
+  generateQRCode() {
+    this.qrComponent = new QRCodeComponent();
+    this.qrData = this.qrComponent.myQrData;
   }
 }
 
@@ -217,11 +261,6 @@ export class QRCodeComponent {
   createQrCode(maxNum: number) {
     this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
-}
-
-export class User {
-  uid: string;
-  displayName: string;
 }
 
 // Class definitions, relating to the database
