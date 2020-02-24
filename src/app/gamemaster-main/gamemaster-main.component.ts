@@ -57,7 +57,7 @@ export class GamemasterMainComponent implements OnInit {
 
     this.questions = this.getQuestionsFromDatabase();
     this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
-    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams});
+    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams; });
     console.log(this.teams);
    }
 
@@ -155,7 +155,7 @@ export class GamemasterMainComponent implements OnInit {
    * @author TomRHandcock
    */
   deleteTeam(id: number) {
-    this.db.object("/team/" + id).remove();
+    this.db.object('/team/' + id).remove();
   }
 
   /**
@@ -192,7 +192,7 @@ export class GamemasterMainComponent implements OnInit {
    * @author TomRHandcock
    */
   addNewTeam() {
-    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: "", score: 0});
+    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: '', score: 0});
   }
 
   /**
@@ -205,17 +205,13 @@ export class GamemasterMainComponent implements OnInit {
     loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
   }
 
+  /**
+   * This method updates the team details in the database
+   * @param id The Team id of the team to update
+   * @author TomRHandcock
+   */
   updateTeam(id) {
-    console.log("Updating teams");
-    this.teams.forEach((item,index)=> {
-      if(id == item.ID) {
-        console.log("Found match")
-        //this.db.object('/team/' + id).set({ID: item.ID, name: item.name, score: item.score});
-        this.db.database.ref('/team/'+id).set({ID: item.ID, name: item.name, score: item.score}).then((res) => {
-          console.log(res);
-        })
-      }
-    });
+    this.db.object('/team/' + id).set(this.teams[id]);
   }
 
   /**
