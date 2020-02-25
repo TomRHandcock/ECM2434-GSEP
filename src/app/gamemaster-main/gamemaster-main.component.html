@@ -33,13 +33,9 @@
 <div class="container" [ngSwitch]="this.screen">
   <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <div class="element map" id="playerMap">Map will go here</div>
-    <div class="element scoreboard" id="scoreboard">Scoreboard</div>
-    <div class="qrcode">
-      <qrcode [qrdata]="myQrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-    </div>
   </section>
 
-  <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
+  <section class="section" id="scoreboard" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
   </section>
 
@@ -164,8 +160,8 @@
       </thead>
       <tr *ngFor="let team of this.teams" class="is-hoverable">
         <td [(textContent)]="team.ID"></td>
-        <td><input type="text" name="teamName" [(ngModel)]="teams[team.ID].name" (blur)="this.updateTeam(team.ID)"></td>
-        <td><input type="number" name="teamScore" [(ngModel)]="teams[team.ID].score" (blur)="this.updateTeam(team.ID)"></td>
+        <td><input type="text" name="teamName" [(ngModel)]="team.name" (blur)="this.updateTeam(team.ID)"></td>
+        <td><input type="number" name="teamScore" [(ngModel)]="team.score" (blur)="this.updateTeam(team.ID)"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>

@@ -4,13 +4,16 @@ import { faCamera, faGlobe, faBars, faHome, faArrowLeft } from '@fortawesome/fre
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import {QrScannerComponent} from 'angular2-qrscanner';
+import { Player, Team} from '../gamemaster-main/gamemaster-main.component';
+import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
+import {Location} from '../gamemaster-main/gamemaster-main.component';
 
 @Component({
   selector: 'app-player-main',
   templateUrl: './player-main.component.html',
   styleUrls: ['./player-main.component.scss']
 })
-export class PlayerMainComponent {
+export class PlayerMainComponent implements OnInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
@@ -26,7 +29,56 @@ export class PlayerMainComponent {
 
   @ViewChild(QrScannerComponent, {static: false}) qrScannerComponent !: QrScannerComponent;
 
-  constructor(private router: Router, private afAuth: AngularFireAuth, private renderer: Renderer2) { }
+  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth, private renderer: Renderer2) { }
+
+  /**
+   * Runs when the page is loaded
+   * @author AlexWesterman
+   */
+  ngOnInit() {
+    // This function will redirect an already logged in user to the player screen
+    this.afAuth.auth.onAuthStateChanged((user: any) => {
+      this.checkTeam(user);
+    });
+  }
+
+  /**
+   * Checks whether the user is part of a team. If they aren't, gives them a dialog box to do so
+   * @param user - the user currently logged in
+   */
+  checkTeam(user: any) {
+    // Check whether they are on a team or not
+    this.db.list('/team/').valueChanges().subscribe((teams) => {
+      let isInTeam = false;
+
+      teams.forEach((team: Team) => {
+        team.players.forEach(((player: Player) => {
+          if (user.uid === player.ID) {
+            isInTeam = true;
+          }
+        }));
+      });
+
+      // End as not necessary
+      if (isInTeam) {
+        return;
+      }
+
+      // Ask the user for their team ID
+      const input: string = window.prompt('Please enter your team id: ');
+
+      try {
+        const tID: number = Number(input);
+        const team: Team = teams[tID] as Team;
+
+        team.players.push(new Player(user.uid));
+        this.db.object('/team/' + tID).set(team);
+      } catch (e) {
+        window.alert('Team ID must be a number and be an existing team!' + e);
+        return;
+      }
+    });
+  }
 
   /**
    * Sets the screen to the progress page

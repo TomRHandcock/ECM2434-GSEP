@@ -56,9 +56,8 @@ export class GamemasterMainComponent implements OnInit {
     this.screen = this.Screens.NONE;
 
     this.questions = this.getQuestionsFromDatabase();
-    this.locations = this.getTableFromDatabase(DatabaseTables.Location, Location);
-    this.db.list('/team/').valueChanges().subscribe((teams) => {this.teams = teams; });
-    console.log(this.teams);
+    this.getTableFromDatabase(DatabaseTables.Location);
+    this.getTableFromDatabase(DatabaseTables.Team);
    }
 
   ngOnInit() {
@@ -110,25 +109,27 @@ export class GamemasterMainComponent implements OnInit {
 
   /**
    * Requests a 'table' from the database and format it as an array of a class
-   * @param table - the 'table' to request
-   * @param cls - the class to return the list of
-   * @return Array<cls[]> - the table representation
+   * @param tableName - the 'table' to request
    * @author AlexWesterman
    * @author TomRHandcock
    */
-  getTableFromDatabase(table: DatabaseTables, cls: any) {
+  getTableFromDatabase(tableName: DatabaseTables) {
     // Get the path for the table
-    const path = table.toString().toLowerCase();
-    const contents = Array<typeof cls>();
+    const path = tableName.toString().toLowerCase();
 
-    // Get the table results and build an array of them
-    this.db.list('/' + path).valueChanges().subscribe((records) => {
-      records.forEach((item: any) => {
-        contents.push(item);
-      });
+    // Get the actual contents
+    this.db.list('/' + path + '/').valueChanges().subscribe((table) => {
+      switch (path) {
+        case 'location':
+          this.locations = table;
+          break;
+        case 'team':
+          this.teams = table;
+          break;
+        default:
+          console.error(path + ' is not handled!');
+      }
     });
-
-    return contents;
   }
 
   /**
@@ -218,7 +219,9 @@ export class GamemasterMainComponent implements OnInit {
    * @author AlexWesterman
    */
   deleteLocation(location: string) {
-    this.locations.splice(this.locations.indexOf(location), 1);
+    // Find the index by name
+    const locIndex: number = this.locations.map((e) => e.name).indexOf(location);
+    this.locations.splice(locIndex, 1);
   }
 
   /**
@@ -226,7 +229,13 @@ export class GamemasterMainComponent implements OnInit {
    * @author AlexWesterman
    */
   addNewLocation() {
-    this.locations[this.locations.length] = {name: '', latitude: 0, longitude: 0, qrCode: ''};
+    this.locations[this.locations.length] = {
+      questions: [],
+      name: '',
+      latitude: 0,
+      longitude: 0,
+      qrCode: ''
+    };
   }
 
   /**
@@ -270,7 +279,10 @@ export class GameMaster {
 
 export class Player {
   public ID: string;
-  public team: number;
+
+  constructor(ID: string) {
+    this.ID = ID;
+  }
 }
 
 export class Location {
@@ -290,4 +302,5 @@ export class Team {
   ID: number;
   name: string;
   score: number;
+  players: Player[];
 }
