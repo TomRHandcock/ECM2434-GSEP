@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
 import { LoginMainComponent } from './login-main/login-main.component';
+import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -33,7 +34,8 @@ const firebaseConfig = {
     AppComponent,
     PlayerMainComponent,
     GamemasterMainComponent,
-    LoginMainComponent
+    LoginMainComponent,
+    ScoreboardComponent
   ],
   imports: [
     BrowserModule,

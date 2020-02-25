@@ -1,0 +1,21 @@
+#scoreboard {
+    background-color: #ffffff;
+    position: relative;
+    overflow: auto;
+}
+
+#scoreboard-title {
+    margin: 10px;
+}
+
+.scoreboard-team {
+    padding: 10px 20px;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 8fr 1fr;
+}
+
+.scoreboard-team > p {
+    padding: 0;
+    margin: 0;
+}

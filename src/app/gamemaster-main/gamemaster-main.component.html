@@ -39,6 +39,10 @@
     </div>
   </section>
 
+  <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
+    <app-scoreboard></app-scoreboard>
+  </section>
+
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
     <table class="table questionTable is-fullwidth">
       <thead>
