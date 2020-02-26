@@ -51,6 +51,7 @@ export class PlayerMainComponent implements OnInit {
       teams.forEach((team: Team) => {
         team.players.forEach(((player: Player) => {
           if (user.uid === player.ID) {
+            console.log(true);
             isInTeam = true;
           }
         }));
@@ -64,12 +65,21 @@ export class PlayerMainComponent implements OnInit {
       // Ask the user for their team ID
       const input: string = window.prompt('Please enter your team id: ');
 
+      // User declined
+      if (!input) {
+        return;
+      }
+
       try {
         const tID: number = Number(input);
         const team: Team = teams[tID] as Team;
 
         team.players.push(new Player(user.uid));
-        this.db.object('/team/' + tID).set(team);
+        this.db.object('/team/' + tID).set(team)
+          .catch((err) => {
+            window.alert('A database error occurred! ' + err);
+          })
+        ;
       } catch (e) {
         window.alert('Team ID must be a number and be an existing team!' + e);
         return;
