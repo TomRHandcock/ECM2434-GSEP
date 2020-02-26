@@ -137,6 +137,15 @@ export class PlayerMainComponent implements OnInit {
   }
 
   /**
+   * Sends the user to the university page
+   * @author OGWSaunders
+   */
+  openUniWebsite() {
+    const win = window.open('https://www.exeter.ac.uk/students/', '_blank');
+    win.focus();
+  }
+
+  /**
    * Sign the user out of their account.
    * @author George White
    */
