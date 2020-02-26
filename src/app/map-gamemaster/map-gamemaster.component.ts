@@ -12,12 +12,12 @@ export class MapGamemasterComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ';
   }
 
   ngAfterViewInit() {
     this.map = new mapboxgl.Map({
       container: 'mapElement',
+      accessToken: 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ',
       style: 'mapbox://styles/mapbox/navigation-guidance-day-v4',
       center: [-3.533636, 50.736],
       zoom: 15
