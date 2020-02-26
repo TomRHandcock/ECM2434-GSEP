@@ -1,5 +1,10 @@
+import { accessToken } from 'mapbox-gl';
+
 export const environment = {
-  production: true
+  production: true,
+  mapbox: {
+    accessToken: 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ'
+  }
 };
 
 const firebaseConfig = {

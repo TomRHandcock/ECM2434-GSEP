@@ -16,8 +16,11 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 
+
+// Other modules and dependencies
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgQrScannerModule } from 'angular2-qrscanner';
+import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
@@ -35,7 +38,8 @@ const firebaseConfig = {
     PlayerMainComponent,
     GamemasterMainComponent,
     LoginMainComponent,
-    ScoreboardComponent
+    ScoreboardComponent,
+    MapGamemasterComponent
   ],
   imports: [
     BrowserModule,

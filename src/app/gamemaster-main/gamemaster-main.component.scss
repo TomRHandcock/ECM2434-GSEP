@@ -70,4 +70,5 @@ fa-icon.teamEdit:nth-of-type(3):hover::after {
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: minmax(200px, 3fr) 7fr;
+  grid-column-gap: 20px;
 }
