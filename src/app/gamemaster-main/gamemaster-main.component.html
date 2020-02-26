@@ -1,3 +1,4 @@
+<!-- The navigations view (Author: George White) -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
@@ -30,20 +31,19 @@
   </div>
 </nav>
 
+<!-- The container for a shown view (uses ngSwitch to change content as appropriate)
+     (Author: AlexWesterman) -->
 <div class="container" [ngSwitch]="this.screen">
   <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <div class="element map" id="playerMap">Map will go here</div>
-    <div class="element scoreboard" id="scoreboard">Scoreboard</div>
-    <div class="qrcode">
-      <qrcode [qrdata]="myQrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-    </div>
   </section>
 
-  <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
+  <section class="section" id="scoreboard" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
     <app-map-gamemaster></app-map-gamemaster>
   </section>
 
+  <!-- The locations view (Author: AlexWesterman) -->
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
     <table class="table questionTable is-fullwidth">
       <thead>
@@ -56,6 +56,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Loop through all locations and add them to the table -->
         <tr *ngFor="let item of this.locations">
           <td class="editCell"
             contenteditable="true"
@@ -84,6 +85,7 @@
     </table>
   </section>
 
+  <!-- The QR code view (Author: AlexWesterman) -->
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
     <table class="qr">
       <tr id="qrCode" *ngIf="this.qrData">
@@ -102,8 +104,10 @@
     </table>
   </section>
 
+  <!-- The questions view (Author: AlexWesterman) -->
   <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
     <div class="location" *ngFor="let item of this.questions | keyvalue">
+      <!-- Also show location for grouping -->
       <h4 class="subtitle is-4">Location: {{item.key}}</h4>
       <table class="table is-fullwidth">
         <thead>
@@ -117,6 +121,7 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Loop through each question in that location -->
           <tr *ngFor="let questions of item.value">
             <td contenteditable="true"
               [(textContent)]="questions.question">
@@ -149,6 +154,7 @@
     </div>
   </section>
 
+  <!-- The teams view (Author: TomRHandcock) -->
   <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
     <table class="table teamsTable is-fullwidth">
       <colgroup>
@@ -165,8 +171,8 @@
       </thead>
       <tr *ngFor="let team of this.teams" class="is-hoverable">
         <td [(textContent)]="team.ID"></td>
-        <td><input type="text" name="teamName" [(ngModel)]="teams[team.ID].name" (blur)="this.updateTeam(team.ID)"></td>
-        <td><input type="number" name="teamScore" [(ngModel)]="teams[team.ID].score" (blur)="this.updateTeam(team.ID)"></td>
+        <td><input type="text" name="teamName" [(ngModel)]="team.name" (blur)="this.updateTeam(team.ID)"></td>
+        <td><input type="number" name="teamScore" [(ngModel)]="team.score" (blur)="this.updateTeam(team.ID)"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>

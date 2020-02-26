@@ -36,10 +36,13 @@
     </form>
   </section>
 
+  <!-- The privacy policy view (Author: AlexWesterman) -->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
+    <!-- The title content -->
     <div class="privacyTitle">
       <u>Privacy Policy</u>
     </div>
+    <!-- The text content -->
     <div class="privacyText">
       <b>
       Due to GDPR we need your permission for us to store data about you for use with this app.
@@ -47,6 +50,7 @@
       <br><br>We also need access to your location via GPS to track your progress on the map, this data will only be held while the app is in use, and once closed will be removed.
       </b>
       <br><br>
+      <!-- Send the user back to the account creation screen -->
       <input type="button" (click)="changeScreen(this.Screens.CREATING_ACCOUNT)" name="return" value="Accept and Continue">
     </div>
   </section>
