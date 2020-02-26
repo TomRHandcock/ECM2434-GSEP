@@ -124,7 +124,6 @@ export class LoginMainComponent implements OnInit {
       alert('Passwords must be non-empty and match');
     }
   }
-
 }
 
 export enum LoginError {

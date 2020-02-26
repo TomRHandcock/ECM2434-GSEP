@@ -60,6 +60,11 @@ export class GamemasterMainComponent implements OnInit {
     this.getTableFromDatabase(DatabaseTables.Team);
    }
 
+  /**
+   * Called on construction
+   * Checks that the user is authorised to be in the gamemaster view, or kicks them out
+   * @author TomRHandcock
+   */
   ngOnInit() {
     this.auth.auth.onAuthStateChanged((loggedInUser) => {
       if (loggedInUser) {

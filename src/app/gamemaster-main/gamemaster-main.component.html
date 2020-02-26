@@ -1,3 +1,4 @@
+<!-- The navigations view (Author: George White) -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
@@ -30,6 +31,8 @@
   </div>
 </nav>
 
+<!-- The container for a shown view (uses ngSwitch to change content as appropriate)
+     (Author: AlexWesterman) -->
 <div class="container" [ngSwitch]="this.screen">
   <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <div class="element map" id="playerMap">Map will go here</div>
@@ -39,6 +42,7 @@
     <app-scoreboard></app-scoreboard>
   </section>
 
+  <!-- The locations view (Author: AlexWesterman) -->
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
     <table class="table questionTable is-fullwidth">
       <thead>
@@ -51,6 +55,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Loop through all locations and add them to the table -->
         <tr *ngFor="let item of this.locations">
           <td class="editCell"
             contenteditable="true"
@@ -79,6 +84,7 @@
     </table>
   </section>
 
+  <!-- The QR code view (Author: AlexWesterman) -->
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
     <table class="qr">
       <tr id="qrCode" *ngIf="this.qrData">
@@ -97,8 +103,10 @@
     </table>
   </section>
 
+  <!-- The questions view (Author: AlexWesterman) -->
   <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
     <div class="location" *ngFor="let item of this.questions | keyvalue">
+      <!-- Also show location for grouping -->
       <h4 class="subtitle is-4">Location: {{item.key}}</h4>
       <table class="table is-fullwidth">
         <thead>
@@ -112,6 +120,7 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Loop through each question in that location -->
           <tr *ngFor="let questions of item.value">
             <td contenteditable="true"
               [(textContent)]="questions.question">
@@ -144,6 +153,7 @@
     </div>
   </section>
 
+  <!-- The teams view (Author: TomRHandcock) -->
   <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
     <table class="table teamsTable is-fullwidth">
       <colgroup>

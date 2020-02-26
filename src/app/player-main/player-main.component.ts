@@ -1,12 +1,11 @@
 import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 
-import { faCamera, faGlobe, faBars, faHome, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import {QrScannerComponent} from 'angular2-qrscanner';
 import { Player, Team} from '../gamemaster-main/gamemaster-main.component';
-import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
-import {Location} from '../gamemaster-main/gamemaster-main.component';
+import {AngularFireDatabase} from '@angular/fire/database';
 
 @Component({
   selector: 'app-player-main',
@@ -17,19 +16,16 @@ export class PlayerMainComponent implements OnInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
-  menuIcon = faBars;
-  closeIcon = faArrowLeft;
   homeIcon = faHome;
 
   screen = 'home';
   score = 0;
 
   showMenu = false;
-  caseQR = null;
 
   @ViewChild(QrScannerComponent, {static: false}) qrScannerComponent !: QrScannerComponent;
 
-  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth, private renderer: Renderer2) { }
+  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) { }
 
   /**
    * Runs when the page is loaded
@@ -45,6 +41,7 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Checks whether the user is part of a team. If they aren't, gives them a dialog box to do so
    * @param user - the user currently logged in
+   * @author AlexWesterman
    */
   checkTeam(user: any) {
     // Check whether they are on a team or not
@@ -98,6 +95,10 @@ export class PlayerMainComponent implements OnInit {
     this.screen = 'qrScanner';
   }
 
+  /**
+   * Opens the user's camera
+   * @author OGWSaunders
+   */
   openCamera() {
     this.qrScannerComponent.getMediaDevices().then(devices => {
       const videoDevices: MediaDeviceInfo[] = [];
@@ -121,6 +122,7 @@ export class PlayerMainComponent implements OnInit {
         }
       }
     });
+
     this.qrScannerComponent.capturedQr.subscribe(result => {
       console.log(result);
     });

@@ -1,3 +1,4 @@
+<!-- The navigations bar (Author: George White) -->
 <nav class="navbar" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
@@ -23,7 +24,6 @@
 
 
 <ng-container #switch [ngSwitch]="this.screen">
-
    <!-- The home screen -->
   <main *ngSwitchCase="'home'" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
@@ -36,6 +36,7 @@
       </div>
     </section>
 
+    <!-- The QR camera opener (Author: OGWSaunders) -->
     <button (click)="openQrScanner()" class="button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
@@ -43,7 +44,7 @@
       <span>Scan QR code</span>
     </button>
 
-    <!-- The bottom buttons -->
+    <!-- The bottom buttons (Author: AlexWesterman) -->
     <div class="button-bar" id="playerButtonBar">
       <button class="button is-primary">
         <span>Request Hint</span>
@@ -57,14 +58,14 @@
     </div>
   </main>
 
-  <!-- The progress screen -->
+  <!-- The progress screen (Author: AlexWesterman) -->
   <main *ngSwitchCase="'progress'" class="container progress-container has-navbar-fixed-top">
+    <!-- The title section -->
     <div class="columns">
       <div class="column is-full">
         <h1 class="title is-1">Your Current Progress</h1>
       </div>
     </div>
-    <!-- TODO - there is a massive gap between above and below - <br> has the same effect? -->
     <!-- The table of entries -->
     <div class="columns">
       <table class="table column is-full flex-grow">
@@ -87,6 +88,7 @@
       </table>
     </div>
 
+    <!-- A button to return back to the home screen -->
     <div role="button" class="is-primary button" id="progressBack" (click)="returnHome()">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
@@ -95,8 +97,9 @@
     </div>
   </main>
 
+  <!-- The QR scanner screen (Author: OGWSaunders) -->
   <main *ngSwitchCase="'qrScanner'" class="container qrScanner-container has-navbar-fixed-top">
-    
+   <!-- A button to open the user's camera -->
     <button (click)="openCamera()" class="button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
@@ -104,14 +107,16 @@
       <span>Open Camera</span>
     </button>
 
+    <!-- The actual QR scanner component -->
     <qr-scanner id="QrScanner"
       [debug]="false"
       [canvasWidth]="1080"
       [canvasHeight]="720"
       [stopAfterScan]="true"
-      [updateTime]="500">  
+      [updateTime]="500">
     </qr-scanner>
 
+    <!-- A button to return to the home view -->
     <div role="button" class="is-primary button" id="qrScannerBack" (click)="returnHome()" (load)="qrCodeOnInit()">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
