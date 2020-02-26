@@ -34,11 +34,7 @@
 <!-- The container for a shown view (uses ngSwitch to change content as appropriate)
      (Author: AlexWesterman) -->
 <div class="container" [ngSwitch]="this.screen">
-  <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
-    <div class="element map" id="playerMap">Map will go here</div>
-  </section>
-
-  <section class="section" id="scoreboard" *ngSwitchCase="this.Screens.OVERVIEW">
+  <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
     <app-map-gamemaster></app-map-gamemaster>
   </section>
