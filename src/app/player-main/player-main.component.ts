@@ -1,10 +1,10 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import {QrScannerComponent} from 'angular2-qrscanner';
-import { Player, Team} from '../gamemaster-main/gamemaster-main.component';
+import { Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 
 @Component({
@@ -34,7 +34,9 @@ export class PlayerMainComponent implements OnInit {
   ngOnInit() {
     // This function will redirect an already logged in user to the player screen
     this.afAuth.auth.onAuthStateChanged((user: any) => {
-      this.checkTeam(user);
+      if (user) {
+        this.checkTeam(user);
+      }
     });
   }
 
@@ -49,9 +51,8 @@ export class PlayerMainComponent implements OnInit {
       let isInTeam = false;
 
       teams.forEach((team: Team) => {
-        team.players.forEach(((player: Player) => {
-          if (user.uid === player.ID) {
-            console.log(true);
+        team.players.forEach(((playerID) => {
+          if (user.uid === playerID) {
             isInTeam = true;
           }
         }));
@@ -74,8 +75,7 @@ export class PlayerMainComponent implements OnInit {
         const tID: number = Number(input);
         const team: Team = teams[tID] as Team;
 
-        team.players.push(new Player(user.uid));
-        this.db.object('/team/' + tID).set(team)
+        this.db.object('/team/' + tID + '/players/' + team.players.length).set(user.uid)
           .catch((err) => {
             window.alert('A database error occurred! ' + err);
           })
