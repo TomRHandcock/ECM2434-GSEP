@@ -46,3 +46,23 @@ h2 {
 .button-bar .button {
   display: table-cell;
 }
+
+.goto-questions {
+  text-align: center;
+}
+
+#question {
+  color: white;
+}
+
+label {
+  color: white;
+  font-size: 20px;
+}
+
+input[type="radio"] {
+  height: 15px;
+  width: 15px;
+  vertical-align: middle;
+  margin-right: 6px;
+}

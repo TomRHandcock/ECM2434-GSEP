@@ -4,28 +4,48 @@ import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import {QrScannerComponent} from 'angular2-qrscanner';
-import { Team} from '../gamemaster-main/gamemaster-main.component';
+import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
+
+enum Screen {
+  ANSWER_QS,
+  HOME,
+  PROGRESS,
+  QR_SCANNER
+}
 
 @Component({
   selector: 'app-player-main',
   templateUrl: './player-main.component.html',
   styleUrls: ['./player-main.component.scss']
 })
+
 export class PlayerMainComponent implements OnInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
   homeIcon = faHome;
 
-  screen = 'home';
-  score = 0;
+  screens = Screen;
+  screen;
+  score: number;
+
+  questions: { [loc: string]: Array<Question> };
+  currQuestion: {num: number, question: string, answers: string[], correct: number};
 
   showMenu = false;
 
   @ViewChild(QrScannerComponent, {static: false}) qrScannerComponent !: QrScannerComponent;
 
-  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) { }
+  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
+    this.score = 0;
+    this.screen = this.screens.HOME;
+
+    this.currQuestion = {num: null, question: null, answers: null, correct: null};
+
+    this.questions = this.getQuestionsFromDatabase();
+    console.log(this.questions);
+  }
 
   /**
    * Runs when the page is loaded
@@ -88,24 +108,6 @@ export class PlayerMainComponent implements OnInit {
   }
 
   /**
-   * Sets the screen to the progress page
-   * TODO - if this function and the one below it stay as simplistic as this,
-   *        we should consider just merging them into one function to change state
-   * @author AlexWesterman
-   */
-  openProgress() {
-    this.screen = 'progress';
-  }
-
-  /**
-   * Sets the screen to the qrScanner page
-   * @author OGWSaunders
-   */
-  openQrScanner() {
-    this.screen = 'qrScanner';
-  }
-
-  /**
    * Opens the user's camera
    * @author OGWSaunders
    */
@@ -139,14 +141,6 @@ export class PlayerMainComponent implements OnInit {
   }
 
   /**
-   * Sets the screen to the home page
-   * @author AlexWesterman
-   */
-  returnHome() {
-    this.screen = 'home';
-  }
-
-  /**
    * Sends the user to the university page
    * @author OGWSaunders
    */
@@ -161,5 +155,87 @@ export class PlayerMainComponent implements OnInit {
    */
   signOut() {
     this.afAuth.auth.signOut().then(() => this.router.navigate(['login']));
+  }
+
+  /**
+   * Returns all questions stored in the database, nested by location
+   * @return [loc: string]: Array<Question> - the (location,questions) pair for each location
+   * @author AlexWesterman
+   */
+  getQuestionsFromDatabase() {
+    // This will loop through each location and get the questions
+    const questions: {[loc: string]: Array<Question>} = {};
+
+    this.db.list('/location').valueChanges().subscribe((locations) => {
+      locations.forEach((item: Location) => {
+        questions[item.name] = item.questions;
+      });
+    });
+
+    console.log(questions);
+
+    return questions;
+  }
+
+  /**
+   * Goes to the next question
+   * @author AlexWesterman
+   */
+  nextQuestion() {
+    // Check screen is correct
+    if (this.screen !== this.screens.ANSWER_QS) {
+      console.warn('Next question is not applicable to this screen!');
+      return;
+    }
+
+    // Either initialise or increment for next question index
+    if (this.currQuestion.num == null) {
+      this.currQuestion.num = 0;
+    } else {
+      this.currQuestion.num++;
+    }
+
+    // TODO once the QR scanner verifies the location, store the location in an instance var
+    const location = 'Forum';
+    if (this.currQuestion.num >= this.questions[location].length) {
+      this.finishQuiz();
+      return;
+    }
+
+    const question = this.questions[location][this.currQuestion.num];
+    const answers = question.answer;
+
+    // Fill in the relevant information
+    this.currQuestion.question = question.question;
+    this.currQuestion.answers = [
+      answers.correct,
+      answers.incorrect0,
+      answers.incorrect1,
+      answers.incorrect2
+    ];
+    this.currQuestion.correct = answers.correct;
+
+    // Shuffle the answer's position
+    // A basic function that will sort (not the fairest but easily good enough for four elements)
+    this.currQuestion.answers.sort(() => Math.random() - 0.5);
+  }
+
+  /**
+   * Begins the answering questions routine
+   * @author AlexWesterman
+   */
+  beingAnswering() {
+    this.screen = this.screens.ANSWER_QS;
+    this.nextQuestion();
+  }
+
+  /**
+   * Finishes the quiz
+   * @author AlexWesterman
+   */
+  finishQuiz() {
+    /* TODO this should also show the player with their score for that round, and total score
+        before then moving on */
+    this.screen = this.screens.HOME;
   }
 }
