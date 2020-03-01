@@ -128,7 +128,7 @@
 
   <!-- The answering screen (Author: AlexWesterman) -->
   <main *ngSwitchCase="this.screens.ANSWER_QS" class="container has-navbar-fixed-top">
-    <h2 id="question" class="is-primary subtitle is-2">Question</h2>
+    <h2 id="question" class="is-primary subtitle is-2">{{this.currQuestion.question}}</h2>
     <div>
       <label for="a1-a">A. </label>
       <input type="radio" id="a1-a" class="" name="answer">
