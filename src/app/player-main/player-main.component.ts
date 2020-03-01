@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import {QrScannerComponent} from 'angular2-qrscanner';
+import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 

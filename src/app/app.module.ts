@@ -19,7 +19,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 // Other modules and dependencies
 import { QRCodeModule } from 'angularx-qrcode';
-import { NgQrScannerModule } from 'angular2-qrscanner';
+import { NgQrScannerModule } from 'ang-qrscanner';
 import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
 
 const firebaseConfig = {
