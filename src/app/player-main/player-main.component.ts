@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -8,6 +8,7 @@ import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.compo
 import {AngularFireDatabase} from '@angular/fire/database';
 import {NgForm, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Map as MapboxMap} from 'mapbox-gl';
+import { auth } from 'firebase';
 
 enum Screen {
   ANSWER_QS,
@@ -33,6 +34,8 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   score: number;
   user;
   answerForm;
+  correctAnswer: number;
+  roundScore: number;
 
   isAGamemaster: boolean;
 
@@ -50,7 +53,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.screen = this.screens.HOME;
     this.user = null;
     this.isAGamemaster = null;
-
     this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
 
     this.questions = this.getQuestionsFromDatabase();
@@ -72,7 +74,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.answerForm = new FormGroup({
       answer: new FormControl(),
     });
-    this.answerForm.registerOnChange(this.verifyAnswer);
+    this.roundScore = 0;
   }
 
   /**
@@ -249,26 +251,66 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     // A basic function that will sort (not the fairest but easily good enough for four elements)
     this.currQuestion.answers.sort(() => Math.random() - 0.5);
     // (Re)-enable the form answers
+    this.correctAnswer = null;
+    this.answerForm.controls.answer.reset();
     this.answerForm.controls.answer.enable();
   }
 
   /**
    * Begins the answering questions routine
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   beingAnswering() {
     this.screen = this.screens.ANSWER_QS;
+    /**
+     * Note from Tom:
+     * I know this is already been initialised but this is being re-initialised to 
+     * stop a potential exploit where the player answers a question correctly then
+     * backs out to re-answer the same question to build up points.
+     */
+    this.roundScore = 0;
     this.nextQuestion();
   }
 
   /**
-   * Finishes the quiz
+   * This method is called when the current round of quiz questions has been finished,
+   * the player's team is then found and the score for that team is updated.
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   finishQuiz() {
     /* TODO this should also show the player with their score for that round, and total score
         before then moving on */
-    this.screen = this.screens.HOME;
+
+    // First find out which team the player is on, iterate through the teams
+    this.db.database.ref("/team/").once('value').then((snapshotData) => {
+      let teamID;
+      snapshotData.forEach((dataSnapshot) => {
+        // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
+        dataSnapshot.child("/players/").forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if(player.toJSON().toString() == this.afAuth.auth.currentUser.uid) {
+            teamID = dataSnapshot.key;
+          }
+        })
+      });
+      if(teamID == null) {
+        // We haven't found a team that the player is on
+        alert("Your team has not been found, please reload the application to join a team");
+        this.score = this.screens.HOME;
+      }
+      let teamCurrentScore;
+      // Find out the teams current score
+      this.db.database.ref("/team/" + teamID + "/score").once("value").then((score) => {
+        teamCurrentScore = score.toJSON();
+        // Add the score obtained from this round to the score in the database
+        this.db.database.ref("/team/" + teamID + "/score").set(teamCurrentScore + this.roundScore).then(() => {
+          // Database updated -> Send the player on back home
+          this.screen = this.screens.HOME;
+        });
+      });
+    });
   }
 
   /**
@@ -287,12 +329,14 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         correctAnswer = index;
       }
     });
+    this.correctAnswer = correctAnswer;
     // Validate the answer
     if(playerAnswer == correctAnswer) {
-      console.log("Correct!");
+      //Correct answer
+      this.roundScore++;
     }
     else {
-      console.log("Incorrect :(");
+      //Incorrect answer
     }
   }
 
