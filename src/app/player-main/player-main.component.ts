@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {NgForm} from '@angular/forms';
+
 
 enum Screen {
   ANSWER_QS,
@@ -31,7 +33,7 @@ export class PlayerMainComponent implements OnInit {
   score: number;
 
   questions: { [loc: string]: Array<Question> };
-  currQuestion: {num: number, question: string, answers: string[], correct: number};
+  currQuestion: {num: number, question: string, answers: string[], playerAnswer: string, correct: number};
 
   showMenu = false;
 
@@ -41,7 +43,7 @@ export class PlayerMainComponent implements OnInit {
     this.score = 0;
     this.screen = this.screens.HOME;
 
-    this.currQuestion = {num: null, question: null, answers: null, correct: null};
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
 
     this.questions = this.getQuestionsFromDatabase();
     console.log(this.questions);
@@ -237,5 +239,9 @@ export class PlayerMainComponent implements OnInit {
     /* TODO this should also show the player with their score for that round, and total score
         before then moving on */
     this.screen = this.screens.HOME;
+  }
+
+  verifyAnswer() {
+    // console.log('Answer selected: ' + playerAnswer.controls['answer'].value);
   }
 }
