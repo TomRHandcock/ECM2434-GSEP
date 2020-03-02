@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
 import { LoginMainComponent } from './login-main/login-main.component';
+import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,7 +21,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 // Other modules and dependencies
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgQrScannerModule } from 'ang-qrscanner';
-import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
+
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
