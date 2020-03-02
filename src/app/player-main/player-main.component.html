@@ -1,5 +1,5 @@
 <!-- The navigations bar (Author: George White) -->
-<nav class="navbar" role="navigation">
+<nav class="navbar is-fixed-top" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
       <span class="navbar-header">Team C</span>
@@ -21,45 +21,10 @@
   </div>
 </nav>
 
-
+<br><br>
 
 <ng-container [ngSwitch]="this.screen">
    <!-- The home screen -->
-  <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
-    <!-- The map -->
-    <section class="element" id="mapSection">Map will go here</section>
-    <!-- The description of the next location -->
-    <section class="element" id="clueSection">
-      <h4 class="subtitle is-4 is-marginless next-location">Next Location</h4>
-      <div class="next-clue">
-        This is some placeholder text that will represent where the description and next clue is for the next location.
-      </div>
-      <button class="goto-questions" (click)="this.beingAnswering()">Answer Questions</button>
-    </section>
-
-    <!-- The QR camera opener (Author: OGWSaunders) -->
-    <button (click)="this.screen = this.screens.QR_SCANNER" class="button is-primary">
-      <span class="icon is-small">
-        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
-      </span>
-      <span>Scan QR code</span>
-    </button>
-
-    <!-- The bottom buttons (Author: AlexWesterman) -->
-    <div class="button-bar" id="playerButtonBar">
-      <button class="button is-primary">
-        <span>Request Hint</span>
-      </button>
-      <button (click)="openUniWebsite()" class="button is-primary">
-        <span class="icon is-small">
-          <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
-        </span>
-        <span>UoE Website</span>
-      </button>
-    </div>
-  </main>
-
-  <!-- The progress screen (Author: AlexWesterman) -->
   <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
     <!-- The title section -->
     <div class="columns">
@@ -98,7 +63,7 @@
     </div>
   </main>
 
-  <!-- The QR scanner screen (Author: OGWSaunders) -->
+  <!-- The progress screen (Author: AlexWesterman) -->
   <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
    <!-- A button to open the user's camera -->
     <button (click)="openCamera()" class="button is-primary">
@@ -126,7 +91,7 @@
     </div>
   </main>
 
-  <!-- The answering screen (Author: AlexWesterman) -->
+  <!-- The QR scanner screen (Author: OGWSaunders) -->
   <main *ngSwitchCase="this.screens.ANSWER_QS" class="container has-navbar-fixed-top">
     <h2 id="question" class="is-primary subtitle is-2">{{this.currQuestion.question}}</h2>
     <div>
@@ -151,5 +116,40 @@
     </div>
 
     <button class="is-primary button" (click)="this.nextQuestion()">Next Question</button>
+  </main>
+
+  <!-- The answering screen (Author: AlexWesterman) -->
+  <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
+    <!-- The map -->
+    <section class="element" id="mapSection"></section>
+    <!-- The description of the next location -->
+    <section class="element" id="clueSection">
+      <h4 class="subtitle is-4 is-marginless next-location">Next Location</h4>
+      <div class="next-clue">
+        This is some placeholder text that will represent where the description and next clue is for the next location.
+      </div>
+      <button class="goto-questions" (click)="this.beingAnswering()">Answer Questions</button>
+    </section>
+
+    <!-- The QR camera opener (Author: OGWSaunders) -->
+    <button (click)="this.screen = this.screens.QR_SCANNER" class="button is-primary">
+      <span class="icon is-small">
+        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
+      </span>
+      <span>Scan QR code</span>
+    </button>
+
+    <!-- The bottom buttons (Author: AlexWesterman) -->
+    <div class="button-bar" id="playerButtonBar">
+      <button class="button is-primary">
+        <span>Request Hint</span>
+      </button>
+      <button (click)="openUniWebsite()" class="button is-primary">
+        <span class="icon is-small">
+          <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
+        </span>
+        <span>UoE Website</span>
+      </button>
+    </div>
   </main>
 </ng-container>
