@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -7,7 +7,7 @@ import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {NgForm} from '@angular/forms';
-
+import {Map as MapboxMap} from 'mapbox-gl';
 
 enum Screen {
   ANSWER_QS,
@@ -22,7 +22,7 @@ enum Screen {
   styleUrls: ['./player-main.component.scss']
 })
 
-export class PlayerMainComponent implements OnInit {
+export class PlayerMainComponent implements OnInit, AfterViewInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
@@ -37,6 +37,8 @@ export class PlayerMainComponent implements OnInit {
 
   questions: { [loc: string]: Array<Question> };
   currQuestion: {num: number, question: string, answers: string[], playerAnswer: string, correct: number};
+
+  map: MapboxMap;
 
   showMenu = false;
 
@@ -64,6 +66,20 @@ export class PlayerMainComponent implements OnInit {
         this.checkTeam(user);
         this.checkGamemaster(user);
       }
+    });
+  }
+
+  /**
+   * Runs when the view is rendered
+   * @author galexite
+   */
+  ngAfterViewInit() {
+    this.map = new MapboxMap({
+      container: 'mapSection',
+      accessToken: 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ',
+      style: 'mapbox://styles/mapbox/navigation-guidance-day-v4',
+      center: [-3.533636, 50.736],
+      zoom: 15
     });
   }
 
