@@ -3,11 +3,11 @@ import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angula
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import {QrScannerComponent} from 'ang-qrscanner';
-import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
-import {AngularFireDatabase} from '@angular/fire/database';
-import {NgForm, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {Map as MapboxMap} from 'mapbox-gl';
+import { QrScannerComponent } from 'ang-qrscanner';
+import { Location, Question, Team } from '../gamemaster-main/gamemaster-main.component';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { NgForm, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Map as MapboxMap, FullscreenControl } from 'mapbox-gl';
 import { auth } from 'firebase';
 
 enum Screen {
@@ -43,6 +43,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   currQuestion: {num: number, question: string, answers: string[], playerAnswer: string, correct: number};
 
   map: MapboxMap;
+  mapFsControl: FullscreenControl;
 
   showMenu = false;
 
@@ -89,6 +90,8 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       center: [-3.533636, 50.736],
       zoom: 15
     });
+    this.mapFsControl = new FullscreenControl();
+    this.map.addControl(this.mapFsControl);
   }
 
   /**
@@ -321,11 +324,11 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     // First we disable the form for more inputs
     this.answerForm.controls.answer.disable();
     // Set up variables for the player/correct answer
-    let playerAnswer = this.answerForm.value.answer;
+    const playerAnswer = this.answerForm.value.answer;
     let correctAnswer;
     // Find which answer index is the correct answer
     this.currQuestion.answers.forEach((item, index) => {
-      if(item == this.currQuestion.correct.toString()) {
+      if (item === this.currQuestion.correct.toString()) {
         correctAnswer = index;
       }
     });
