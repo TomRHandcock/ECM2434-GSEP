@@ -29,6 +29,9 @@ export class PlayerMainComponent implements OnInit {
   screens = Screen;
   screen;
   score: number;
+  user;
+
+  isAGamemaster: boolean;
 
   questions: { [loc: string]: Array<Question> };
   currQuestion: {num: number, question: string, answers: string[], correct: number};
@@ -40,11 +43,12 @@ export class PlayerMainComponent implements OnInit {
   constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
     this.score = 0;
     this.screen = this.screens.HOME;
+    this.user = null;
+    this.isAGamemaster = null;
 
     this.currQuestion = {num: null, question: null, answers: null, correct: null};
 
     this.questions = this.getQuestionsFromDatabase();
-    console.log(this.questions);
   }
 
   /**
@@ -56,6 +60,7 @@ export class PlayerMainComponent implements OnInit {
     this.afAuth.auth.onAuthStateChanged((user: any) => {
       if (user) {
         this.checkTeam(user);
+        this.checkGamemaster(user);
       }
     });
   }
@@ -172,8 +177,6 @@ export class PlayerMainComponent implements OnInit {
       });
     });
 
-    console.log(questions);
-
     return questions;
   }
 
@@ -237,5 +240,43 @@ export class PlayerMainComponent implements OnInit {
     /* TODO this should also show the player with their score for that round, and total score
         before then moving on */
     this.screen = this.screens.HOME;
+  }
+
+  /**
+   * Returns whether the logged in player is a gamemaster
+   * @param user - the current user logged in
+   * @return boolean - whether the player is a gamemaster
+   * @author AlexWesterman
+   */
+  checkGamemaster(user: any) {
+    if (!user) {
+      return false;
+    }
+
+    // Check each gamemaster id with this user's
+    this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
+      let gamemaster = false;
+
+      gamemasters.forEach((item: string) => {
+        if (user.uid === item) {
+          gamemaster = true;
+        }
+      });
+
+      this.isAGamemaster = gamemaster;
+    });
+  }
+
+  /**
+   * Redirects to the gamemaster view, if the user is a gamemaster
+   * An alert will pop up if they are not authorised
+   * @author AlexWesterman
+   */
+  goToGamemaster() {
+    if (this.isAGamemaster) {
+      window.location.assign('./gamemaster');
+    } else {
+      window.alert('You are not authorised to go to the gamemaster control view!');
+    }
   }
 }

@@ -251,6 +251,14 @@ export class GamemasterMainComponent implements OnInit {
     this.qrComponent = new QRCodeComponent();
     this.qrData = this.qrComponent.myQrData;
   }
+
+  /**
+   * Redirects to the player view
+   * @author AlexWesterman
+   */
+  gotoPlayerView() {
+    window.location.assign('./player');
+  }
 }
 
 export class QRCodeComponent {
@@ -278,16 +286,18 @@ export class QRCodeComponent {
 }
 
 // Class definitions, relating to the database
-export class GameMaster {
+export class User {
   ID: string;
-}
-
-export class Player {
-  public ID: string;
 
   constructor(ID: string) {
     this.ID = ID;
   }
+}
+
+export class GameMaster extends User {
+}
+
+export class Player extends User {
 }
 
 export class Location {

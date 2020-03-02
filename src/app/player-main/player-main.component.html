@@ -12,6 +12,7 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
+      <a class="navbar-item" *ngIf="this.isAGamemaster;" style="color:green" (click)="this.goToGamemaster();">Gamemaster Control</a>
       <a class="navbar-item" (click)="this.screen = this.screens.PROGRESS; showMenu = false">Our Progress</a>
       <a class="navbar-item" style="color:red">I'm Lost</a>
       <a class="navbar-item" style="color:red">Help and Support</a>

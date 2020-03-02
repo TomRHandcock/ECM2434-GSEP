@@ -12,6 +12,9 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
+      <a class="navbar-item" (click)="this.gotoPlayerView();">
+        Player View
+      </a>
       <a class="navbar-item" (click)="changeScreen(this.Screens.TEAMS);">
         Teams
       </a>
