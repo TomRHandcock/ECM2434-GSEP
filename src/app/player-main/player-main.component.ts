@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
-import {NgForm} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 
 enum Screen {
@@ -32,6 +32,7 @@ export class PlayerMainComponent implements OnInit {
   screen;
   score: number;
   user;
+  answerForm;
 
   isAGamemaster: boolean;
 
@@ -65,6 +66,11 @@ export class PlayerMainComponent implements OnInit {
         this.checkGamemaster(user);
       }
     });
+
+    this.answerForm = new FormGroup({
+      answer: new FormControl(),
+    });
+    this.answerForm.registerOnChange(this.verifyAnswer);
   }
 
   /**
@@ -185,6 +191,9 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Goes to the next question
    * @author AlexWesterman
+   * Minor revision: (Re)-enabling the answer upon a new question being displayed
+   * @author TomRHandcock
+   * @version 2
    */
   nextQuestion() {
     // Check screen is correct
@@ -223,6 +232,8 @@ export class PlayerMainComponent implements OnInit {
     // Shuffle the answer's position
     // A basic function that will sort (not the fairest but easily good enough for four elements)
     this.currQuestion.answers.sort(() => Math.random() - 0.5);
+    // (Re)-enable the form answers
+    this.answerForm.controls.answer.enable();
   }
 
   /**
@@ -244,8 +255,29 @@ export class PlayerMainComponent implements OnInit {
     this.screen = this.screens.HOME;
   }
 
+  /**
+   * This method check the player answer and disables the form to prevent changing the answer
+   * @author TomRHandcock
+   */
   verifyAnswer() {
-    // console.log('Answer selected: ' + playerAnswer.controls['answer'].value);
+    // First we disable the form for more inputs
+    this.answerForm.controls.answer.disable();
+    // Set up variables for the player/correct answer
+    let playerAnswer = this.answerForm.value.answer;
+    let correctAnswer;
+    // Find which answer index is the correct answer
+    this.currQuestion.answers.forEach((item, index) => {
+      if(item == this.currQuestion.correct.toString()) {
+        correctAnswer = index;
+      }
+    });
+    // Validate the answer
+    if(playerAnswer == correctAnswer) {
+      console.log("Correct!");
+    }
+    else {
+      console.log("Incorrect :(");
+    }
   }
 
   /**

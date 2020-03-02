@@ -95,24 +95,24 @@
   <!-- The QR scanner screen (Author: OGWSaunders) -->
   <main *ngSwitchCase="this.screens.ANSWER_QS" class="container has-navbar-fixed-top">
     <h2 id="questionLabel" class="is-primary subtitle is-2">{{this.currQuestion.question}}</h2>
-    <form id="question" (change)="this.verifyAnswer()">
+    <form id="question" (change)="this.verifyAnswer()" [formGroup]="answerForm">
       <label for="a1-a">A. </label>
-      <input type="radio" id="a1-a" class="" ngModel name="answer">
+      <input type="radio" id="a1-a" formControlName="answer" value="0">
       <label for="a1-a">{{this.currQuestion.answers[0]}}</label>
       <br>
 
       <label for="a2-a">B. </label>
-      <input type="radio" id="a2-a" class="" ngModel name="answer">
+      <input type="radio" id="a2-a" formControlName="answer" value="1">
       <label for="a1-a">{{this.currQuestion.answers[1]}}</label>
       <br>
 
       <label for="a3-a">C. </label>
-      <input type="radio" id="a3-a" class="" ngModel name="answer">
+      <input type="radio" id="a3-a"  formControlName="answer" value="2">
       <label for="a1-a">{{this.currQuestion.answers[2]}}</label>
       <br>
 
       <label for="a4-a">D. </label>
-      <input type="radio" id="a4-a" class="" ngModel name="answer">
+      <input type="radio" id="a4-a" formControlName="answer" value="3">
       <label for="a1-a">{{this.currQuestion.answers[3]}}</label>
     </form>
 
