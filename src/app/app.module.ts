@@ -39,7 +39,9 @@ const firebaseConfig = {
     GamemasterMainComponent,
     LoginMainComponent,
     ScoreboardComponent,
-    MapGamemasterComponent
+    MapGamemasterComponent,
+    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,
