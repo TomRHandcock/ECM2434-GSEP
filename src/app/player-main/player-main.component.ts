@@ -328,7 +328,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     let correctAnswer;
     // Find which answer index is the correct answer
     this.currQuestion.answers.forEach((item, index) => {
-      if (item === this.currQuestion.correct.toString()) {
+      if (item.toString() === this.currQuestion.correct.toString()) {
         correctAnswer = index;
       }
     });
