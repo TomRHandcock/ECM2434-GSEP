@@ -268,7 +268,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.screen = this.screens.ANSWER_QS;
     /**
      * Note from Tom:
-     * I know this is already been initialised but this is being re-initialised to 
+     * I know this is already been initialised but this is being re-initialised to
      * stop a potential exploit where the player answers a question correctly then
      * backs out to re-answer the same question to build up points.
      */
@@ -284,31 +284,31 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    */
   finishQuiz() {
     /* TODO this should also show the player with their score for that round, and total score
-        before then moving on */
+    before then moving on */
 
     // First find out which team the player is on, iterate through the teams
-    this.db.database.ref("/team/").once('value').then((snapshotData) => {
+    this.db.database.ref('/team/').once('value').then((snapshotData) => {
       let teamID;
       snapshotData.forEach((dataSnapshot) => {
         // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
-        dataSnapshot.child("/players/").forEach((player) => {
+        dataSnapshot.child('/players/').forEach((player) => {
           // Once we find one, make a note of the team ID
-          if(player.toJSON().toString() == this.afAuth.auth.currentUser.uid) {
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
             teamID = dataSnapshot.key;
           }
-        })
+        });
       });
-      if(teamID == null) {
+      if (teamID == null) {
         // We haven't found a team that the player is on
-        alert("Your team has not been found, please reload the application to join a team");
+        alert('Your team has not been found, please reload the application to join a team');
         this.score = this.screens.HOME;
       }
       let teamCurrentScore;
       // Find out the teams current score
-      this.db.database.ref("/team/" + teamID + "/score").once("value").then((score) => {
+      this.db.database.ref('/team/' + teamID + '/score').once('value').then((score) => {
         teamCurrentScore = score.toJSON();
         // Add the score obtained from this round to the score in the database
-        this.db.database.ref("/team/" + teamID + "/score").set(teamCurrentScore + this.roundScore).then(() => {
+        this.db.database.ref('/team/' + teamID + '/score').set(teamCurrentScore + this.roundScore).then(() => {
           // Database updated -> Send the player on back home
           this.screen = this.screens.HOME;
         });
@@ -334,12 +334,11 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     });
     this.correctAnswer = correctAnswer;
     // Validate the answer
-    if(playerAnswer == correctAnswer) {
-      //Correct answer
+    if (playerAnswer === correctAnswer) {
+      // Correct answer
       this.roundScore++;
-    }
-    else {
-      //Incorrect answer
+    } else {
+      // Incorrect answer
     }
   }
 
