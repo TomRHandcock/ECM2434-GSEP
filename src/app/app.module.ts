@@ -1,12 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PlayerMainComponent } from './player-main/player-main.component';
 import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
 import { LoginMainComponent } from './login-main/login-main.component';
+import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,7 +21,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 // Other modules and dependencies
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgQrScannerModule } from 'ang-qrscanner';
-import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
+
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
@@ -40,7 +41,6 @@ const firebaseConfig = {
     LoginMainComponent,
     ScoreboardComponent,
     MapGamemasterComponent,
-    AppComponent,
     AppComponent
   ],
   imports: [
@@ -52,7 +52,8 @@ const firebaseConfig = {
     AngularFireDatabaseModule,
     FontAwesomeModule,
     QRCodeModule,
-    NgQrScannerModule
+    NgQrScannerModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

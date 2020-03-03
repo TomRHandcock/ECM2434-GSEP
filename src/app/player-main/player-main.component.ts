@@ -1,11 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import {QrScannerComponent} from 'ang-qrscanner';
-import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
-import {AngularFireDatabase} from '@angular/fire/database';
+import { QrScannerComponent } from 'ang-qrscanner';
+import { Location, Question, Team } from '../gamemaster-main/gamemaster-main.component';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { NgForm, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Map as MapboxMap, FullscreenControl } from 'mapbox-gl';
+import { auth } from 'firebase';
 
 enum Screen {
   ANSWER_QS,
@@ -20,7 +23,7 @@ enum Screen {
   styleUrls: ['./player-main.component.scss']
 })
 
-export class PlayerMainComponent implements OnInit {
+export class PlayerMainComponent implements OnInit, AfterViewInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
@@ -30,11 +33,17 @@ export class PlayerMainComponent implements OnInit {
   screen;
   score: number;
   user;
+  answerForm;
+  correctAnswer: number;
+  roundScore: number;
 
   isAGamemaster: boolean;
 
   questions: { [loc: string]: Array<Question> };
-  currQuestion: {num: number, question: string, answers: string[], correct: number};
+  currQuestion: {num: number, question: string, answers: string[], playerAnswer: string, correct: number};
+
+  map: MapboxMap;
+  mapFsControl: FullscreenControl;
 
   showMenu = false;
 
@@ -45,8 +54,7 @@ export class PlayerMainComponent implements OnInit {
     this.screen = this.screens.HOME;
     this.user = null;
     this.isAGamemaster = null;
-
-    this.currQuestion = {num: null, question: null, answers: null, correct: null};
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
 
     this.questions = this.getQuestionsFromDatabase();
   }
@@ -63,6 +71,27 @@ export class PlayerMainComponent implements OnInit {
         this.checkGamemaster(user);
       }
     });
+
+    this.answerForm = new FormGroup({
+      answer: new FormControl(),
+    });
+    this.roundScore = 0;
+  }
+
+  /**
+   * Runs when the view is rendered
+   * @author galexite
+   */
+  ngAfterViewInit() {
+    this.map = new MapboxMap({
+      container: 'mapSection',
+      accessToken: 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ',
+      style: 'mapbox://styles/mapbox/navigation-guidance-day-v4',
+      center: [-3.533636, 50.736],
+      zoom: 15
+    });
+    this.mapFsControl = new FullscreenControl();
+    this.map.addControl(this.mapFsControl);
   }
 
   /**
@@ -183,6 +212,9 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Goes to the next question
    * @author AlexWesterman
+   * Minor revision: (Re)-enabling the answer upon a new question being displayed
+   * @author TomRHandcock
+   * @version 2
    */
   nextQuestion() {
     // Check screen is correct
@@ -221,25 +253,93 @@ export class PlayerMainComponent implements OnInit {
     // Shuffle the answer's position
     // A basic function that will sort (not the fairest but easily good enough for four elements)
     this.currQuestion.answers.sort(() => Math.random() - 0.5);
+    // (Re)-enable the form answers
+    this.correctAnswer = null;
+    this.answerForm.controls.answer.reset();
+    this.answerForm.controls.answer.enable();
   }
 
   /**
    * Begins the answering questions routine
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   beingAnswering() {
     this.screen = this.screens.ANSWER_QS;
+    /**
+     * Note from Tom:
+     * I know this is already been initialised but this is being re-initialised to
+     * stop a potential exploit where the player answers a question correctly then
+     * backs out to re-answer the same question to build up points.
+     */
+    this.roundScore = 0;
     this.nextQuestion();
   }
 
   /**
-   * Finishes the quiz
+   * This method is called when the current round of quiz questions has been finished,
+   * the player's team is then found and the score for that team is updated.
    * @author AlexWesterman
+   * @author TomRHandcock
    */
   finishQuiz() {
     /* TODO this should also show the player with their score for that round, and total score
-        before then moving on */
-    this.screen = this.screens.HOME;
+    before then moving on */
+
+    // First find out which team the player is on, iterate through the teams
+    this.db.database.ref('/team/').once('value').then((snapshotData) => {
+      let teamID;
+      snapshotData.forEach((dataSnapshot) => {
+        // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
+        dataSnapshot.child('/players/').forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            teamID = dataSnapshot.key;
+          }
+        });
+      });
+      if (teamID == null) {
+        // We haven't found a team that the player is on
+        alert('Your team has not been found, please reload the application to join a team');
+        this.score = this.screens.HOME;
+      }
+      let teamCurrentScore;
+      // Find out the teams current score
+      this.db.database.ref('/team/' + teamID + '/score').once('value').then((score) => {
+        teamCurrentScore = score.toJSON();
+        // Add the score obtained from this round to the score in the database
+        this.db.database.ref('/team/' + teamID + '/score').set(teamCurrentScore + this.roundScore).then(() => {
+          // Database updated -> Send the player on back home
+          this.screen = this.screens.HOME;
+        });
+      });
+    });
+  }
+
+  /**
+   * This method check the player answer and disables the form to prevent changing the answer
+   * @author TomRHandcock
+   */
+  verifyAnswer() {
+    // First we disable the form for more inputs
+    this.answerForm.controls.answer.disable();
+    // Set up variables for the player/correct answer
+    const playerAnswer = this.answerForm.value.answer;
+    let correctAnswer;
+    // Find which answer index is the correct answer
+    this.currQuestion.answers.forEach((item, index) => {
+      if (item.toString() === this.currQuestion.correct.toString()) {
+        correctAnswer = index;
+      }
+    });
+    this.correctAnswer = correctAnswer;
+    // Validate the answer
+    if (playerAnswer === correctAnswer) {
+      // Correct answer
+      this.roundScore++;
+    } else {
+      // Incorrect answer
+    }
   }
 
   /**

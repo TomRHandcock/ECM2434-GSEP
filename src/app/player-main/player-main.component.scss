@@ -51,7 +51,7 @@ h2 {
   text-align: center;
 }
 
-#question {
+#questionLabel {
   color: white;
 }
 
@@ -65,4 +65,15 @@ input[type="radio"] {
   width: 15px;
   vertical-align: middle;
   margin-right: 6px;
+}
+
+.questionAnswer {
+  padding: 5px;
+  border-radius: 8px;
+  border-width: 0;
+  border-style: solid;
+}
+
+.correctAnswer {
+  background-color: #3ce03ccc;
 }
