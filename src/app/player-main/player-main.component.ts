@@ -79,7 +79,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Runs when the view is rendered
+   * Runs when the view is rendered, adds the Mapbox map in
    * @author galexite
    */
   ngAfterViewInit() {
@@ -92,6 +92,30 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     });
     this.mapFsControl = new FullscreenControl();
     this.map.addControl(this.mapFsControl);
+
+    // Add the campus building GeoJSON dataset
+    this.map.on('load', () => {
+      this.map.addSource('campus', {
+        type: 'geojson',
+        data: '/assets/campus.geojson'
+      });
+      this.map.addLayer({
+        id: 'campus',
+        source: 'campus',
+        type: 'fill',
+        paint: {
+          'fill-color': 'rgba(0,0,0,0.4)'
+        }
+      });
+      this.map.addLayer({
+        id: 'campus-labels',
+        source: 'campus',
+        type: 'symbol',
+        layout: {
+          'text-field': ['get', 'name']
+        }
+      });
+    });
   }
 
   /**
