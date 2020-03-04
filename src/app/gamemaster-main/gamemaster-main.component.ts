@@ -306,6 +306,8 @@ export class Location {
   name: string;
   qrCode: string;
   questions: Question[];
+  description: string;
+  hint: string;
 }
 
 export class Question {

@@ -35,6 +35,8 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   correctAnswer: number;
   roundScore: number;
 
+  currTarget: {location: string, hint: string, description: string, showHint: boolean};
+
   isAGamemaster: boolean;
 
   questions: { [loc: string]: Array<Question> };
@@ -53,6 +55,10 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.user = null;
     this.isAGamemaster = null;
     this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
+
+    // TODO again, needs to be automatically assigned
+    this.currTarget = {location: 'The Forum', hint: null, description: null, showHint: false};
+    this.getLocation();
 
     this.questions = this.getQuestionsFromDatabase();
   }
@@ -139,11 +145,11 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       let isInTeam = false;
 
       teams.forEach((team: Team) => {
-        team.players.forEach(((playerID) => {
+        team.players.forEach((playerID) => {
           if (user.uid === playerID) {
             isInTeam = true;
           }
-        }));
+        });
       });
 
       // End as not necessary
@@ -332,11 +338,14 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
           }
         });
       });
+
       if (teamID == null) {
         // We haven't found a team that the player is on
         alert('Your team has not been found, please reload the application to join a team');
         this.score = this.screens.HOME;
+        return;
       }
+
       let teamCurrentScore;
       // Find out the teams current score
       this.db.database.ref('/team/' + teamID + '/score').once('value').then((score) => {
@@ -366,6 +375,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         correctAnswer = index;
       }
     });
+
     this.correctAnswer = correctAnswer;
     // Validate the answer
     if (playerAnswer === correctAnswer) {
@@ -411,6 +421,33 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       window.location.assign('./gamemaster');
     } else {
       window.alert('You are not authorised to go to the gamemaster control view!');
+    }
+  }
+
+  /**
+   * Sets the location variables (such as description) to the player view
+   * @author AlexWesterman
+   */
+  getLocation() {
+    this.db.list('/location').valueChanges().subscribe((locations) => {
+      locations.forEach((item: Location) => {
+        if (item.name === this.currTarget.location) {
+          console.log(item);
+          this.currTarget.description = item.description;
+          this.currTarget.hint = item.hint;
+        }
+      });
+    });
+  }
+
+  /**
+   * Shows a popup for confirmation and then shows the hint
+   * @author AlexWesterman
+   */
+  showHint() {
+    if (confirm('Are you sure you want to use a hint? (it will cost you score!)')) {
+      this.currTarget.showHint = true;
+      // TODO Deduct score here
     }
   }
 }

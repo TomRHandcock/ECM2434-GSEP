@@ -92,31 +92,31 @@
     </div>
   </main>
 
-  <!-- The QR scanner screen (Author: OGWSaunders) -->
+  <!-- The answer screen (Author: AlexWesterman, TomRHandcock) -->
   <main *ngSwitchCase="this.screens.ANSWER_QS" class="container has-navbar-fixed-top">
     <h2 id="questionLabel" class="is-primary subtitle is-2">{{this.currQuestion.question}}</h2>
     <form id="question" (change)="this.verifyAnswer()" [formGroup]="answerForm">
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 0 ? 'correctAnswer' : ''">
         <label for="a1-a">A. </label>
-        <input id="answerInput0" type="radio" id="a1-a" formControlName="answer" value="0">
+        <input type="radio" id="a1-a" formControlName="answer" value="0">
         <label for="a1-a">{{this.currQuestion.answers[0]}}</label>
       </div>
 
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 1 ? 'correctAnswer' : ''">
         <label for="a2-a">B. </label>
-        <input id="answerInput1" type="radio" id="a2-a" formControlName="answer" value="1">
+        <input type="radio" id="a2-a" formControlName="answer" value="1">
         <label for="a1-a">{{this.currQuestion.answers[1]}}</label>
       </div>
 
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 2 ? 'correctAnswer' : ''">
         <label for="a3-a">C. </label>
-        <input id="answerInput2" type="radio" id="a3-a"  formControlName="answer" value="2">
+        <input type="radio" id="a3-a"  formControlName="answer" value="2">
         <label for="a1-a">{{this.currQuestion.answers[2]}}</label>
       </div>
 
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 3 ? 'correctAnswer' : ''">
         <label for="a4-a">D. </label>
-        <input id="answerInput3" type="radio" id="a4-a" formControlName="answer" value="3">
+        <input type="radio" id="a4-a" formControlName="answer" value="3">
         <label for="a1-a">{{this.currQuestion.answers[3]}}</label>
       </div>
     </form>
@@ -130,9 +130,16 @@
     </section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
-      <h4 class="subtitle is-4 is-marginless next-location">Next Location</h4>
-      <div class="next-clue">
-        This is some placeholder text that will represent where the description and next clue is for the next location.
+      <h4 class="subtitle is-4 is-marginless next-location">Next Location: {{this.currTarget.location}}</h4>
+      <div class="next-info">
+        <br>
+        {{this.currTarget.description}}
+        <!-- Only show if hint is unlocked -->
+        <div class="next-loc-info" *ngIf="this.currTarget.showHint">
+          <br>
+          <b>Hint:
+          {{this.currTarget.hint}}</b>
+        </div>
       </div>
       <button class="goto-questions" (click)="this.beingAnswering()">Answer Questions</button>
     </section>
@@ -147,7 +154,7 @@
 
     <!-- The bottom buttons (Author: AlexWesterman) -->
     <div class="button-bar" id="playerButtonBar">
-      <button class="button is-primary">
+      <button (click)="this.showHint();" class="button is-primary">
         <span>Request Hint</span>
       </button>
       <button (click)="openUniWebsite()" class="button is-primary">
