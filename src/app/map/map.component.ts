@@ -1,15 +1,17 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 
 @Component({
-  selector: 'app-map-gamemaster',
-  templateUrl: './map-gamemaster.component.html',
-  styleUrls: ['./map-gamemaster.component.scss']
+  selector: 'app-map',
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.scss']
 })
-export class MapGamemasterComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit, AfterViewInit {
 
   map: mapboxgl.Map;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit() {
   }

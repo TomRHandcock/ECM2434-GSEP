@@ -1,14 +1,13 @@
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 
-import { faCamera, faGlobe, faHome } from '@fortawesome/free-solid-svg-icons';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { QrScannerComponent } from 'ang-qrscanner';
-import { Location, Question, Team } from '../gamemaster-main/gamemaster-main.component';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { NgForm, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Map as MapboxMap, FullscreenControl } from 'mapbox-gl';
-import { auth } from 'firebase';
+import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
+import {QrScannerComponent} from 'ang-qrscanner';
+import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
+import {AngularFireDatabase} from '@angular/fire/database';
+import {FormControl, FormGroup} from '@angular/forms';
+import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 
 enum Screen {
   ANSWER_QS,
@@ -22,7 +21,6 @@ enum Screen {
   templateUrl: './player-main.component.html',
   styleUrls: ['./player-main.component.scss']
 })
-
 export class PlayerMainComponent implements OnInit, AfterViewInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
@@ -79,7 +77,40 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Runs when the view is rendered, adds the Mapbox map in
+   * Add the campus polygons to the map
+   * @author galexite
+   */
+  onMapLoad(map: MapboxMap) {
+    map.addSource('campus', {
+      type: 'geojson',
+      data: '/assets/campus.geojson'
+    });
+    map.addLayer({
+      id: 'campus',
+      source: 'campus',
+      type: 'fill',
+      paint: {
+        'fill-color': 'rgba(0,0,0,0.4)'
+      }
+    });
+    map.addLayer({
+      id: 'campus-labels',
+      source: 'campus',
+      type: 'symbol',
+      layout: {
+        'text-field': ['get', 'name']
+      }
+    });
+    map.on('click', 'campus', (event) => {
+      new MapboxPopup()
+        .setLngLat(event.lngLat)
+        .setHTML(event.features[0].properties.name)
+        .addTo(this.map);
+    });
+  }
+
+  /**
+   * Runs when the view is rendered, adds the Mapbox map
    * @author galexite
    */
   ngAfterViewInit() {
@@ -94,28 +125,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.map.addControl(this.mapFsControl);
 
     // Add the campus building GeoJSON dataset
-    this.map.on('load', () => {
-      this.map.addSource('campus', {
-        type: 'geojson',
-        data: '/assets/campus.geojson'
-      });
-      this.map.addLayer({
-        id: 'campus',
-        source: 'campus',
-        type: 'fill',
-        paint: {
-          'fill-color': 'rgba(0,0,0,0.4)'
-        }
-      });
-      this.map.addLayer({
-        id: 'campus-labels',
-        source: 'campus',
-        type: 'symbol',
-        layout: {
-          'text-field': ['get', 'name']
-        }
-      });
-    });
+    this.map.on('load', () => this.onMapLoad(this.map));
   }
 
   /**

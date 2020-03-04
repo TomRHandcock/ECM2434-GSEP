@@ -1,26 +1,23 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { PlayerMainComponent } from './player-main/player-main.component';
-import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
-import { LoginMainComponent } from './login-main/login-main.component';
-import { MapGamemasterComponent } from './map-gamemaster/map-gamemaster.component';
-import { ScoreboardComponent } from './scoreboard/scoreboard.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {PlayerMainComponent} from './player-main/player-main.component';
+import {GamemasterMainComponent} from './gamemaster-main/gamemaster-main.component';
+import {LoginMainComponent} from './login-main/login-main.component';
+import {MapComponent} from './map/map.component';
+import {ScoreboardComponent} from './scoreboard/scoreboard.component';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 // Firebase modules
-import { AngularFireModule } from '@angular/fire';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-
-
+import {AngularFireModule} from '@angular/fire';
+import {AngularFireAuthModule} from '@angular/fire/auth';
+import {AngularFireDatabaseModule} from '@angular/fire/database';
 // Other modules and dependencies
-import { QRCodeModule } from 'angularx-qrcode';
-import { NgQrScannerModule } from 'ang-qrscanner';
+import {QRCodeModule} from 'angularx-qrcode';
+import {NgQrScannerModule} from 'ang-qrscanner';
 
 
 const firebaseConfig = {
@@ -40,7 +37,7 @@ const firebaseConfig = {
     GamemasterMainComponent,
     LoginMainComponent,
     ScoreboardComponent,
-    MapGamemasterComponent,
+    MapComponent,
     AppComponent
   ],
   imports: [
