@@ -92,10 +92,13 @@ export class QuizComponent implements OnInit {
     // Don't show the correct answer for the next question until the player has answered!
     this.showCorrectAnswer = false;
 
-    if (++this.questionNumber >= this.questions.length) {
+    // Test before we increment to avoid errors in console
+    if (this.questionNumber + 1 >= this.questions.length) {
       this.finishQuiz();
       return;
     }
+
+    this.questionNumber++;
 
     const newAnswers = this.currentQuestion.answer;
 
