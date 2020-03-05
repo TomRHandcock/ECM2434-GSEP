@@ -130,11 +130,12 @@
     </section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
-      <h4 class="subtitle is-4 is-marginless next-location">Next Location: {{this.currTarget.location}}</h4>
+      <h6 class="is-small is is-uppercase">Next Location</h6>
+      <h3 class="subtitle is-3 next-location">{{currTarget.name}}</h3>
       <div class="next-info">
         <p class="content">{{currTarget.description}}</p>
         <!-- Only show if hint is unlocked -->
-        <div class="next-loc-info" *ngIf="this.currTarget.showHint">
+        <div *ngIf="isShowingHint" class="next-loc-info">
           <h5 class="is-5">
             Hint
           </h5>
