@@ -4,11 +4,11 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {PlayerMainComponent} from './player-main/player-main.component';
-import {GamemasterMainComponent} from './gamemaster-main/gamemaster-main.component';
-import {LoginMainComponent} from './login-main/login-main.component';
-import {MapComponent} from './gamemaster-main/map/map.component';
-import {ScoreboardComponent} from './gamemaster-main/scoreboard/scoreboard.component';
+import {PlayerMainComponent} from './player/player-main.component';
+import {GamemasterMainComponent} from './gamemaster/gamemaster-main.component';
+import {LoginMainComponent} from './login/login-main.component';
+import {MapComponent} from './gamemaster/map/map.component';
+import {ScoreboardComponent} from './gamemaster/scoreboard/scoreboard.component';
 import {NgxTimerModule} from 'ngx-timer';
 
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
@@ -19,7 +19,7 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 // Other modules and dependencies
 import {QRCodeModule} from 'angularx-qrcode';
 import {NgQrScannerModule} from 'ang-qrscanner';
-import {QuizComponent} from './player-main/quiz/quiz.component';
+import {QuizComponent} from './player/quiz/quiz.component';
 
 
 const firebaseConfig = {

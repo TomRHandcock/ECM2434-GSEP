@@ -4,7 +4,7 @@ import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
-import {Location, Team} from '../gamemaster-main/gamemaster-main.component';
+import {Location, Team} from '../gamemaster/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 

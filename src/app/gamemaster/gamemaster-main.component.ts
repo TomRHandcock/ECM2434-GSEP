@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt, faQrcode } from '@fortawesome/free-solid-svg-icons';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {faArrowLeft, faBars, faMapMarkerAlt, faPen, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {AngularFireDatabase} from '@angular/fire/database';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 enum Screen {
   NONE,
