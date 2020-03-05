@@ -20,7 +20,7 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {QRCodeModule} from 'angularx-qrcode';
 import {NgQrScannerModule} from 'ang-qrscanner';
 import {QuizComponent} from './player/quiz/quiz.component';
-import {QrscannerComponent} from './player/qrscanner/qrscanner.component';
+import {PlayerQrScannerComponent} from './player/qr-scanner/qr-scanner.component';
 
 
 const firebaseConfig = {
@@ -43,7 +43,7 @@ const firebaseConfig = {
     MapComponent,
     AppComponent,
     QuizComponent,
-    QrscannerComponent
+    PlayerQrScannerComponent
   ],
   imports: [
     BrowserModule,

@@ -204,39 +204,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Opens the user's camera
-   * @author OGWSaunders
-   */
-  openCamera() {
-    this.qrScannerComponent.getMediaDevices().then(devices => {
-      const videoDevices: MediaDeviceInfo[] = [];
-      for (const device of devices) {
-        if (device.kind.toString() === 'videoinput') {
-          videoDevices.push(device);
-        }
-      }
-      if (videoDevices.length > 0) {
-        let choosenDev;
-        for (const dev of videoDevices) {
-          if (dev.label.includes('front')) {
-            choosenDev = dev;
-            break;
-          }
-        }
-        if (choosenDev) {
-          this.qrScannerComponent.chooseCamera.next(choosenDev);
-        } else {
-          this.qrScannerComponent.chooseCamera.next(videoDevices[0]);
-        }
-      }
-    });
-
-    this.qrScannerComponent.capturedQr.subscribe(result => {
-      console.log(result);
-    });
-  }
-
-  /**
    * Sends the user to the university page
    * @author OGWSaunders
    */
