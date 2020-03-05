@@ -34,6 +34,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   answerForm;
   correctAnswer: number;
   roundScore: number;
+  teamData;
 
   currTarget: {location: string, hint: string, description: string, showHint: boolean};
 
@@ -80,6 +81,10 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       answer: new FormControl(),
     });
     this.roundScore = 0;
+    // Set some default values to stop the console errors screaming at you
+    this.teamData = {name: '', score: 0, hintsUsed: 0, locationsCompleted: 0};
+    // Then get the actual values
+    this.getTeamStats();
   }
 
   /**
@@ -132,6 +137,15 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
     // Add the campus building GeoJSON dataset
     this.map.on('load', () => this.onMapLoad(this.map));
+  }
+
+  /**
+   * Changes the screen
+   * @param newScreen - the new screen to change to
+   * @author AlexWesterman
+   */
+  changeScreen(newScreen: Screen) {
+    this.screen = newScreen;
   }
 
   /**
@@ -271,7 +285,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     }
 
     // TODO once the QR scanner verifies the location, store the location in an instance var
-    const location = 'Forum';
+    const location = 'The Forum';
     if (this.currQuestion.num >= this.questions[location].length) {
       this.finishQuiz();
       return;
@@ -305,7 +319,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock
    */
   beingAnswering() {
-    this.screen = this.screens.ANSWER_QS;
+    this.changeScreen(this.screens.ANSWER_QS);
     /**
      * Note from Tom:
      * I know this is already been initialised but this is being re-initialised to
@@ -353,10 +367,13 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         // Add the score obtained from this round to the score in the database
         this.db.database.ref('/team/' + teamID + '/score').set(teamCurrentScore + this.roundScore).then(() => {
           // Database updated -> Send the player on back home
-          this.screen = this.screens.HOME;
+          this.changeScreen(this.screens.HOME);
         });
       });
     });
+
+    // Reset for next set of questions
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
   }
 
   /**
@@ -449,5 +466,37 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       this.currTarget.showHint = true;
       // TODO Deduct score here
     }
+  }
+
+  /**
+   * This method obtains the teams current stats from the database.
+   * @author TomRHandcock
+   */
+  getTeamStats() {
+    // First, find the team's ID by looking for the player within a team
+    this.db.database.ref('/team/').once('value').then((snapshotData) => {
+      let teamID;
+      snapshotData.forEach((dataSnapshot) => {
+        // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
+        dataSnapshot.child('/players/').forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            teamID = dataSnapshot.key;
+          }
+        });
+      });
+
+      if (teamID == null) {
+        // We haven't found a team that the player is on
+        alert('Your team has not been found, please reload the application to join a team');
+        return;
+      }
+
+      // Find out the teams current score
+      this.db.object('/team/' + teamID).valueChanges().subscribe((data) => {
+        this.teamData = data;
+        console.log(this.teamData);
+      });
+    });
   }
 }
