@@ -308,8 +308,47 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   showHint() {
     if (confirm('Are you sure you want to use a hint? (it will cost you score!)')) {
       this.isShowingHint = true;
-      // TODO Deduct score here
+      this.updateDatabaseHints();
     }
+  }
+
+  /**
+   * Updates the hints used in the database, and subtracts points from the
+   * team score in the database.
+   * @author OGWSaunders
+   *
+   * Handle creation of QuizComponent
+   * @author galexite
+   * @version 2
+   */
+  updateDatabaseHints() {
+    // Change score
+    this.updatePlayerScore(-10);
+
+    // Find out the teams current hints used
+    let teamCurrentHints;
+    this.db.database.ref('/team/' + this.teamId + '/hintsUsed').once('value').then((hints) => {
+      teamCurrentHints = hints.toJSON();
+      // Add the hint used to the database
+      this.db.database.ref('/team/' + this.teamId + '/hintsUsed').set(teamCurrentHints + 1).then(() => {
+        this.changeScreen(this.screens.HOME);
+      });
+    });
+  }
+
+  /**
+   * Apply the player's score to the database by addition (can be negative).
+   * @param addition the number to add to the player's score on the database
+   * @author galexite
+   */
+  updatePlayerScore(addition: number) {
+    let teamCurrentScore;
+    // Find out the teams current score
+    this.db.database.ref('/team/' + this.teamId + '/score').once('value').then(data => {
+      teamCurrentScore = data.toJSON();
+      // Add the score obtained from this round to the score in the database
+      this.db.database.ref('/team/' + this.teamId + '/score').set(teamCurrentScore + addition);
+    });
   }
 
   /**
