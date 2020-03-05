@@ -140,6 +140,15 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Changes the screen
+   * @param newScreen - the new screen to change to
+   * @author AlexWesterman
+   */
+  changeScreen(newScreen: Screen) {
+    this.screen = newScreen;
+  }
+
+  /**
    * Checks whether the user is part of a team. If they aren't, gives them a dialog box to do so
    * @param user - the user currently logged in
    * @author AlexWesterman
@@ -276,7 +285,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     }
 
     // TODO once the QR scanner verifies the location, store the location in an instance var
-    const location = 'Forum';
+    const location = 'The Forum';
     if (this.currQuestion.num >= this.questions[location].length) {
       this.finishQuiz();
       return;
@@ -310,7 +319,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock
    */
   beingAnswering() {
-    this.screen = this.screens.ANSWER_QS;
+    this.changeScreen(this.screens.ANSWER_QS);
     /**
      * Note from Tom:
      * I know this is already been initialised but this is being re-initialised to
@@ -358,10 +367,13 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         // Add the score obtained from this round to the score in the database
         this.db.database.ref('/team/' + teamID + '/score').set(teamCurrentScore + this.roundScore).then(() => {
           // Database updated -> Send the player on back home
-          this.screen = this.screens.HOME;
+          this.changeScreen(this.screens.HOME);
         });
       });
     });
+
+    // Reset for next set of questions
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
   }
 
   /**
