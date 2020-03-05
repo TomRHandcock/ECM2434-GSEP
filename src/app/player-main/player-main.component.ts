@@ -8,6 +8,7 @@ import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.compo
 import {AngularFireDatabase} from '@angular/fire/database';
 import {FormControl, FormGroup} from '@angular/forms';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
+import { getAttrsForDirectiveMatching } from '@angular/compiler/src/render3/view/util';
 
 enum Screen {
   ANSWER_QS,
@@ -341,6 +342,17 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     before then moving on */
 
     // First find out which team the player is on, iterate through the teams
+    this.addScore();
+
+    // Reset for next set of questions
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
+  }
+
+  /**
+   *  The score for a given team is updated with the round score.
+   * @author TomRHandcock, OGWSaunders
+   */
+  addScore() {
     this.db.database.ref('/team/').once('value').then((snapshotData) => {
       let teamID;
       snapshotData.forEach((dataSnapshot) => {
@@ -352,7 +364,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
           }
         });
       });
-
       if (teamID == null) {
         // We haven't found a team that the player is on
         alert('Your team has not been found, please reload the application to join a team');
@@ -371,14 +382,11 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         });
       });
     });
-
-    // Reset for next set of questions
-    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
   }
 
   /**
    * This method check the player answer and disables the form to prevent changing the answer
-   * @author TomRHandcock
+   * @author TomRHandcock, OGWSaunders
    */
   verifyAnswer() {
     // First we disable the form for more inputs
@@ -395,9 +403,9 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
     this.correctAnswer = correctAnswer;
     // Validate the answer
-    if (playerAnswer === correctAnswer) {
+    if (playerAnswer == correctAnswer) {
       // Correct answer
-      this.roundScore++;
+      this.roundScore += 50;
     } else {
       // Incorrect answer
     }
@@ -459,13 +467,56 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
   /**
    * Shows a popup for confirmation and then shows the hint
-   * @author AlexWesterman
+   * @author OGWSaunders, AlexWesterman
    */
   showHint() {
     if (confirm('Are you sure you want to use a hint? (it will cost you score!)')) {
       this.currTarget.showHint = true;
-      // TODO Deduct score here
     }
+
+    this.updateDatabaseHints();
+  }
+
+  /**
+   * Updates the hints used in the database, and subtracts points from the
+   * team score in the database.
+   * @author OGWSaunders,
+   */
+  updateDatabaseHints() {
+    // Change score
+    this.roundScore = -10;
+    this.addScore();
+
+    // Change hints used
+    this.db.database.ref('/team/').once('value').then((teams) => {
+      let teamID;
+      teams.forEach((team) => {
+        // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
+        team.child('/players/').forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            teamID = team.key;
+          }
+        });
+      });
+
+      if (teamID == null) {
+        // We haven't found a team that the player is on
+        alert('Your team has not been found, please reload the application to join a team');
+        this.score = this.screens.HOME;
+        return;
+      }
+
+      let teamCurrentHints;
+      // Find out the teams current hints used
+      this.db.database.ref('/team/' + teamID + '/hintsUsed').once('value').then((hints) => {
+        teamCurrentHints = hints.toJSON();
+        // Add the hint used to the database
+        this.db.database.ref('/team/' + teamID + '/hintsUsed').set(teamCurrentHints + 1).then(() => {
+          this.changeScreen(this.screens.HOME);
+        });
+      });
+    });
   }
 
   /**

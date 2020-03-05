@@ -9,6 +9,7 @@ import {GamemasterMainComponent} from './gamemaster-main/gamemaster-main.compone
 import {LoginMainComponent} from './login-main/login-main.component';
 import {MapComponent} from './map/map.component';
 import {ScoreboardComponent} from './scoreboard/scoreboard.component';
+import { NgxTimerModule } from 'ngx-timer';
 
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 // Firebase modules
@@ -50,7 +51,8 @@ const firebaseConfig = {
     FontAwesomeModule,
     QRCodeModule,
     NgQrScannerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxTimerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
