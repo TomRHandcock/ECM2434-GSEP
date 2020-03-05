@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {faArrowLeft, faBars, faMapMarkerAlt, faPen, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
@@ -32,8 +32,7 @@ export class GamemasterMainComponent implements OnInit {
   qrComponent: QRCodeComponent = null;
   qrData: string = null;
 
-  closeIcon = faArrowLeft;
-  menuIcon = faBars;
+  plusIcon = faPlus;
   editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
@@ -106,7 +105,7 @@ export class GamemasterMainComponent implements OnInit {
 
     this.db.list('/location').valueChanges().subscribe((locations) => {
       locations.forEach((item: Location) => {
-        questions[item.name] = item.questions;
+        questions[item.name] = item.questions || [];
       });
     });
 
