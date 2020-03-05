@@ -7,7 +7,7 @@ import {AppComponent} from './app.component';
 import {PlayerMainComponent} from './player/player-main.component';
 import {GamemasterMainComponent} from './gamemaster/gamemaster-main.component';
 import {LoginMainComponent} from './login/login-main.component';
-import {MapComponent} from './gamemaster/map/map.component';
+import {MapComponent} from './common/map/map.component';
 import {ScoreboardComponent} from './gamemaster/scoreboard/scoreboard.component';
 import {NgxTimerModule} from 'ngx-timer';
 

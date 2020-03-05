@@ -32,7 +32,8 @@
   ---------------------------------------------------------------------------->
   <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
-    <section class="element" id="mapSection">
+    <section class="element map-section" id="mapSection">
+      <app-map class="flex-grow"></app-map>
     </section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 
 import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
@@ -6,7 +6,6 @@ import {Router} from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Team} from '../gamemaster/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
-import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 
 enum Screen {
   ANSWER_QS,
@@ -20,7 +19,7 @@ enum Screen {
   templateUrl: './player-main.component.html',
   styleUrls: ['./player-main.component.scss']
 })
-export class PlayerMainComponent implements OnInit, AfterViewInit {
+export class PlayerMainComponent implements OnInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
@@ -53,16 +52,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   isAGamemaster: boolean;
 
   /**
-   * Map that displays on the first half of the screen.
-   */
-  map: MapboxMap;
-
-  /**
-   * Full screen button that floats top-right of the map.
-   */
-  mapFsControl: FullscreenControl;
-
-  /**
    * Whether or not to show the menu on a mobile device.
    */
   showMenu = false;
@@ -93,58 +82,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.teamData = {name: '', score: 0, hintsUsed: 0, locationsCompleted: 0};
     // Then get the actual values
     this.getTeamStats();
-  }
-
-  /**
-   * Add the campus polygons to the map
-   * @author galexite
-   */
-  onMapLoad(map: MapboxMap) {
-    map.addSource('campus', {
-      type: 'geojson',
-      data: '/assets/campus.geojson'
-    });
-    map.addLayer({
-      id: 'campus',
-      source: 'campus',
-      type: 'fill',
-      paint: {
-        'fill-color': 'rgba(0,0,0,0.4)'
-      }
-    });
-    map.addLayer({
-      id: 'campus-labels',
-      source: 'campus',
-      type: 'symbol',
-      layout: {
-        'text-field': ['get', 'name']
-      }
-    });
-    map.on('click', 'campus', (event) => {
-      new MapboxPopup()
-        .setLngLat(event.lngLat)
-        .setHTML(event.features[0].properties.name)
-        .addTo(this.map);
-    });
-  }
-
-  /**
-   * Runs when the view is rendered, adds the Mapbox map
-   * @author galexite
-   */
-  ngAfterViewInit() {
-    this.map = new MapboxMap({
-      container: 'mapSection',
-      accessToken: 'pk.eyJ1IjoidG9tcmhhbmRjb2NrIiwiYSI6ImNrNjZpemRzMDA4Nmcza3A2ZXB4YzR3MDQifQ.ut4uLWl97TVdhGxP1TEgoQ',
-      style: 'mapbox://styles/mapbox/navigation-guidance-day-v4',
-      center: [-3.533636, 50.736],
-      zoom: 15
-    });
-    this.mapFsControl = new FullscreenControl();
-    this.map.addControl(this.mapFsControl);
-
-    // Add the campus building GeoJSON dataset
-    this.map.on('load', () => this.onMapLoad(this.map));
   }
 
   /**
