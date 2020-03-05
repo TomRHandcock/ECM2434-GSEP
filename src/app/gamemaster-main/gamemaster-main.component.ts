@@ -47,6 +47,7 @@ export class GamemasterMainComponent implements OnInit {
   questions: { [loc: string]: Array<Question> };
   locations: Array<any>;
   teams: Array<any>;
+  displayLocQr = false;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
@@ -294,6 +295,56 @@ export class GamemasterMainComponent implements OnInit {
    */
   gotoPlayerView() {
     window.location.assign('./player');
+  }
+
+  /**
+   * This method is used to display the QR code for locations
+   * @param seed The name of the location (used for the QR seed)
+   * @author TomRHandcock
+   */
+  displayLocQrCode(seed) {
+    this.qrComponent = new QRCodeComponent();
+    this.qrData = '[' + seed + ']';
+    this.displayLocQr = true;
+  }
+
+  /**
+   *  This method will copy the argument text to the user's clipboard.
+   * @param str The string to copy to the clipboard.
+   * @author TomRHandcock
+   */
+  copyText(str) {
+    // Create a DOM element
+    const textbox = document.createElement('textarea');
+    // Set the value to the string to copy
+    textbox.value = str;
+    // 'Hide' the created element's style (not actually in the DOM yet)
+    textbox.style.position = 'fixed';
+    textbox.style.left = '0';
+    textbox.style.top = '0';
+    textbox.style.opacity = '0';
+    // Add the element to the DOM
+    document.body.appendChild(textbox);
+    // Focus the element and select the text
+    textbox.focus();
+    textbox.select();
+    // Copy the selected text
+    document.execCommand('copy');
+    // Get rid of the DOM element
+    document.body.removeChild(textbox);
+    document.getElementById('locCopyId').innerHTML = 'Copied!';
+  }
+
+  /**
+   * This method saves the QR Code currently displayed in the location view.
+   * @author TomRHandcock
+   */
+  saveQrCode() {
+    // Get the canvas used to display the QR code
+    const canvas = document.getElementsByClassName('qrcode')[0].firstChild as HTMLCanvasElement;
+    // Convert canvas to image and open it in a new tab
+    const img = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+    window.open(img);
   }
 }
 
