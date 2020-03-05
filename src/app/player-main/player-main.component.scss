@@ -79,5 +79,8 @@ input[type="radio"] {
 }
 
 .home-container {
-  width: 90%;
+  width: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: 1fr 1fr auto;
 }

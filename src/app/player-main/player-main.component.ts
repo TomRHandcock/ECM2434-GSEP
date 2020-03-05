@@ -318,7 +318,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    * @author TomRHandcock
    */
-  beingAnswering() {
+  beginAnsweringQuestions() {
     this.changeScreen(this.screens.ANSWER_QS);
     /**
      * Note from Tom:
@@ -374,6 +374,8 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
     // Reset for next set of questions
     this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
+
+    // Set the next location.
   }
 
   /**

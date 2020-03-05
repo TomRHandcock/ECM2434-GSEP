@@ -132,16 +132,16 @@
     <section class="element" id="clueSection">
       <h4 class="subtitle is-4 is-marginless next-location">Next Location: {{this.currTarget.location}}</h4>
       <div class="next-info">
-        <br>
-        {{this.currTarget.description}}
+        <p class="content">{{currTarget.description}}</p>
         <!-- Only show if hint is unlocked -->
         <div class="next-loc-info" *ngIf="this.currTarget.showHint">
-          <br>
-          <b>Hint:
-          {{this.currTarget.hint}}</b>
+          <h5 class="is-5">
+            Hint
+          </h5>
+          <p class="content">{{currTarget.hint}}</p>
         </div>
       </div>
-      <button class="goto-questions" (click)="this.beingAnswering()">Answer Questions</button>
+      <button (click)="beginAnsweringQuestions()" class="button goto-questions">Answer Questions</button>
     </section>
 
     <!-- The QR camera opener (Author: OGWSaunders) -->
