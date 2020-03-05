@@ -105,19 +105,19 @@
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 1 ? 'correctAnswer' : ''">
         <label for="a2-a">B. </label>
         <input type="radio" id="a2-a" formControlName="answer" value="1">
-        <label for="a1-a">{{this.currQuestion.answers[1]}}</label>
+        <label for="a2-a">{{this.currQuestion.answers[1]}}</label>
       </div>
 
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 2 ? 'correctAnswer' : ''">
         <label for="a3-a">C. </label>
         <input type="radio" id="a3-a"  formControlName="answer" value="2">
-        <label for="a1-a">{{this.currQuestion.answers[2]}}</label>
+        <label for="a3-a">{{this.currQuestion.answers[2]}}</label>
       </div>
 
       <div class="questionAnswer" [ngClass]="this.correctAnswer == 3 ? 'correctAnswer' : ''">
         <label for="a4-a">D. </label>
         <input type="radio" id="a4-a" formControlName="answer" value="3">
-        <label for="a1-a">{{this.currQuestion.answers[3]}}</label>
+        <label for="a4-a">{{this.currQuestion.answers[3]}}</label>
       </div>
     </form>
     <button class="is-primary button" (click)="this.nextQuestion()">Next Question</button>
