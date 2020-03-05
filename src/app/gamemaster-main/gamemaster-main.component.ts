@@ -194,10 +194,41 @@ export class GamemasterMainComponent implements OnInit {
 
   /**
    * Adds a new team to the database
-   * @author TomRHandcock
+   * @author TomRHandcock, OGWSaunders
    */
   addNewTeam() {
-    this.db.object('/team/' + this.teams.length).set({ID: this.teams.length, name: '', score: 0, players: []});
+    const id = this.generateTeamID();
+    this.db.object('/team/' + id).set({ID: id, name: '', score: 0, players: []});
+  }
+
+  /**
+   * Generates a new team ID for creating a team
+   * @author OGWSaunders
+   */
+  generateTeamID() {
+    const usedIDs: Array<number> = this.getUsedIDs();
+    let randID;
+    randID = Math.floor(Math.random() * Math.floor(999));
+    while (usedIDs.includes(randID)) {
+      randID = Math.floor(Math.random() * Math.floor(999));
+    }
+    return randID;
+  }
+
+  /**
+   * Finds all the currently used team IDs to ensure unique team ID
+   * @author OGWSaunders
+   */
+  getUsedIDs() {
+    const usedIDs = [];
+
+    this.db.list('/team/').valueChanges().subscribe((table) => {
+      table.forEach((item: Team) => {
+          usedIDs.push(item.ID);
+      });
+    });
+    return usedIDs;
+
   }
 
   /**
@@ -213,10 +244,15 @@ export class GamemasterMainComponent implements OnInit {
   /**
    * This method updates the team details in the database
    * @param id The Team id of the team to update
-   * @author TomRHandcock
+   * @author TomRHandcock, OGWSaunders
    */
   updateTeam(id) {
-    this.db.object('/team/' + id).set(this.teams[id]);
+    console.log(this.teams);
+    this.teams.forEach(element => {
+      if (element.ID === id) {
+        this.db.object('/team/' + element.ID).set(element);
+      }
+    });
   }
 
   /**
