@@ -4,7 +4,7 @@ import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
-import {Location, Question, Team} from '../gamemaster-main/gamemaster-main.component';
+import {Location, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {FormControl, FormGroup} from '@angular/forms';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
@@ -37,12 +37,27 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   roundScore: number;
   teamData;
 
-  currTarget: {location: string, hint: string, description: string, showHint: boolean};
+  /**
+   * Object ID on the Firebase database for the current location.
+   */
+  currTargetId = 0;
 
+  /**
+   * Next location for the player to reach.
+   */
+  currTarget = new Location();
+
+  /**
+   * Whether or not the hint should be displayed.
+   */
+  isShowingHint = false;
+
+  /**
+   * Whether or not the player is a gamemaster (and thus whether they should have access to the gamemaster UI)
+   */
   isAGamemaster: boolean;
 
-  questions: { [loc: string]: Array<Question> };
-  currQuestion: {num: number, question: string, answers: string[], playerAnswer: string, correct: number};
+  currQuestion: { num: number, question: string, answers: string[], playerAnswer: string, correct: number };
 
   map: MapboxMap;
   mapFsControl: FullscreenControl;
@@ -57,12 +72,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.user = null;
     this.isAGamemaster = null;
     this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
-
-    // TODO again, needs to be automatically assigned
-    this.currTarget = {location: 'The Forum', hint: null, description: null, showHint: false};
-    this.getLocation();
-
-    this.questions = this.getQuestionsFromDatabase();
+    this.updateLocation(this.currTargetId);
   }
 
   /**
@@ -247,24 +257,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Returns all questions stored in the database, nested by location
-   * @return [loc: string]: Array<Question> - the (location,questions) pair for each location
-   * @author AlexWesterman
-   */
-  getQuestionsFromDatabase() {
-    // This will loop through each location and get the questions
-    const questions: {[loc: string]: Array<Question>} = {};
-
-    this.db.list('/location').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location) => {
-        questions[item.name] = item.questions;
-      });
-    });
-
-    return questions;
-  }
-
-  /**
    * Goes to the next question
    * @author AlexWesterman
    * Minor revision: (Re)-enabling the answer upon a new question being displayed
@@ -287,12 +279,12 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
     // TODO once the QR scanner verifies the location, store the location in an instance var
     const location = 'The Forum';
-    if (this.currQuestion.num >= this.questions[location].length) {
+    if (this.currQuestion.num >= this.currTarget.questions.length) {
       this.finishQuiz();
       return;
     }
 
-    const question = this.questions[location][this.currQuestion.num];
+    const question = this.currTarget.questions[this.currQuestion.num];
     const answers = question.answer;
 
     // Fill in the relevant information
@@ -319,7 +311,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    * @author TomRHandcock
    */
-  beingAnswering() {
+  beginAnsweringQuestions() {
     this.changeScreen(this.screens.ANSWER_QS);
     /**
      * Note from Tom:
@@ -382,6 +374,12 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
         });
       });
     });
+
+    // Reset for next set of questions
+    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
+
+    // Set the next location.
+    this.updateLocation(++this.currTargetId);
   }
 
   /**
@@ -403,6 +401,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
     this.correctAnswer = correctAnswer;
     // Validate the answer
+    // tslint:disable-next-line
     if (playerAnswer == correctAnswer) {
       // Correct answer
       this.roundScore += 50;
@@ -453,15 +452,9 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    * Sets the location variables (such as description) to the player view
    * @author AlexWesterman
    */
-  getLocation() {
-    this.db.list('/location').valueChanges().subscribe((locations) => {
-      locations.forEach((item: Location) => {
-        if (item.name === this.currTarget.location) {
-          console.log(item);
-          this.currTarget.description = item.description;
-          this.currTarget.hint = item.hint;
-        }
-      });
+  updateLocation(id: number) {
+    this.db.object('/location/' + id).valueChanges().subscribe((item: Location) => {
+      this.currTarget = item;
     });
   }
 
@@ -471,7 +464,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    */
   showHint() {
     if (confirm('Are you sure you want to use a hint? (it will cost you score!)')) {
-      this.currTarget.showHint = true;
+      this.isShowingHint = true;
     }
 
     this.updateDatabaseHints();
