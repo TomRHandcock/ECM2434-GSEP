@@ -25,7 +25,7 @@
 <br><br>
 
 <ng-container [ngSwitch]="this.screen">
-   <!-- The home screen -->
+   <!-- The progress screen -->
   <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
     <!-- The title section -->
     <div class="columns">
@@ -64,7 +64,7 @@
     </div>
   </main>
 
-  <!-- The progress screen (Author: AlexWesterman) -->
+  <!-- The QR Scanner screen (Author: OGWSaunders) -->
   <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
    <!-- A button to open the user's camera -->
     <button (click)="openCamera()" class="button is-primary">
