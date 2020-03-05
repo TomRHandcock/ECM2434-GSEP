@@ -53,8 +53,7 @@
           <th>Name</th>
           <th>Latitude</th>
           <th>Longitude</th>
-          <th>QR Code</th>
-          <th></th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -72,12 +71,9 @@
             contenteditable="true"
             [(textContent)]="item.longitude">
           </td>
-          <td class="editCell"
-            contenteditable="true"
-            [(textContent)]="item.qrCode">
-          </td>
-          <td class="editCell" (click)="this.deleteLocation(this.numToString(item.name))">
-            <fa-icon [icon]="deleteIcon"></fa-icon>
+          <td class="editCell">
+            <fa-icon class="locationAction" (click)="this.displayLocQrCode(item.name)" [icon]="qrCodeIcon"></fa-icon>
+            <fa-icon class="locationAction" (click)="this.deleteLocation(this.numToString(item.name))" [icon]="deleteIcon"></fa-icon>
           </td>
         </tr>
       </tbody>
@@ -85,6 +81,15 @@
         <td colspan="6" class="addNewQs" (click)="this.addNewLocation()">Add New Location</td>
       </tfoot>
     </table>
+
+    <div id="qrHolder" *ngIf="this.displayLocQr">
+      <div id="locationQrCodeDisplay">
+        <qrcode [qrdata]="this.qrData" [width]="300" [errorCorrectionLevel]="'M'"></qrcode>
+        <button id="locCopyId" class="button" (click)="this.copyText(this.qrData);">Text String: {{this.qrData}}</button>
+        <button class="button" (click)="this.saveQrCode()">Save image</button>
+        <button class="button" (click)="this.displayLocQr = false">Close dialog</button>
+      </div>
+    </div>
   </section>
 
   <!-- The QR code view (Author: AlexWesterman) -->
