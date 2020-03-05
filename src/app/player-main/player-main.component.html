@@ -92,36 +92,18 @@
     </div>
   </main>
 
-  <!-- The answer screen (Author: AlexWesterman, TomRHandcock) -->
-  <main *ngSwitchCase="this.screens.ANSWER_QS" class="container has-navbar-fixed-top">
-    <h2 id="questionLabel" class="is-primary subtitle is-2">{{this.currQuestion.question}}</h2>
-    <form *ngIf="this.currQuestion.question;" id="question" (change)="this.verifyAnswer()" [formGroup]="answerForm">
-      <div class="questionAnswer" [ngClass]="this.correctAnswer == 0 ? 'correctAnswer' : ''">
-        <label for="a1-a">A. </label>
-        <input type="radio" id="a1-a" formControlName="answer" value="0">
-        <label for="a1-a">{{this.currQuestion.answers[0]}}</label>
-      </div>
-
-      <div class="questionAnswer" [ngClass]="this.correctAnswer == 1 ? 'correctAnswer' : ''">
-        <label for="a2-a">B. </label>
-        <input type="radio" id="a2-a" formControlName="answer" value="1">
-        <label for="a2-a">{{this.currQuestion.answers[1]}}</label>
-      </div>
-
-      <div class="questionAnswer" [ngClass]="this.correctAnswer == 2 ? 'correctAnswer' : ''">
-        <label for="a3-a">C. </label>
-        <input type="radio" id="a3-a"  formControlName="answer" value="2">
-        <label for="a3-a">{{this.currQuestion.answers[2]}}</label>
-      </div>
-
-      <div class="questionAnswer" [ngClass]="this.correctAnswer == 3 ? 'correctAnswer' : ''">
-        <label for="a4-a">D. </label>
-        <input type="radio" id="a4-a" formControlName="answer" value="3">
-        <label for="a4-a">{{this.currQuestion.answers[3]}}</label>
-      </div>
-    </form>
-    <button class="is-primary button" (click)="this.nextQuestion()">Next Question</button>
-  </main>
+  <!--
+    The answer screen (Author: AlexWesterman, TomRHandcock)
+    Refactored out in to app-quiz
+    @author galexite
+  -->
+  <app-quiz
+    (finalScore)="onQuizFinalScore($event)"
+    *ngSwitchCase="this.screens.ANSWER_QS"
+    [questions]="currTarget.questions"
+    [teamId]="teamId"
+    class="container has-navbar-fixed-top">
+  </app-quiz>
 
   <!-- The answering screen (Author: AlexWesterman) -->
   <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
@@ -142,11 +124,12 @@
           <p class="content">{{currTarget.hint}}</p>
         </div>
       </div>
-      <button (click)="beginAnsweringQuestions()" class="button goto-questions">Answer Questions</button>
+      <button (click)="this.changeScreen(this.screens.ANSWER_QS)" class="button goto-questions">Answer Questions
+      </button>
     </section>
 
     <!-- The QR camera opener (Author: OGWSaunders) -->
-    <button (click)="this.changeScreen(this.screens.QR_SCANNER);" class="button is-primary">
+    <button (click)="this.changeScreen(this.screens.QR_SCANNER)" class="button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
       </span>

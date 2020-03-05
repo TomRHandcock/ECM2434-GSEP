@@ -6,7 +6,6 @@ import {Router} from '@angular/router';
 import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
-import {FormControl, FormGroup} from '@angular/forms';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 
 enum Screen {
@@ -29,11 +28,8 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
 
   screens = Screen;
   screen;
-  score: number;
   user;
-  answerForm;
-  correctAnswer: number;
-  roundScore: number;
+  teamId: string;
   teamData;
 
   /**
@@ -56,21 +52,27 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
    */
   isAGamemaster: boolean;
 
-  currQuestion: { num: number, question: string, answers: string[], playerAnswer: string, correct: number };
-
+  /**
+   * Map that displays on the first half of the screen.
+   */
   map: MapboxMap;
+
+  /**
+   * Full screen button that floats top-right of the map.
+   */
   mapFsControl: FullscreenControl;
 
+  /**
+   * Whether or not to show the menu on a mobile device.
+   */
   showMenu = false;
 
   @ViewChild(QrScannerComponent, {static: false}) qrScannerComponent !: QrScannerComponent;
 
   constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
-    this.score = 0;
     this.screen = this.screens.HOME;
     this.user = null;
     this.isAGamemaster = null;
-    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
     this.updateLocation(this.currTargetId);
   }
 
@@ -87,10 +89,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.answerForm = new FormGroup({
-      answer: new FormControl(),
-    });
-    this.roundScore = 0;
     // Set some default values to stop the console errors screaming at you
     this.teamData = {name: '', score: 0, hintsUsed: 0, locationsCompleted: 0};
     // Then get the actual values
@@ -256,149 +254,6 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Goes to the next question
-   * @author AlexWesterman
-   * Minor revision: (Re)-enabling the answer upon a new question being displayed
-   * @author TomRHandcock
-   * @version 2
-   */
-  nextQuestion() {
-    // Check screen is correct
-    if (this.screen !== this.screens.ANSWER_QS) {
-      console.warn('Next question is not applicable to this screen!');
-      return;
-    }
-
-    // Either initialise or increment for next question index
-    if (this.currQuestion.num == null) {
-      this.currQuestion.num = 0;
-    } else {
-      this.currQuestion.num++;
-    }
-
-    // TODO once the QR scanner verifies the location, store the location in an instance var
-    const location = 'The Forum';
-    if (this.currQuestion.num >= this.currTarget.questions.length) {
-      this.finishQuiz();
-      return;
-    }
-
-    const question = this.currTarget.questions[this.currQuestion.num];
-    const answers = question.answer;
-
-    // Fill in the relevant information
-    this.currQuestion.question = question.question;
-    this.currQuestion.answers = [
-      answers.correct,
-      answers.incorrect0,
-      answers.incorrect1,
-      answers.incorrect2
-    ];
-    this.currQuestion.correct = answers.correct;
-
-    // Shuffle the answer's position
-    // A basic function that will sort (not the fairest but easily good enough for four elements)
-    this.currQuestion.answers.sort(() => Math.random() - 0.5);
-    // (Re)-enable the form answers
-    this.correctAnswer = null;
-    this.answerForm.controls.answer.reset();
-    this.answerForm.controls.answer.enable();
-  }
-
-  /**
-   * Begins the answering questions routine
-   * @author AlexWesterman
-   * @author TomRHandcock
-   */
-  beginAnsweringQuestions() {
-    this.changeScreen(this.screens.ANSWER_QS);
-    /**
-     * Note from Tom:
-     * I know this is already been initialised but this is being re-initialised to
-     * stop a potential exploit where the player answers a question correctly then
-     * backs out to re-answer the same question to build up points.
-     */
-    this.roundScore = 0;
-    this.nextQuestion();
-  }
-
-  /**
-   * This method is called when the current round of quiz questions has been finished,
-   * the player's team is then found and the score for that team is updated.
-   * @author AlexWesterman
-   * @author TomRHandcock
-   */
-  finishQuiz() {
-    /* TODO this should also show the player with their score for that round, and total score
-    before then moving on */
-
-    // First find out which team the player is on, iterate through the teams
-    this.db.database.ref('/team/').once('value').then((snapshotData) => {
-      let teamID;
-      snapshotData.forEach((dataSnapshot) => {
-        // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
-        dataSnapshot.child('/players/').forEach((player) => {
-          // Once we find one, make a note of the team ID
-          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-            teamID = dataSnapshot.key;
-          }
-        });
-      });
-
-      if (teamID == null) {
-        // We haven't found a team that the player is on
-        alert('Your team has not been found, please reload the application to join a team');
-        this.score = this.screens.HOME;
-        return;
-      }
-
-      let teamCurrentScore;
-      // Find out the teams current score
-      this.db.database.ref('/team/' + teamID + '/score').once('value').then((score) => {
-        teamCurrentScore = score.toJSON();
-        // Add the score obtained from this round to the score in the database
-        this.db.database.ref('/team/' + teamID + '/score').set(teamCurrentScore + this.roundScore).then(() => {
-          // Database updated -> Send the player on back home
-          this.changeScreen(this.screens.HOME);
-        });
-      });
-    });
-
-    // Reset for next set of questions
-    this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
-
-    // Set the next location.
-    this.updateLocation(++this.currTargetId);
-  }
-
-  /**
-   * This method check the player answer and disables the form to prevent changing the answer
-   * @author TomRHandcock
-   */
-  verifyAnswer() {
-    // First we disable the form for more inputs
-    this.answerForm.controls.answer.disable();
-    // Set up variables for the player/correct answer
-    const playerAnswer = this.answerForm.value.answer;
-    let correctAnswer;
-    // Find which answer index is the correct answer
-    this.currQuestion.answers.forEach((item, index) => {
-      if (item.toString() === this.currQuestion.correct.toString()) {
-        correctAnswer = index;
-      }
-    });
-
-    this.correctAnswer = correctAnswer;
-    // Validate the answer
-    if (playerAnswer === correctAnswer) {
-      // Correct answer
-      this.roundScore++;
-    } else {
-      // Incorrect answer
-    }
-  }
-
-  /**
    * Returns whether the logged in player is a gamemaster
    * @param user - the current user logged in
    * @return boolean - whether the player is a gamemaster
@@ -464,28 +319,37 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   getTeamStats() {
     // First, find the team's ID by looking for the player within a team
     this.db.database.ref('/team/').once('value').then((snapshotData) => {
-      let teamID;
       snapshotData.forEach((dataSnapshot) => {
         // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
         dataSnapshot.child('/players/').forEach((player) => {
           // Once we find one, make a note of the team ID
           if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-            teamID = dataSnapshot.key;
+            this.teamId = dataSnapshot.key;
           }
         });
       });
 
-      if (teamID == null) {
+      if (this.teamId == null) {
         // We haven't found a team that the player is on
         alert('Your team has not been found, please reload the application to join a team');
         return;
       }
 
       // Find out the teams current score
-      this.db.object('/team/' + teamID).valueChanges().subscribe((data) => {
+      this.db.object('/team/' + this.teamId).valueChanges().subscribe((data) => {
         this.teamData = data;
         console.log(this.teamData);
       });
     });
+  }
+
+  /**
+   * Called when the quiz has finished, and the final score has been given
+   * @param finalScore the finishing score of the quiz
+   * @author galexite
+   */
+  onQuizFinalScore(finalScore: number) {
+    this.updateLocation(++this.currTargetId);
+    this.changeScreen(this.screens.HOME);
   }
 }
