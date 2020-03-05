@@ -23,87 +23,13 @@
 </nav>
 
 <ng-container [ngSwitch]="this.screen">
-   <!-- The progress screen -->
-  <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
-    <!-- The title section -->
-    <div class="columns">
-      <div class="column is-full">
-        <h1 class="title is-1">Your Current Progress</h1>
-      </div>
-    </div>
-    <!-- The table of entries -->
-    <div class="columns">
-      <table class="table column is-full flex-grow">
-        <tbody>
-          <tr>
-            <td class="row-heading">Score</td>
-            <td class="row-value">{{this.teamData.score}}</td>
-          </tr>
+  <!---------------------------------------------------------------------------
+    HOME
 
-          <!-- Some example entries that we may choose to implement -->
-          <tr>
-            <td class="row-heading">Locations Complete</td>
-            <td class="row-value">{{this.teamData.locationsCompleted}}</td>
-          </tr>
-          <tr>
-            <td class="row-heading">Hints Used</td>
-            <td class="row-value">{{this.teamData.hintsUsed}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- A button to return back to the home screen -->
-    <div role="button" class="is-primary button" id="progressBack" (click)="this.changeScreen(this.screens.HOME)">
-      <span class="icon is-small">
-        <fa-icon [icon]="homeIcon"></fa-icon>
-      </span>
-      <span>Back to Home</span>
-    </div>
-  </main>
-
-  <!-- The QR Scanner screen (Author: OGWSaunders) -->
-  <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
-   <!-- A button to open the user's camera -->
-    <button (click)="openCamera()" class="button is-primary">
-      <span class="icon is-small">
-        <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
-      </span>
-      <span>Open Camera</span>
-    </button>
-
-    <!-- The actual QR scanner component -->
-    <qr-scanner id="QrScanner"
-      [debug]="false"
-      [canvasWidth]="1080"
-      [canvasHeight]="720"
-      [stopAfterScan]="true"
-      [updateTime]="500">
-    </qr-scanner>
-
-    <!-- A button to return to the home view -->
-    <div role="button" class="is-primary button" id="qrScannerBack" (click)="this.changeScreen(this.screens.HOME);">
-      <span class="icon is-small">
-        <fa-icon [icon]="homeIcon"></fa-icon>
-      </span>
-      <span>Back to Home</span>
-    </div>
-  </main>
-
-  <!--
-    The answer screen (Author: AlexWesterman, TomRHandcock)
-    Refactored out in to app-quiz
-    @author galexite
-  -->
-  <app-quiz
-    (finalScore)="onQuizFinalScore($event)"
-    *ngSwitchCase="this.screens.ANSWER_QS"
-    [questions]="currTarget.questions"
-    [teamId]="teamId"
-    class="container has-navbar-fixed-top">
-  </app-quiz>
-
-  <!-- The answering screen (Author: AlexWesterman) -->
+    This is the first screen the user sees, presents the map, next location and
+    clue information
+    @author galexite, AlexWesterman
+  ---------------------------------------------------------------------------->
   <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
     <section class="element" id="mapSection">
@@ -147,4 +73,83 @@
       </button>
     </div>
   </main>
+
+
+  <!---------------------------------------------------------------------------
+      PROGRESS
+
+      Reached by selecting the item from the navigation bar
+  ---------------------------------------------------------------------------->
+  <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
+    <!-- The title section -->
+    <div class="columns">
+      <div class="column is-full">
+        <h1 class="title is-1">Your Current Progress</h1>
+      </div>
+    </div>
+    <!-- The table of entries -->
+    <div class="columns">
+      <table class="table column is-full flex-grow">
+        <tbody>
+          <tr>
+            <td class="row-heading">Score</td>
+            <td class="row-value">{{this.teamData.score}}</td>
+          </tr>
+
+          <!-- Some example entries that we may choose to implement -->
+          <tr>
+            <td class="row-heading">Locations Complete</td>
+            <td class="row-value">{{this.teamData.locationsCompleted}}</td>
+          </tr>
+          <tr>
+            <td class="row-heading">Hints Used</td>
+            <td class="row-value">{{this.teamData.hintsUsed}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- A button to return back to the home screen -->
+    <div role="button" class="is-primary button" id="progressBack" (click)="this.changeScreen(this.screens.HOME)">
+      <span class="icon is-small">
+        <fa-icon [icon]="homeIcon"></fa-icon>
+      </span>
+      <span>Back to Home</span>
+    </div>
+  </main>
+
+
+  <!---------------------------------------------------------------------------
+    QR SCANNER
+
+    Available when the user is near a location where they can scan a QR code
+    to begin the quiz for that location
+    @author OGWSaunders
+  ---------------------------------------------------------------------------->
+  <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
+    <app-qrscanner></app-qrscanner>
+    <!-- A button to return to the home view -->
+    <div role="button" class="is-primary button" id="qrScannerBack" (click)="this.changeScreen(this.screens.HOME);">
+      <span class="icon is-small">
+        <fa-icon [icon]="homeIcon"></fa-icon>
+      </span>
+      <span>Back to Home</span>
+    </div>
+  </main>
+
+
+  <!---------------------------------------------------------------------------
+    QUIZ
+
+    The answer screen (Author: AlexWesterman, TomRHandcock)
+    Refactored out in to app-quiz
+    @author galexite
+  ---------------------------------------------------------------------------->
+  <app-quiz
+    (finalScore)="onQuizFinalScore($event)"
+    *ngSwitchCase="this.screens.ANSWER_QS"
+    [questions]="currTarget.questions"
+    [teamId]="teamId"
+    class="container has-navbar-fixed-top">
+  </app-quiz>
 </ng-container>
