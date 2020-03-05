@@ -2,7 +2,7 @@
 <nav class="navbar is-fixed-top" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
-      <span class="navbar-header">Team C</span>
+      <span class="navbar-header">{{this.teamData.name}}</span>
     </div>
     <a class="navbar-burger" role="button" aria-label="Toggle navigation" (click)="showMenu = !showMenu">
       <span aria-hidden="true"></span>
@@ -25,7 +25,7 @@
 <br><br>
 
 <ng-container [ngSwitch]="this.screen">
-   <!-- The home screen -->
+   <!-- The progress screen -->
   <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
     <!-- The title section -->
     <div class="columns">
@@ -39,17 +39,17 @@
         <tbody>
           <tr>
             <td class="row-heading">Score</td>
-            <td class="row-value">{{this.score}}</td>
+            <td class="row-value">{{this.teamData.score}}</td>
           </tr>
 
           <!-- Some example entries that we may choose to implement -->
           <tr>
             <td class="row-heading">Locations Complete</td>
-            <td class="row-value">0</td>
+            <td class="row-value">{{this.teamData.locationsCompleted}}</td>
           </tr>
           <tr>
             <td class="row-heading">Hints Used</td>
-            <td class="row-value">0</td>
+            <td class="row-value">{{this.teamData.hintsUsed}}</td>
           </tr>
         </tbody>
       </table>
@@ -64,7 +64,7 @@
     </div>
   </main>
 
-  <!-- The progress screen (Author: AlexWesterman) -->
+  <!-- The QR Scanner screen (Author: OGWSaunders) -->
   <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
    <!-- A button to open the user's camera -->
     <button (click)="openCamera()" class="button is-primary">
