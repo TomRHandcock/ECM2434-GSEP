@@ -3,6 +3,7 @@ import {Question} from '../../gamemaster/gamemaster-main.component';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {CountupTimerService} from 'ngx-timer';
 
 /**
  * A component to ask the user a short quiz for the given location.
@@ -29,38 +30,51 @@ export class QuizComponent implements OnInit {
    * The current question number.
    */
   questionNumber = 0;
+
   /**
    * Multiple choice answers to the question.
    */
   answers: string[];
+
   /**
    * The answer which is correct.
    */
   correctAnswerId = 0;
+
   /**
    * Whether or not to display the correct answer.
    */
   showCorrectAnswer = false;
+
   /**
    * Form for the player to answer the question.
    */
   answerForm = new FormGroup({
     answer: new FormControl()
   });
+
   /**
    * Whether or not the next question button should be enabled.
    */
   nextQuestionEnabled = false;
+
+  /**
+   * The CountupTimerService for tracking the time taken on a round of questions
+   */
+  countupTimerService: CountupTimerService;
+
   /**
    * This quiz's current score
    */
   score = 0;
+
   /**
    * The total score for this quiz.
    */
   @Output() finalScore = new EventEmitter<number>();
 
   constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase) {
+    this.countupTimerService = new CountupTimerService();
   }
 
   /**
@@ -71,7 +85,32 @@ export class QuizComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Start the timer for scoring
+    this.startTimer();
+
     this.nextQuestion();
+  }
+
+  /**
+   * Starts the timer for questions
+   * @author OGWSaunders
+   */
+  startTimer() {
+    console.log(this.countupTimerService);
+    this.countupTimerService.startTimer();
+
+    // Needs to be called otherwise time is not kept track of
+    this.trackTimerValue();
+  }
+
+  /**
+   * Tracks the changes to the timer (timer will be 0 seconds until called)
+   * @author OGWSaunders
+   */
+  trackTimerValue() {
+    this.countupTimerService.getTimerValue().subscribe(res => {
+      console.log(Object.assign(res));
+    });
   }
 
   /**
@@ -150,6 +189,8 @@ export class QuizComponent implements OnInit {
    * This method check the player answer and disables the form to prevent changing the answer
    * @author TomRHandcock
    *
+   * Added the scoring change
+   * @author OGWSaunders
    * Refactored in to QuizComponent
    * @author
    * @version 2
