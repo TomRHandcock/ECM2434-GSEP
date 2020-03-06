@@ -315,7 +315,7 @@ export class PlayerMainComponent implements OnInit {
    * @author galexite
    */
   onQrCodeScanned(qrCode: string) {
-    if (qrCode === this.currTarget.name) {
+    if (qrCode === '[' + this.currTarget.name + ']') {
       this.changeScreen(Screen.ANSWER_QS);
     } else {
       alert('This isn\'t the right QR code for this location! Are you in the right place?');
