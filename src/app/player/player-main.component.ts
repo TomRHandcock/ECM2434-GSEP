@@ -323,4 +323,18 @@ export class PlayerMainComponent implements OnInit {
     // Go back home
     this.changeScreen(this.screens.HOME);
   }
+
+  /**
+   * Called when a QR code was successfully scanned, with the QR code.
+   * @param qrCode the scanned QR code
+   * @author galexite
+   */
+  onQrCodeScanned(qrCode: string) {
+    if (qrCode === this.currTarget.name) {
+      this.changeScreen(Screen.ANSWER_QS);
+    } else {
+      alert('This isn\'t the right QR code for this location! Are you in the right place?');
+      this.changeScreen(Screen.HOME);
+    }
+  }
 }
