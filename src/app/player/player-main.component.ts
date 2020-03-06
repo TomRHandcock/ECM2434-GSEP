@@ -208,9 +208,16 @@ export class PlayerMainComponent implements OnInit {
    * @author TomRHandcock
    */
   updateLocation() {
-    this.db.object('location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
-      console.log(this.teamData);
-      this.currTarget = location as Location;
+    this.db.database.ref('/location').once('value').then((data) => {
+      if (data.val().length <= this.teamData.locationsCompleted) {
+        // Team has finished the game
+        alert('You have finished with a score of ' + this.teamData.score);
+      } else {
+        // Team hasn't finished the game
+        this.db.object('location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
+          this.currTarget = location as Location;
+        });
+      }
     });
   }
 
@@ -299,13 +306,21 @@ export class PlayerMainComponent implements OnInit {
    * Called when the quiz has finished, and the final score has been given
    * @param finalScore the finishing score of the quiz
    * @author galexite
+   * Changed the method to update variables in the database rather than on the client.
+   * @author TomRHandcock
    */
   onQuizFinalScore(finalScore: number) {
+    // Add 1 to locations completed
     this.teamData.locationsCompleted++;
+    // TODO: Randomise the next target to kne not already visited
     this.teamData.nextTarget++;
+    // Update the team's score
     this.teamData.score += finalScore;
+    // Update the database values
     this.db.database.ref('/team/' + this.teamData.ID).set(this.teamData);
+    // Update the location view
     this.updateLocation();
+    // Go back home
     this.changeScreen(this.screens.HOME);
   }
 
