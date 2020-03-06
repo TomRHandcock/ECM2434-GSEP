@@ -3,7 +3,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
-import {QrScannerComponent} from 'ang-qrscanner';
 import {Location, Team} from '../gamemaster/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 
@@ -56,8 +55,6 @@ export class PlayerMainComponent implements OnInit {
    * Whether or not to show the menu on a mobile device.
    */
   showMenu = false;
-
-  @ViewChild(QrScannerComponent, {static: false}) qrScannerComponent !: QrScannerComponent;
 
   constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
     this.screen = this.screens.HOME;

@@ -128,7 +128,7 @@
     @author OGWSaunders
   ---------------------------------------------------------------------------->
   <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
-    <app-qr-scanner (qrCode)="onQrCodeScanned($event)"></app-qr-scanner>
+    <zxing-scanner (scanSuccess)="onQrCodeScanned($event)"></zxing-scanner>
     <!-- A button to return to the home view -->
     <div role="button" class="is-primary button" id="qrScannerBack" (click)="this.changeScreen(this.screens.HOME);">
       <span class="icon is-small">
