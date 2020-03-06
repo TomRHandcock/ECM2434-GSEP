@@ -1,0 +1,87 @@
+<main xmlns="http://www.w3.org/1999/html" [ngSwitch]="this.screen">
+  <!-- This is for the login form -->
+  <section id="loginSection" *ngSwitchCase="this.Screens.LOGIN">
+    <form id="loginForm">
+      <div class="fields">
+        <p class="loginFeedback" *ngIf="loginError == 'Password Incorrect'">Incorrect password</p>
+        <p class="loginFeedback" *ngIf="loginError == 'Email not found'">User not found</p>
+        <p class="loginFeedback" *ngIf="loginError == 'Argument Error'">Ensure all fields are filled</p>
+        <p class="loginFeedback" *ngIf="loginError == 'Invalid Email'">Invalid Email</p>
+        <input type="email" name="email" placeholder="Email" [(ngModel)]="loginEmail" pattern="[a-z|A-Z|0-9]+@[a-z|A-Z|0-9]+\.[a-z|.]{2,}$" required>
+        <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword" required>
+      </div>
+      <div class="formExtras">
+        <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
+        <input type="button" (click)="changeScreen(this.Screens.PRIVACY_POLICY)" name="createAccount" value="Create Account">
+        <div class="links">
+          <a>Help logging in</a>
+        </div>
+      </div>
+    </form>
+  </section>
+  <!-- This is for the account creation form -->
+  <section id="createSection" *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
+    <form id="createForm">
+      <div class="fields">
+        <input type="text" name="email" placeholder="Email" [(ngModel)]="createEmail">
+        <input type="password" name="password" placeholder="Password" [(ngModel)]="createPassword">
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" [(ngModel)]="createConfirmPassword">
+      </div>
+      <div class="formExtras">
+        <input type="submit" (click)="onCreationPressed()" name="createSubmit" value="Create Account">
+        <div class="links">
+          <a>Help logging in</a>
+        </div>
+      </div>
+    </form>
+  </section>
+
+
+  <!---------------------------------------------------------------------------
+    TEAM CONNECTION
+
+    Displayed when the user has not yet joined a team (whether they have just
+    registered or have logged in).
+    @author galexite
+    -------------------------------------------------------------------------->
+  <section id="teamIdSection" *ngSwitchCase="this.Screens.TEAM_ID">
+    <form id="loginForm">
+      <div class="fields">
+        <p class="content">
+          Please enter your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected with your team!
+        </p>
+        <input type="text" name="teamId" placeholder="Team ID" [(ngModel)]="teamId" required>
+      </div>
+      <div class="formExtras">
+        <input type="submit" (click)="onJoinTeam()" name="loginSubmit" value="Join team">
+        <div class="links">
+          <a>Help logging in</a>
+        </div>
+      </div>
+    </form>
+  </section>
+  <!-- The privacy policy view (Author: AlexWesterman) -->
+  <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
+    <div class="policyContainer">
+      <!-- The title content -->
+      <!-- The text content -->
+      <div class="fields">
+        <h2 class="title is-2">Privacy Policy</h2>
+        <p class="content">
+          Due to GDPR we need your permission for us to store data about you for use with this app.
+        </p>
+        <p class="content">
+          We will need a username for use in leaderboards.</p>
+        <p class="content">
+          We also need access to your location via GPS to track your progress on the map, this data will only be held
+          while the app is in use, and once closed will be removed.
+        </p>
+      </div>
+      <!-- Send the user back to the account creation screen -->
+      <div class="formExtras">
+        <input (click)="changeScreen(this.Screens.CREATING_ACCOUNT)" name="return" type="button"
+               value="Accept and Continue">
+      </div>
+    </div>
+  </section>
+</main>

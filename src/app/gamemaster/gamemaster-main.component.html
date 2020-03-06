@@ -1,3 +1,4 @@
+<!-- The navigations view (Author: George White) -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
@@ -11,6 +12,12 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
+      <a class="navbar-item" (click)="this.gotoPlayerView();">
+        Player View
+      </a>
+      <a class="navbar-item" (click)="changeScreen(this.Screens.OVERVIEW);">
+        Overview
+      </a>
       <a class="navbar-item" (click)="changeScreen(this.Screens.TEAMS);">
         Teams
       </a>
@@ -30,15 +37,15 @@
   </div>
 </nav>
 
+<!-- The container for a shown view (uses ngSwitch to change content as appropriate)
+     (Author: AlexWesterman) -->
 <div class="container" [ngSwitch]="this.screen">
-  <section id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
-    <div class="element map" id="playerMap">Map will go here</div>
-    <div class="element scoreboard" id="scoreboard">Scoreboard</div>
-    <div class="qrcode">
-      <qrcode [qrdata]="myQrData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-    </div>
+  <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
+    <app-scoreboard></app-scoreboard>
+    <app-map></app-map>
   </section>
 
+  <!-- The locations view (Author: AlexWesterman) -->
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
     <table class="table questionTable is-fullwidth">
       <thead>
@@ -46,11 +53,11 @@
           <th>Name</th>
           <th>Latitude</th>
           <th>Longitude</th>
-          <th>QR Code</th>
-          <th></th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
+        <!-- Loop through all locations and add them to the table -->
         <tr *ngFor="let item of this.locations">
           <td class="editCell"
             contenteditable="true"
@@ -64,12 +71,9 @@
             contenteditable="true"
             [(textContent)]="item.longitude">
           </td>
-          <td class="editCell"
-            contenteditable="true"
-            [(textContent)]="item.qrCode">
-          </td>
-          <td class="editCell" (click)="this.deleteLocation(this.numToString(item.name))">
-            <fa-icon [icon]="deleteIcon"></fa-icon>
+          <td class="editCell">
+            <fa-icon class="locationAction" (click)="this.displayLocQrCode(item.name)" [icon]="qrCodeIcon"></fa-icon>
+            <fa-icon class="locationAction" (click)="this.deleteLocation(this.numToString(item.name))" [icon]="deleteIcon"></fa-icon>
           </td>
         </tr>
       </tbody>
@@ -77,8 +81,18 @@
         <td colspan="6" class="addNewQs" (click)="this.addNewLocation()">Add New Location</td>
       </tfoot>
     </table>
+
+    <div id="qrHolder" *ngIf="this.displayLocQr">
+      <div id="locationQrCodeDisplay">
+        <qrcode [qrdata]="this.qrData" [width]="300" [errorCorrectionLevel]="'M'"></qrcode>
+        <button id="locCopyId" class="button" (click)="this.copyText(this.qrData);">Text String: {{this.qrData}}</button>
+        <button class="button" (click)="this.saveQrCode()">Save image</button>
+        <button class="button" (click)="this.displayLocQr = false">Close dialog</button>
+      </div>
+    </div>
   </section>
 
+  <!-- The QR code view (Author: AlexWesterman) -->
   <section id="QRView" *ngSwitchCase="this.Screens.QR">
     <table class="qr">
       <tr id="qrCode" *ngIf="this.qrData">
@@ -97,8 +111,10 @@
     </table>
   </section>
 
+  <!-- The questions view (Author: AlexWesterman) -->
   <section class="section" id="questionsView" *ngSwitchCase="this.Screens.QUESTIONS">
     <div class="location" *ngFor="let item of this.questions | keyvalue">
+      <!-- Also show location for grouping -->
       <h4 class="subtitle is-4">Location: {{item.key}}</h4>
       <table class="table is-fullwidth">
         <thead>
@@ -112,38 +128,27 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let questions of item.value">
-            <td contenteditable="true"
-              [(textContent)]="questions.question">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.correct"
-              style="color: green">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect0"
-              style="color: coral">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect1"
-              style="color: coral">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect2"
-              style="color: coral">
-            </td>
-            <td (click)="deleteQuestion(numToString(item.key), questions.question)">
+          <!-- Loop through each question in that location -->
+          <tr *ngFor="let question of item.value">
+            question
+            <td><input type="text" name="question"   [(ngModel)]="question.question" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="correct"    [(ngModel)]="question.answer.correct" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect0" [(ngModel)]="question.answer.incorrect0" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect1" [(ngModel)]="question.answer.incorrect1" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect2" [(ngModel)]="question.answer.incorrect2" (blur)="this.updateQuestion(item.key)"></td>
+            <td (click)="deleteQuestion(item.key, question.question)">
               <fa-icon [icon]="deleteIcon"></fa-icon>
             </td>
           </tr>
         </tbody>
         <tfoot>
-          <td [colSpan]="6" class="addNewQs" (click)="addNewQuestion(numToString(item.key))">Add New Question...</td>
+          <td style="text-align: center; cursor: pointer;" colspan="6" (click)="this.addNewQuestion(item.key)">+ Add a new question</td>
         </tfoot>
       </table>
     </div>
   </section>
 
+  <!-- The teams view (Author: TomRHandcock) -->
   <section class="section" id="teamsView" *ngSwitchCase="this.Screens.TEAMS">
     <table class="table teamsTable is-fullwidth">
       <colgroup>
@@ -160,11 +165,10 @@
       </thead>
       <tr *ngFor="let team of this.teams" class="is-hoverable">
         <td [(textContent)]="team.ID"></td>
-        <td contenteditable="true" [(textContent)]="team.name" (keyup)="this.updateTeam(team.ID)"></td>
-        <td contenteditable="true" [(textContent)]="team.score" (keyup)="this.updateTeam(team.ID)"></td>
+        <td><input type="text" name="teamName" [(ngModel)]="team.name" (blur)="this.updateTeam(team.ID)"></td>
+        <td><input type="number" name="teamScore" [(ngModel)]="team.score" (blur)="this.updateTeam(team.ID)"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
-          <fa-icon class="teamEdit" [icon]="qrCodeIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="deleteIcon" (click)="this.deleteTeam(team.ID)" ></fa-icon>
         </td>

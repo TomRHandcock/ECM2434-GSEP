@@ -1,4 +1,4 @@
-@charset 'utf8';
+@charset "utf-8";
 
 @import '_variables';
 @import '~bulma';
@@ -7,7 +7,7 @@ body {
   padding: 0;
   margin: 0;
   background-color: #0078b5; // Older browsers
-  background: linear-gradient(to bottom, #0078b5 0%,#006abc 100%); // Newer browsers, gradient!
+  background: linear-gradient(to bottom, #0078b5 0%, #006abc 100%); // Newer browsers, gradient!
   min-height: 100vh;
   font-family: $family-sans-serif;
 }
@@ -15,6 +15,10 @@ body {
 .navbar-header {
   font-weight: bold;
   font-size: 1.2em;
+}
+
+.container.has-navbar-fixed-top {
+  padding-top: $navbar-height !important;
 }
 
 .is-hoverable:hover {

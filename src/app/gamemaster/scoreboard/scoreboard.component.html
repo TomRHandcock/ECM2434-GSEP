@@ -1,0 +1,9 @@
+<section id="scoreboard">
+    <h1 id="scoreboard-title" class="title">Scoreboard</h1>
+    <ul id="scoreboard-list" class="list">
+        <li *ngFor="let team of this.teams" class="scoreboard-team">
+          <p class="subtitle is-5">{{team.name}}</p>
+          <p class="subtitle is-5">{{team.score}}</p>
+        </li>
+    </ul>
+</section>

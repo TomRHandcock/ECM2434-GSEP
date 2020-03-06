@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
+import {Component, OnInit} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/auth';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { FirebaseDatabase } from '@angular/fire';
 
 enum Screen {
   CREATING_ACCOUNT,
   PRIVACY_POLICY,
-  LOGIN
+  LOGIN,
+  TEAM_ID
 }
 
 @Component({
@@ -12,7 +15,6 @@ enum Screen {
   templateUrl: './login-main.component.html',
   styleUrls: ['./login-main.component.scss']
 })
-
 export class LoginMainComponent implements OnInit {
   // So HTML can access it
   Screens = Screen;
@@ -24,8 +26,9 @@ export class LoginMainComponent implements OnInit {
   createPassword: string;
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
+  teamId = '';
 
-  constructor(public authentication: AngularFireAuth) {
+  constructor(public authentication: AngularFireAuth, private db: AngularFireDatabase) {
     this.screen = Screen.LOGIN;
   }
 
@@ -35,9 +38,9 @@ export class LoginMainComponent implements OnInit {
    */
   ngOnInit() {
     // This function will redirect an already logged in user to the player screen
-    this.authentication.auth.onAuthStateChanged((user) => {
+    this.authentication.auth.onAuthStateChanged(user => {
       if (user) {
-        window.location.assign('./player');
+        this.checkTeamAndRedirectPlayer(this.db);
       }
     });
   }
@@ -62,9 +65,7 @@ export class LoginMainComponent implements OnInit {
   onLoginPressed() {
     try {
       this.authentication.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
-        () => {
-          window.location.assign('./player');
-       }
+        () => this.checkTeamAndRedirectPlayer(this.db)
       ).catch((reason) => {
         switch (reason.code) {
           case 'auth/invalid-email':
@@ -106,11 +107,8 @@ export class LoginMainComponent implements OnInit {
     // Check passwords have been entered and match
     if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
-        () => {
-          // Go to the player view
-          window.location.assign('./player');
-        },
-        (reason) => {
+        () => this.checkTeamAndRedirectPlayer(this.db),
+        reason => {
           alert('Creation of account failed with reason: ' + reason);
         }
       ).catch(reason => {
@@ -125,6 +123,38 @@ export class LoginMainComponent implements OnInit {
     }
   }
 
+  /**
+   * Check if the user is already on a team.
+   * If not, ask them for their team's ID.
+   * @author galexite
+   */
+  checkTeamAndRedirectPlayer(db: AngularFireDatabase) {
+    db.database.ref('/team/').once('value').then(dataSnapshot => {
+      dataSnapshot.forEach(team => team.child('/players/').forEach(player => {
+        if (player.toJSON().toString() ===
+            this.authentication.auth.currentUser.uid) {
+          window.location.assign('./player');
+        }
+      }));
+
+      // Ask the user for their Team ID
+      this.changeScreen(Screen.TEAM_ID);
+    });
+  }
+
+
+  /**
+   * Callback for adding the player's team ID.
+   * @author galexite
+   */
+  onJoinTeam() {
+    this.authentication.user.subscribe(user => {
+      this.db.database.ref('/team/' + this.teamId + '/players/')
+        .push(user.uid)
+        .then(() => this.checkTeamAndRedirectPlayer(this.db))
+        .catch(error => alert('Couldn\'t add you to that team: ' + error));
+    });
+  }
 }
 
 export enum LoginError {

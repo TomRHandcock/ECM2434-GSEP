@@ -1,20 +1,25 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { PlayerMainComponent } from './player-main/player-main.component';
-import { GamemasterMainComponent } from './gamemaster-main/gamemaster-main.component';
-import { LoginMainComponent } from './login-main/login-main.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {PlayerMainComponent} from './player/player-main.component';
+import {GamemasterMainComponent} from './gamemaster/gamemaster-main.component';
+import {LoginMainComponent} from './login/login-main.component';
+import {MapComponent} from './common/map/map.component';
+import {ScoreboardComponent} from './gamemaster/scoreboard/scoreboard.component';
+import {NgxTimerModule} from 'ngx-timer';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 // Firebase modules
-import { AngularFireModule } from '@angular/fire';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { QRCodeModule } from 'angularx-qrcode';
+import {AngularFireModule} from '@angular/fire';
+import {AngularFireAuthModule} from '@angular/fire/auth';
+import {AngularFireDatabaseModule} from '@angular/fire/database';
+// Other modules and dependencies
+import {QRCodeModule} from 'angularx-qrcode';
+import {QuizComponent} from './player/quiz/quiz.component';
+import {ZXingScannerModule} from '@zxing/ngx-scanner';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAL4V69MO2IiQtUgkAgDPlbrgX4Yu7-j9I',
@@ -31,7 +36,11 @@ const firebaseConfig = {
     AppComponent,
     PlayerMainComponent,
     GamemasterMainComponent,
-    LoginMainComponent
+    LoginMainComponent,
+    ScoreboardComponent,
+    MapComponent,
+    AppComponent,
+    QuizComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +50,10 @@ const firebaseConfig = {
     AngularFireAuthModule,
     AngularFireDatabaseModule,
     FontAwesomeModule,
-    QRCodeModule
+    QRCodeModule,
+    ZXingScannerModule,
+    ReactiveFormsModule,
+    NgxTimerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
