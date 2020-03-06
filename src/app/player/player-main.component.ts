@@ -30,6 +30,7 @@ export class PlayerMainComponent implements OnInit {
   user;
   teamId: string;
   teamData;
+  finishedQuiz = false;
 
   /**
    * Object ID on the Firebase database for the current location.
@@ -211,7 +212,7 @@ export class PlayerMainComponent implements OnInit {
     this.db.database.ref('/location').once('value').then((data) => {
       if (data.val().length <= this.teamData.locationsCompleted) {
         // Team has finished the game
-        alert('You have finished with a score of ' + this.teamData.score);
+        this.finishedQuiz = true;
       } else {
         // Team hasn't finished the game
         this.db.object('location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {

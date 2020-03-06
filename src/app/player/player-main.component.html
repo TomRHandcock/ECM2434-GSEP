@@ -153,4 +153,19 @@
     [teamId]="teamId"
     class="container has-navbar-fixed-top">
   </app-quiz>
+
+  <!---------------------------------------------------------------------------
+    FINISHED GAME DIALOG
+
+    This dialog pop-up thing shows when the team the user is on has completed
+    all the locations available.
+    @author TomRHandcock
+  ---------------------------------------------------------------------------->
+  <main id="finishedDialog" *ngIf="finishedQuiz">
+    <div>
+      <h1 class="title is-1">You have finished the game!</h1>
+      <h2 class="title is-2">Your score: {{this.teamData.score}}</h2>
+      <h2 class="title is-2">Head back to the start to see the rankings.</h2>
+    </div>
+  </main>
 </ng-container>
