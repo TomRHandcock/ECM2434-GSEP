@@ -8,7 +8,8 @@ import {Location, Team} from '../gamemaster-main/gamemaster-main.component';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {FormControl, FormGroup} from '@angular/forms';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
-import { getAttrsForDirectiveMatching } from '@angular/compiler/src/render3/view/util';
+import {getAttrsForDirectiveMatching} from '@angular/compiler/src/render3/view/util';
+import {CountupTimerService, countUpTimerConfigModel, timerTexts} from 'ngx-timer';
 
 enum Screen {
   ANSWER_QS,
@@ -22,6 +23,7 @@ enum Screen {
   templateUrl: './player-main.component.html',
   styleUrls: ['./player-main.component.scss']
 })
+
 export class PlayerMainComponent implements OnInit, AfterViewInit {
   // Re-export Font Awesome icons for use in HTML
   scanQrCodeIcon = faCamera;
@@ -36,6 +38,9 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
   correctAnswer: number;
   roundScore: number;
   teamData;
+
+  countupTimerService: CountupTimerService;
+  testConfig: countUpTimerConfigModel;
 
   /**
    * Object ID on the Firebase database for the current location.
@@ -73,6 +78,7 @@ export class PlayerMainComponent implements OnInit, AfterViewInit {
     this.isAGamemaster = null;
     this.currQuestion = {num: null, question: null, answers: null, playerAnswer: null, correct: null};
     this.updateLocation(this.currTargetId);
+    this.countupTimerService = new CountupTimerService();
   }
 
   /**
