@@ -281,7 +281,6 @@ export class PlayerMainComponent implements OnInit {
       // Find out the teams current score
       this.db.object('/team/' + this.teamId).valueChanges().subscribe((data) => {
         this.teamData = data;
-        console.log(this.teamData);
       });
     });
   }

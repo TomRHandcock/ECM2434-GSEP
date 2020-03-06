@@ -1,3 +1,7 @@
+h2 {
+  padding: 10px;
+}
+
 #questionLabel {
   color: white;
 }
@@ -15,12 +19,19 @@ input[type="radio"] {
 }
 
 .questionAnswer {
-  padding: 5px;
+  padding: 5px 10px;
   border-radius: 8px;
-  border-width: 0;
+  border-width: 1px;
   border-style: solid;
+  border-color: white;
+  margin: 10px;
 }
 
 .correctAnswer {
   background-color: #3ce03ccc;
+}
+
+input[type=radio] {
+  width: 24px;
+  height: 24px;
 }
