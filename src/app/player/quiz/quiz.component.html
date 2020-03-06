@@ -1,25 +1,25 @@
 <h2 class="is-primary subtitle is-2" id="questionLabel">{{currentQuestion.question}}</h2>
 <form (change)="verifyAnswer()" [formGroup]="answerForm" id="question">
   <div [ngClass]="{'correctAnswer': correctAnswerId == 0 && showCorrectAnswer}" class="questionAnswer">
-    <label for="a1-a">A. </label>
+    <label for="a1-a"></label>
     <input formControlName="answer" id="a1-a" type="radio" value="0">
     <label for="a1-a">{{answers[0]}}</label>
   </div>
 
   <div [ngClass]="{'correctAnswer': correctAnswerId == 1 && showCorrectAnswer}" class="questionAnswer">
-    <label for="a2-a">B. </label>
+    <label for="a2-a"></label>
     <input formControlName="answer" id="a2-a" type="radio" value="1">
     <label for="a2-a">{{answers[1]}}</label>
   </div>
 
   <div [ngClass]="{'correctAnswer': correctAnswerId == 2 && showCorrectAnswer}" class="questionAnswer">
-    <label for="a3-a">C. </label>
+    <label for="a3-a"></label>
     <input formControlName="answer" id="a3-a" type="radio" value="2">
     <label for="a3-a">{{answers[2]}}</label>
   </div>
 
   <div [ngClass]="{'correctAnswer': correctAnswerId == 3 && showCorrectAnswer}" class="questionAnswer">
-    <label for="a4-a">D. </label>
+    <label for="a4-a"></label>
     <input formControlName="answer" id="a4-a" type="radio" value="3">
     <label for="a4-a">{{answers[3]}}</label>
   </div>

@@ -197,7 +197,16 @@ export class GamemasterMainComponent implements OnInit {
    */
   addNewTeam() {
     const id = this.generateTeamID();
-    this.db.object('/team/' + id).set({ID: id, name: '', score: 0, players: []});
+    this.db.object('/team/' + id).set({
+      ID: id,
+      name: '',
+      score: 0,
+      players: [],
+      currentTarget: '',
+      nextTarget: '',
+      hintsUsed: 0,
+      locatonsCompleted: 0
+    });
   }
 
   /**
