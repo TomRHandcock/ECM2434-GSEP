@@ -130,12 +130,11 @@
         <tbody>
           <!-- Loop through each question in that location -->
           <tr *ngFor="let question of item.value">
-            question
             <td><input type="text" name="question"   [(ngModel)]="question.question" (blur)="this.updateQuestion(item.key)"></td>
-            <td><input type="text" name="correct"    [(ngModel)]="question.answer.correct" (blur)="this.updateQuestion(item.key)"></td>
-            <td><input type="text" name="incorrect0" [(ngModel)]="question.answer.incorrect0" (blur)="this.updateQuestion(item.key)"></td>
-            <td><input type="text" name="incorrect1" [(ngModel)]="question.answer.incorrect1" (blur)="this.updateQuestion(item.key)"></td>
-            <td><input type="text" name="incorrect2" [(ngModel)]="question.answer.incorrect2" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="correct"    style="color:lightgreen" [(ngModel)]="question.answer.correct" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect0" style="color:coral" [(ngModel)]="question.answer.incorrect0" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect1" style="color:coral" [(ngModel)]="question.answer.incorrect1" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect2" style="color:coral"  [(ngModel)]="question.answer.incorrect2" (blur)="this.updateQuestion(item.key)"></td>
             <td (click)="deleteQuestion(item.key, question.question)">
               <fa-icon [icon]="deleteIcon"></fa-icon>
             </td>
