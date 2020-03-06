@@ -113,6 +113,14 @@ export class QuizComponent implements OnInit {
   }
 
   /**
+   * Returns the total number of seconds passed by the timer service
+   * @author OGWSaunders
+   */
+  getTimerValue() {
+    return this.countupTimerService.totalSeconds;
+  }
+
+  /**
    * Goes to the next question
    * @author AlexWesterman
    *
@@ -167,21 +175,20 @@ export class QuizComponent implements OnInit {
    *
    * Refactored in to QuizComponent
    * @author galexite
+   * @author OGWSaunders
    * @version 2
    */
   finishQuiz() {
     // TODO: show the player with their score for that round
 
-    let teamCurrentScore;
-    // Find out the teams current score
-    this.db.database.ref('/team/' + this.teamId + '/score').once('value').then(data => {
-      teamCurrentScore = data.toJSON();
-      // Add the score obtained from this round to the score in the database
-      this.db.database.ref('/team/' + this.teamId + '/score').set(teamCurrentScore + this.score).then(() => {
-        // Database updated -> Send the player on back home
-        this.finalScore.emit(this.score);
-      });
-    });
+    // Update the score to remove the time taken (seconds)
+    const timeTaken = this.getTimerValue();
+
+    // Add points for time
+    const timeAfterNoPoints = 600;
+    this.score += Math.floor((timeAfterNoPoints - timeTaken) / 10) * 10;
+
+    this.finalScore.emit(this.score);
   }
 
   /**
