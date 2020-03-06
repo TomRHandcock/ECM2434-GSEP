@@ -17,6 +17,7 @@ import {AngularFireModule} from '@angular/fire';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 // Other modules and dependencies
+import {QRCodeModule} from 'angularx-qrcode';
 import {QuizComponent} from './player/quiz/quiz.component';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 
@@ -39,7 +40,7 @@ const firebaseConfig = {
     ScoreboardComponent,
     MapComponent,
     AppComponent,
-    QuizComponent
+    QuizComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +50,7 @@ const firebaseConfig = {
     AngularFireAuthModule,
     AngularFireDatabaseModule,
     FontAwesomeModule,
+    QRCodeModule,
     ZXingScannerModule,
     ReactiveFormsModule,
     NgxTimerModule
