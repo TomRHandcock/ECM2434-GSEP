@@ -36,6 +36,30 @@
     </form>
   </section>
 
+
+  <!---------------------------------------------------------------------------
+    TEAM CONNECTION
+
+    Displayed when the user has not yet joined a team (whether they have just
+    registered or have logged in).
+    @author galexite
+    -------------------------------------------------------------------------->
+  <section id="teamIdSection" *ngSwitchCase="this.Screens.TEAM_ID">
+    <form id="loginForm">
+      <div class="fields">
+        <p class="content">
+          Please enter your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected with your team!
+        </p>
+        <input type="text" name="teamId" placeholder="Team ID" [(ngModel)]="teamId" required>
+      </div>
+      <div class="formExtras">
+        <input type="submit" (click)="onJoinTeam()" name="loginSubmit" value="Join team">
+        <div class="links">
+          <a>Help logging in</a>
+        </div>
+      </div>
+    </form>
+  </section>
   <!-- The privacy policy view (Author: AlexWesterman) -->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
     <div class="policyContainer">
