@@ -28,7 +28,7 @@ export class QuizComponent implements OnInit {
   /**
    * The current question number.
    */
-  questionNumber = 0;
+  questionNumber = -1;
   /**
    * Multiple choice answers to the question.
    */
