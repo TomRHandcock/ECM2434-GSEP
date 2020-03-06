@@ -1,8 +1,8 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {PlayerMainComponent} from './player-main/player-main.component';
-import {GamemasterMainComponent} from './gamemaster-main/gamemaster-main.component';
-import {LoginMainComponent} from './login-main/login-main.component';
+import {PlayerMainComponent} from './player/player-main.component';
+import {GamemasterMainComponent} from './gamemaster/gamemaster-main.component';
+import {LoginMainComponent} from './login/login-main.component';
 
 
 const routes: Routes = [

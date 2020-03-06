@@ -29,6 +29,10 @@
   flex-grow: 1;
 }
 
+.map-section {
+  display: flex;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -45,37 +49,6 @@ h2 {
 
 .button-bar .button {
   display: table-cell;
-}
-
-.goto-questions {
-  text-align: center;
-}
-
-#questionLabel {
-  color: white;
-}
-
-label {
-  color: white;
-  font-size: 20px;
-}
-
-input[type="radio"] {
-  height: 15px;
-  width: 15px;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-
-.questionAnswer {
-  padding: 5px;
-  border-radius: 8px;
-  border-width: 0;
-  border-style: solid;
-}
-
-.correctAnswer {
-  background-color: #3ce03ccc;
 }
 
 .home-container {

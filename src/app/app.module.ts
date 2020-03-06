@@ -4,12 +4,12 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {PlayerMainComponent} from './player-main/player-main.component';
-import {GamemasterMainComponent} from './gamemaster-main/gamemaster-main.component';
-import {LoginMainComponent} from './login-main/login-main.component';
-import {MapComponent} from './map/map.component';
-import {ScoreboardComponent} from './scoreboard/scoreboard.component';
-import { NgxTimerModule } from 'ngx-timer';
+import {PlayerMainComponent} from './player/player-main.component';
+import {GamemasterMainComponent} from './gamemaster/gamemaster-main.component';
+import {LoginMainComponent} from './login/login-main.component';
+import {MapComponent} from './common/map/map.component';
+import {ScoreboardComponent} from './gamemaster/scoreboard/scoreboard.component';
+import {NgxTimerModule} from 'ngx-timer';
 
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 // Firebase modules
@@ -19,6 +19,8 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 // Other modules and dependencies
 import {QRCodeModule} from 'angularx-qrcode';
 import {NgQrScannerModule} from 'ang-qrscanner';
+import {QuizComponent} from './player/quiz/quiz.component';
+import {PlayerQrScannerComponent} from './player/qr-scanner/qr-scanner.component';
 
 
 const firebaseConfig = {
@@ -39,7 +41,9 @@ const firebaseConfig = {
     LoginMainComponent,
     ScoreboardComponent,
     MapComponent,
-    AppComponent
+    AppComponent,
+    QuizComponent,
+    PlayerQrScannerComponent
   ],
   imports: [
     BrowserModule,

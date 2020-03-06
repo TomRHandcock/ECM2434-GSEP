@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { faBars, faArrowLeft, faTrashAlt, faSort, faPen, faMapMarkerAlt, faQrcode } from '@fortawesome/free-solid-svg-icons';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {AngularFireDatabase} from '@angular/fire/database';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 enum Screen {
   NONE,
@@ -32,8 +32,7 @@ export class GamemasterMainComponent implements OnInit {
   qrComponent: QRCodeComponent = null;
   qrData: string = null;
 
-  closeIcon = faArrowLeft;
-  menuIcon = faBars;
+  plusIcon = faPlus;
   editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
@@ -106,7 +105,7 @@ export class GamemasterMainComponent implements OnInit {
 
     this.db.list('/location').valueChanges().subscribe((locations) => {
       locations.forEach((item: Location) => {
-        questions[item.name] = item.questions;
+        questions[item.name] = item.questions || [];
       });
     });
 
@@ -198,7 +197,16 @@ export class GamemasterMainComponent implements OnInit {
    */
   addNewTeam() {
     const id = this.generateTeamID();
-    this.db.object('/team/' + id).set({ID: id, name: '', score: 0, players: []});
+    this.db.object('/team/' + id).set({
+      ID: id,
+      name: '',
+      score: 0,
+      players: [],
+      currentTarget: '',
+      nextTarget: '',
+      hintsUsed: 0,
+      locatonsCompleted: 0
+    });
   }
 
   /**

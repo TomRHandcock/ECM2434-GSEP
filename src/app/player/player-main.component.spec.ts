@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PlayerMainComponent } from './player-main.component';
+import {PlayerMainComponent} from './player-main.component';
 
 describe('PlayerMainComponent', () => {
   let component: PlayerMainComponent;

@@ -38,20 +38,26 @@
 
   <!-- The privacy policy view (Author: AlexWesterman) -->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
-    <!-- The title content -->
-    <div class="privacyTitle">
-      <u>Privacy Policy</u>
-    </div>
-    <!-- The text content -->
-    <div class="privacyText">
-      <b>
-      Due to GDPR we need your permission for us to store data about you for use with this app.
-      <br><br>We will need a username for use in leaderboards.
-      <br><br>We also need access to your location via GPS to track your progress on the map, this data will only be held while the app is in use, and once closed will be removed.
-      </b>
-      <br><br>
+    <div class="policyContainer">
+      <!-- The title content -->
+      <!-- The text content -->
+      <div class="fields">
+        <h2 class="title is-2">Privacy Policy</h2>
+        <p class="content">
+          Due to GDPR we need your permission for us to store data about you for use with this app.
+        </p>
+        <p class="content">
+          We will need a username for use in leaderboards.</p>
+        <p class="content">
+          We also need access to your location via GPS to track your progress on the map, this data will only be held
+          while the app is in use, and once closed will be removed.
+        </p>
+      </div>
       <!-- Send the user back to the account creation screen -->
-      <input type="button" (click)="changeScreen(this.Screens.CREATING_ACCOUNT)" name="return" value="Accept and Continue">
+      <div class="formExtras">
+        <input (click)="changeScreen(this.Screens.CREATING_ACCOUNT)" name="return" type="button"
+               value="Accept and Continue">
+      </div>
     </div>
   </section>
 </main>

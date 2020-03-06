@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { ThrowStmt } from '@angular/compiler';
+import {Component, OnInit} from '@angular/core';
+import {AngularFireDatabase} from '@angular/fire/database';
 
 @Component({
   selector: 'app-scoreboard',

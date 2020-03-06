@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GamemasterMainComponent } from './gamemaster-main.component';
+import {GamemasterMainComponent} from './gamemaster-main.component';
 
 describe('GamemasterMainComponent', () => {
   let component: GamemasterMainComponent;

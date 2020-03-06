@@ -149,13 +149,18 @@
               [(textContent)]="questions.answer.incorrect2"
               style="color: coral">
             </td>
-            <td (click)="deleteQuestion(numToString(item.key), questions.question)">
+            <td (click)="deleteQuestion(item.key, questions.question)">
               <fa-icon [icon]="deleteIcon"></fa-icon>
             </td>
           </tr>
         </tbody>
         <tfoot>
-          <td [colSpan]="6" class="addNewQs" (click)="addNewQuestion(numToString(item.key))">Add New Question...</td>
+        <td colSpan="6">
+          <button (click)="addNewQuestion(item.key)" class="button is-success">
+            <span class="icon is-small"><fa-icon [icon]="plusIcon"></fa-icon></span>
+            <span>Add New Question...</span>
+          </button>
+        </td>
         </tfoot>
       </table>
     </div>
