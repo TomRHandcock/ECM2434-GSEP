@@ -50,8 +50,6 @@
             <p class="content">{{currTarget.hint}}</p>
           </div>
         </div>
-      <button (click)="this.changeScreen(this.screens.ANSWER_QS)" class="button goto-questions">Answer Questions
-      </button>
       </div>
     </section>
 
@@ -130,7 +128,7 @@
     @author OGWSaunders
   ---------------------------------------------------------------------------->
   <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
-    <app-qr-scanner></app-qr-scanner>
+    <app-qr-scanner (qrCode)="onQrCodeScanned($event)"></app-qr-scanner>
     <!-- A button to return to the home view -->
     <div role="button" class="is-primary button" id="qrScannerBack" (click)="this.changeScreen(this.screens.HOME);">
       <span class="icon is-small">

@@ -54,7 +54,11 @@ export class PlayerQrScannerComponent implements AfterViewInit {
       }
     });
 
-    this.qrScannerComponent.capturedQr.subscribe(this.qrCode.emit);
+    this.qrScannerComponent.capturedQr.subscribe(
+      qrCode => {
+        this.qrCode.emit(qrCode);
+      }
+    );
   }
 
 }

@@ -15,7 +15,6 @@ enum Screen {
   templateUrl: './login-main.component.html',
   styleUrls: ['./login-main.component.scss']
 })
-
 export class LoginMainComponent implements OnInit {
   // So HTML can access it
   Screens = Screen;
@@ -125,8 +124,9 @@ export class LoginMainComponent implements OnInit {
   }
 
   /**
-   * Check if the user is already on a team. If not, ask them for their team's ID.
-   * @author galexite.
+   * Check if the user is already on a team.
+   * If not, ask them for their team's ID.
+   * @author galexite
    */
   checkTeamAndRedirectPlayer(db: AngularFireDatabase) {
     db.database.ref('/team/').once('value').then(dataSnapshot => {
@@ -145,6 +145,7 @@ export class LoginMainComponent implements OnInit {
 
   /**
    * Callback for adding the player's team ID.
+   * @author galexite
    */
   onJoinTeam() {
     this.authentication.user.subscribe(user => {
