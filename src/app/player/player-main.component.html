@@ -37,20 +37,22 @@
     </section>
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
-      <h6 class="is-small is is-uppercase">Next Location</h6>
-      <h3 class="subtitle is-3 next-location">{{currTarget.name}}</h3>
-      <div class="next-info">
-        <p class="content">{{currTarget.description}}</p>
-        <!-- Only show if hint is unlocked -->
-        <div *ngIf="isShowingHint" class="next-loc-info">
-          <h5 class="is-5">
-            Hint
-          </h5>
-          <p class="content">{{currTarget.hint}}</p>
+      <div>
+        <h6 class="is-small is is-uppercase">Next Location</h6>
+        <h3 class="subtitle is-3 next-location">{{this.currTarget.name}}</h3>
+        <div class="next-info">
+          <p class="content">{{currTarget.description}}</p>
+          <!-- Only show if hint is unlocked -->
+          <div *ngIf="isShowingHint" class="next-loc-info">
+            <h5 class="is-5">
+              Hint
+            </h5>
+            <p class="content">{{currTarget.hint}}</p>
+          </div>
         </div>
-      </div>
       <button (click)="this.changeScreen(this.screens.ANSWER_QS)" class="button goto-questions">Answer Questions
       </button>
+      </div>
     </section>
 
     <!-- The QR camera opener (Author: OGWSaunders) -->

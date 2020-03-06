@@ -62,7 +62,6 @@ export class PlayerMainComponent implements OnInit {
     this.screen = this.screens.HOME;
     this.user = null;
     this.isAGamemaster = null;
-    this.updateLocation(this.currTargetId);
   }
 
   /**
@@ -79,7 +78,15 @@ export class PlayerMainComponent implements OnInit {
     });
 
     // Set some default values to stop the console errors screaming at you
-    this.teamData = {name: '', score: 0, hintsUsed: 0, locationsCompleted: 0};
+    this.teamData = {
+      ID: 0,
+      name: '',
+      score: 0,
+      hintsUsed: 0,
+      locationsCompleted: 0,
+      currentTarget: 0,
+      nextTarget: 0
+    };
     // Then get the actual values
     this.getTeamStats();
   }
@@ -198,10 +205,12 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Sets the location variables (such as description) to the player view
    * @author AlexWesterman
+   * @author TomRHandcock
    */
-  updateLocation(id: number) {
-    this.db.object('/location/' + id).valueChanges().subscribe((item: Location) => {
-      this.currTarget = item;
+  updateLocation() {
+    this.db.object('location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
+      console.log(this.teamData);
+      this.currTarget = location as Location;
     });
   }
 
@@ -281,6 +290,7 @@ export class PlayerMainComponent implements OnInit {
       // Find out the teams current score
       this.db.object('/team/' + this.teamId).valueChanges().subscribe((data) => {
         this.teamData = data;
+        this.updateLocation();
       });
     });
   }
@@ -291,7 +301,11 @@ export class PlayerMainComponent implements OnInit {
    * @author galexite
    */
   onQuizFinalScore(finalScore: number) {
-    this.updateLocation(++this.currTargetId);
+    this.teamData.locationsCompleted++;
+    this.teamData.nextTarget++;
+    this.teamData.score += finalScore;
+    this.db.database.ref('/team/' + this.teamData.ID).set(this.teamData);
+    this.updateLocation();
     this.changeScreen(this.screens.HOME);
   }
 }
