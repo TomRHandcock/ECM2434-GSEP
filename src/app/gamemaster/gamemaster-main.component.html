@@ -129,38 +129,20 @@
         </thead>
         <tbody>
           <!-- Loop through each question in that location -->
-          <tr *ngFor="let questions of item.value">
-            <td contenteditable="true"
-              [(textContent)]="questions.question">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.correct"
-              style="color: green">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect0"
-              style="color: coral">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect1"
-              style="color: coral">
-            </td>
-            <td contenteditable="true"
-              [(textContent)]="questions.answer.incorrect2"
-              style="color: coral">
-            </td>
-            <td (click)="deleteQuestion(item.key, questions.question)">
+          <tr *ngFor="let question of item.value">
+            question
+            <td><input type="text" name="question"   [(ngModel)]="question.question" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="correct"    [(ngModel)]="question.answer.correct" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect0" [(ngModel)]="question.answer.incorrect0" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect1" [(ngModel)]="question.answer.incorrect1" (blur)="this.updateQuestion(item.key)"></td>
+            <td><input type="text" name="incorrect2" [(ngModel)]="question.answer.incorrect2" (blur)="this.updateQuestion(item.key)"></td>
+            <td (click)="deleteQuestion(item.key, question.question)">
               <fa-icon [icon]="deleteIcon"></fa-icon>
             </td>
           </tr>
         </tbody>
         <tfoot>
-        <td colSpan="6">
-          <button (click)="addNewQuestion(item.key)" class="button is-success">
-            <span class="icon is-small"><fa-icon [icon]="plusIcon"></fa-icon></span>
-            <span>Add New Question...</span>
-          </button>
-        </td>
+          <td style="text-align: center; cursor: pointer;" colspan="6" (click)="this.addNewQuestion(item.key)">+ Add a new question</td>
         </tfoot>
       </table>
     </div>

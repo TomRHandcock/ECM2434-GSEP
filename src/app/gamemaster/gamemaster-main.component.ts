@@ -103,7 +103,7 @@ export class GamemasterMainComponent implements OnInit {
     // This will loop through each location and get the questions
     const questions: {[loc: string]: Array<Question>} = {};
 
-    this.db.list('/location').valueChanges().subscribe((locations) => {
+    this.db.list('/location').valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
         questions[item.name] = item.questions || [];
       });
@@ -164,7 +164,7 @@ export class GamemasterMainComponent implements OnInit {
   }
 
   /**
-   * Deletes a question locally (does NOT delete from the database)
+   * Deletes a question locally
    * @param location - the location the question belongs to
    * @param question - the question to delete
    * @author AlexWesterman
@@ -179,6 +179,8 @@ export class GamemasterMainComponent implements OnInit {
         locQs.splice(i, 1);
       }
     }
+
+    this.updateQuestion(location);
   }
 
   /**
@@ -205,7 +207,41 @@ export class GamemasterMainComponent implements OnInit {
       currentTarget: '',
       nextTarget: '',
       hintsUsed: 0,
-      locatonsCompleted: 0
+      locationsCompleted: 0
+    });
+  }
+
+  /**
+   * Adds a new question to a given location
+   * @param locationName - the location to add the question in to
+   * @author AlexWesterman
+   */
+  addNewQuestion(locationName: string) {
+    const sub = this.db.list('/location/').valueChanges().subscribe((locations: Location[]) => {
+      locations.forEach((item: Location, index: number) => {
+        if (item.name === locationName) {
+          this.addNewQuestionToLocation(index, item);
+          // Cancel subscription to prevent unnecessary looping
+          sub.unsubscribe();
+        }
+      });
+    });
+  }
+
+  /**
+   * Adds a new question to a location in the database
+   * @param locationId - the location id
+   * @param location - the location object
+   */
+  addNewQuestionToLocation(locationId: number, location: Location) {
+    this.db.object('/location/' +  locationId + '/questions/' + location.questions.length).set({
+      question: '',
+      answer: {
+        correct: '',
+        incorrect0: '',
+        incorrect1: '',
+        incorrect2: ''
+      }
     });
   }
 
@@ -215,11 +251,12 @@ export class GamemasterMainComponent implements OnInit {
    */
   generateTeamID() {
     const usedIDs: Array<number> = this.getUsedIDs();
-    let randID;
-    randID = Math.floor(Math.random() * Math.floor(999));
+    let randID = Math.floor(Math.random() * Math.floor(999));
+
     while (usedIDs.includes(randID)) {
       randID = Math.floor(Math.random() * Math.floor(999));
     }
+
     return randID;
   }
 
@@ -236,18 +273,24 @@ export class GamemasterMainComponent implements OnInit {
       });
     });
     return usedIDs;
-
   }
 
   /**
-   * Adds a new question to a given location
-   * @param location - the location to add the question in to
+   * Updates the question in the database
+   * @param locationName - the location name
    * @author AlexWesterman
    */
-  addNewQuestion(location: string) {
-    const loc = this.questions[location];
-    loc[loc.length] = {question: '', answer: {correct: '', incorrect0: '', incorrect1: '', incorrect2: ''}};
+  updateQuestion(locationName: string) {
+    const sub = this.db.list('/location/').valueChanges().subscribe((locations: Location[]) => {
+      locations.forEach((item: Location, index: number) => {
+        if (item.name === locationName) {
+          this.db.object('/location/' + index + '/questions/').set(this.questions[locationName]);
+          sub.unsubscribe();
+        }
+      });
+    });
   }
+
 
   /**
    * This method updates the team details in the database
