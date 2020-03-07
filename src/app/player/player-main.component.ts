@@ -116,9 +116,7 @@ export class PlayerMainComponent implements OnInit {
               isInTeam = true;
             }
           });
-        }
-        catch(error) {
-        }
+        } catch(error) {}
       });
 
       // End as not necessary

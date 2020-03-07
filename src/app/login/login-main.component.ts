@@ -130,7 +130,6 @@ export class LoginMainComponent implements OnInit {
    * Check if the user is already on a team.
    * If not, ask them for their team's ID.
    * @author galexite
-   * 
    * Extended to add support for multiple games
    * @author TomRHandcock
    * @version 2
@@ -145,19 +144,19 @@ export class LoginMainComponent implements OnInit {
        // For each game we look at the players in that game
        players.forEach((player) => {
         // We find if they are in that game
-        if (player.toJSON().toString() == this.authentication.auth.currentUser.uid) {
+        if (player.toJSON().toString() === this.authentication.auth.currentUser.uid) {
           // We found the current user in this game
-          let gameID = game.child('ID').toJSON().toString();
+          const gameID = game.child('ID').toJSON().toString();
           this.gameID = gameID;
           // Now we need to find the team the current player is on
           teams = game.child('team');
           teams.forEach((team) => {
             // Array of players on a team
-            let players = team.child('players');
-            players.forEach((player) => {
-              if(player.toJSON().toString() === this.authentication.auth.currentUser.uid) {
+            const teamPlayers = team.child('players');
+            teamPlayers.forEach((teamPlayer) => {
+              if (teamPlayer.toJSON().toString() === this.authentication.auth.currentUser.uid) {
                 // We found the team the player is on
-                console.log("Redirecting to player screen");
+                console.log('Redirecting to player screen');
                 window.location.assign('./player');
                 return;
               }
@@ -165,7 +164,7 @@ export class LoginMainComponent implements OnInit {
           });
           if (!this.teamId) {
             // We couldn't find the team the player was on
-            console.log("Redirecting to select team");
+            console.log('Redirecting to select team');
             this.screen = Screen.TEAM_ID;
             return;
           }
@@ -174,7 +173,7 @@ export class LoginMainComponent implements OnInit {
       });
       if (!this.gameID) {
         // We haven't found a game with the player in
-        console.log("Redirecting to game selection");
+        console.log('Redirecting to game selection');
         this.screen = Screen.GAME_ID;
       }
     });
@@ -184,7 +183,6 @@ export class LoginMainComponent implements OnInit {
   /**
    * Callback for adding the player's team ID.
    * @author galexite
-   * 
    * Modified to make sure Firebase can recognise the 'players' as an Array on a new team.
    * This had to be modified due to the way the "CheckTeam" method in player-main works.
    * @author TomRHandcock
@@ -193,7 +191,7 @@ export class LoginMainComponent implements OnInit {
   onJoinTeam() {
     // Get the player's list of the team the user inputted
     this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players').once('value').then((data) => {
-      let currentCount = data.val();
+      const currentCount = data.val();
       // Get the index for the player in the players list
       let index;
       if (currentCount == null) {
@@ -204,7 +202,8 @@ export class LoginMainComponent implements OnInit {
         index = currentCount.length;
       }
       // Insert the player into the team
-      this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index).set(this.authentication.auth.currentUser.uid).then(() => {
+      this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index)
+      .set(this.authentication.auth.currentUser.uid).then(() => {
         this.checkTeamAndRedirectPlayer(this.db);
       });
     });
