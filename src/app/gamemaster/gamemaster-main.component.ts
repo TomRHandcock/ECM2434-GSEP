@@ -202,8 +202,8 @@ export class GamemasterMainComponent implements OnInit {
       name: '',
       score: 0,
       players: [],
-      currentTarget: '',
-      nextTarget: '',
+      currentTarget: 0,
+      nextTarget: 0,
       hintsUsed: 0,
       locationsCompleted: 0
     });

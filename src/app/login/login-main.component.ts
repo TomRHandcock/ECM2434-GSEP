@@ -2,12 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { FirebaseDatabase } from '@angular/fire';
+import { typeWithParameters } from '@angular/compiler/src/render3/util';
 
 enum Screen {
   CREATING_ACCOUNT,
   PRIVACY_POLICY,
   LOGIN,
-  TEAM_ID
+  TEAM_ID,
+  GAME_ID
 }
 
 @Component({
@@ -27,6 +29,7 @@ export class LoginMainComponent implements OnInit {
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
   teamId = '';
+  gameID: string;
 
   constructor(public authentication: AngularFireAuth, private db: AngularFireDatabase) {
     this.screen = Screen.LOGIN;
@@ -127,18 +130,53 @@ export class LoginMainComponent implements OnInit {
    * Check if the user is already on a team.
    * If not, ask them for their team's ID.
    * @author galexite
+   * 
+   * Extended to add support for multiple games
+   * @author TomRHandcock
+   * @version 2
    */
   checkTeamAndRedirectPlayer(db: AngularFireDatabase) {
-    db.database.ref('games/0/team/').once('value').then(dataSnapshot => {
-      dataSnapshot.forEach(team => team.child('/players/').forEach(player => {
-        if (player.toJSON().toString() ===
-            this.authentication.auth.currentUser.uid) {
-          window.location.assign('./player');
+    let teams;
+    let players;
+    db.database.ref('games').once('value').then((games) => {
+      // First we get all the games available
+      games.forEach((game) => {
+       players = game.child('players');
+       // For each game we look at the players in that game
+       players.forEach((player) => {
+        // We find if they are in that game
+        if (player.toJSON().toString() == this.authentication.auth.currentUser.uid) {
+          // We found the current user in this game
+          let gameID = game.child('ID').toJSON().toString();
+          this.gameID = gameID;
+          // Now we need to find the team the current player is on
+          teams = game.child('team');
+          teams.forEach((team) => {
+            // Array of players on a team
+            let players = team.child('players');
+            players.forEach((player) => {
+              if(player.toJSON().toString() === this.authentication.auth.currentUser.uid) {
+                // We found the team the player is on
+                console.log("Redirecting to player screen");
+                window.location.assign('./player');
+                return;
+              }
+            });
+          });
+          if (!this.teamId) {
+            // We couldn't find the team the player was on
+            console.log("Redirecting to select team");
+            this.screen = Screen.TEAM_ID;
+            return;
+          }
         }
-      }));
-
-      // Ask the user for their Team ID
-      this.changeScreen(Screen.TEAM_ID);
+       });
+      });
+      if (!this.gameID) {
+        // We haven't found a game with the player in
+        console.log("Redirecting to game selection");
+        this.screen = Screen.GAME_ID;
+      }
     });
   }
 
@@ -146,13 +184,42 @@ export class LoginMainComponent implements OnInit {
   /**
    * Callback for adding the player's team ID.
    * @author galexite
+   * 
+   * Modified to make sure Firebase can recognise the 'players' as an Array on a new team.
+   * This had to be modified due to the way the "CheckTeam" method in player-main works.
+   * @author TomRHandcock
+   * @version 2
    */
   onJoinTeam() {
-    this.authentication.user.subscribe(user => {
-      this.db.database.ref('games/0/team/' + this.teamId + '/players/')
-        .push(user.uid)
-        .then(() => this.checkTeamAndRedirectPlayer(this.db))
-        .catch(error => alert('Couldn\'t add you to that team: ' + error));
+    // Get the player's list of the team the user inputted
+    this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players').once('value').then((data) => {
+      let currentCount = data.val();
+      // Get the index for the player in the players list
+      let index;
+      if (currentCount == null) {
+        // If it is empty start the list at 0
+        index = 0;
+      } else {
+        // Otherwise, get the length
+        index = currentCount.length;
+      }
+      // Insert the player into the team
+      this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index).set(this.authentication.auth.currentUser.uid).then(() => {
+        this.checkTeamAndRedirectPlayer(this.db);
+      });
+    });
+  }
+
+  /**
+   * Callback for joining a game
+   * @author TomRHandcock
+   */
+  onJoinGame() {
+    // Add the player to the game, once done, call the check team and redirect player method
+    this.db.database.ref('games/' + this.gameID + '/players/').push(this.authentication.auth.currentUser.uid).then(() => {
+      this.checkTeamAndRedirectPlayer(this.db);
+    }).catch((error) => {
+      alert('Unable to add you to the selected team, reason: ' + error);
     });
   }
 }
