@@ -105,7 +105,7 @@ export class PlayerMainComponent implements OnInit {
    */
   checkTeam(user: any) {
     // Check whether they are on a team or not
-    this.db.list('/team/').valueChanges().subscribe((teams) => {
+    this.db.list('games/0/team/').valueChanges().subscribe((teams) => {
       let isInTeam = false;
 
       teams.forEach((team: Team) => {
@@ -133,7 +133,7 @@ export class PlayerMainComponent implements OnInit {
         const tID: number = Number(input);
         const team: Team = teams[tID] as Team;
 
-        this.db.object('/team/' + tID + '/players/' + team.players.length).set(user.uid)
+        this.db.object('games/0/team/' + tID + '/players/' + team.players.length).set(user.uid)
           .catch((err) => {
             window.alert('A database error occurred! ' + err);
           })
@@ -174,7 +174,7 @@ export class PlayerMainComponent implements OnInit {
     }
 
     // Check each gamemaster id with this user's
-    this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
+    this.db.list('games/0/gameMaster/').valueChanges().subscribe((gamemasters) => {
       let gamemaster = false;
 
       gamemasters.forEach((item: string) => {
@@ -206,13 +206,13 @@ export class PlayerMainComponent implements OnInit {
    * @author TomRHandcock
    */
   updateLocation() {
-    this.db.database.ref('/location').once('value').then((data) => {
+    this.db.database.ref('games/0/location').once('value').then((data) => {
       if (data.val().length <= this.teamData.locationsCompleted) {
         // Team has finished the game
         this.finishedQuiz = true;
       } else {
         // Team hasn't finished the game
-        this.db.object('location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
+        this.db.object('games/0/location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
           this.currTarget = location as Location;
         });
       }
@@ -245,10 +245,10 @@ export class PlayerMainComponent implements OnInit {
 
     // Find out the teams current hints used
     let teamCurrentHints;
-    this.db.database.ref('/team/' + this.teamId + '/hintsUsed').once('value').then((hints) => {
+    this.db.database.ref('games/0/team/' + this.teamId + '/hintsUsed').once('value').then((hints) => {
       teamCurrentHints = hints.toJSON();
       // Add the hint used to the database
-      this.db.database.ref('/team/' + this.teamId + '/hintsUsed').set(teamCurrentHints + 1).then(() => {
+      this.db.database.ref('games/0/team/' + this.teamId + '/hintsUsed').set(teamCurrentHints + 1).then(() => {
         this.changeScreen(this.screens.HOME);
       });
     });
@@ -262,10 +262,10 @@ export class PlayerMainComponent implements OnInit {
   updatePlayerScore(addition: number) {
     let teamCurrentScore;
     // Find out the teams current score
-    this.db.database.ref('/team/' + this.teamId + '/score').once('value').then(data => {
+    this.db.database.ref('games/0/team/' + this.teamId + '/score').once('value').then(data => {
       teamCurrentScore = data.toJSON();
       // Add the score obtained from this round to the score in the database
-      this.db.database.ref('/team/' + this.teamId + '/score').set(teamCurrentScore + addition);
+      this.db.database.ref('games/0/team/' + this.teamId + '/score').set(teamCurrentScore + addition);
     });
   }
 
@@ -275,7 +275,7 @@ export class PlayerMainComponent implements OnInit {
    */
   getTeamStats() {
     // First, find the team's ID by looking for the player within a team
-    this.db.database.ref('/team/').once('value').then((snapshotData) => {
+    this.db.database.ref('games/0/team/').once('value').then((snapshotData) => {
       snapshotData.forEach((dataSnapshot) => {
         // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
         dataSnapshot.child('/players/').forEach((player) => {
@@ -293,7 +293,7 @@ export class PlayerMainComponent implements OnInit {
       }
 
       // Find out the teams current score
-      this.db.object('/team/' + this.teamId).valueChanges().subscribe((data) => {
+      this.db.object('games/0/team/' + this.teamId).valueChanges().subscribe((data) => {
         this.teamData = data;
         this.updateLocation();
       });
@@ -315,7 +315,7 @@ export class PlayerMainComponent implements OnInit {
     // Update the team's score
     this.teamData.score += finalScore;
     // Update the database values
-    this.db.database.ref('/team/' + this.teamData.ID).set(this.teamData);
+    this.db.database.ref('games/0/team/' + this.teamData.ID).set(this.teamData);
     // Update the location view
     this.updateLocation();
     // Go back home

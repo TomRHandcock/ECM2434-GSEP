@@ -11,7 +11,7 @@ export class ScoreboardComponent implements OnInit {
   teams: Array<any>;
 
   constructor(public db: AngularFireDatabase) {
-    this.db.list('/team/').valueChanges().subscribe((teams) => {
+    this.db.list('games/0/team/').valueChanges().subscribe((teams) => {
       this.teams = teams.sort(this.compare);
       console.log(this.teams);
     });

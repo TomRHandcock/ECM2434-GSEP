@@ -71,7 +71,7 @@ export class GamemasterMainComponent implements OnInit {
         // There is a user logged in
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
-        this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
+        this.db.list('games/0/gameMaster/').valueChanges().subscribe((gamemasters) => {
           gamemasters.forEach((item: string) => {
             if (loggedInUser.uid === item) {
               gamemaster = true;
@@ -101,7 +101,7 @@ export class GamemasterMainComponent implements OnInit {
     // This will loop through each location and get the questions
     const questions: {[loc: string]: Array<Question>} = {};
 
-    this.db.list('/location').valueChanges().subscribe((locations: Location[]) => {
+    this.db.list('games/0/location').valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
         questions[item.name] = item.questions || [];
       });
@@ -121,7 +121,7 @@ export class GamemasterMainComponent implements OnInit {
     const path = tableName.toString().toLowerCase();
 
     // Get the actual contents
-    this.db.list('/' + path + '/').valueChanges().subscribe((table) => {
+    this.db.list('games/0/' + path + '/').valueChanges().subscribe((table) => {
       switch (path) {
         case 'location':
           this.locations = table;
@@ -158,7 +158,7 @@ export class GamemasterMainComponent implements OnInit {
    * @author TomRHandcock
    */
   deleteTeam(id: number) {
-    this.db.object('/team/' + id).remove();
+    this.db.object('games/0/team/' + id).remove();
   }
 
   /**
@@ -197,7 +197,7 @@ export class GamemasterMainComponent implements OnInit {
    */
   addNewTeam() {
     const id = this.generateTeamID();
-    this.db.object('/team/' + id).set({
+    this.db.object('games/0/team/' + id).set({
       ID: id,
       name: '',
       score: 0,
@@ -215,7 +215,7 @@ export class GamemasterMainComponent implements OnInit {
    * @author AlexWesterman
    */
   addNewQuestion(locationName: string) {
-    const sub = this.db.list('/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
           this.addNewQuestionToLocation(index, item);
@@ -237,7 +237,7 @@ export class GamemasterMainComponent implements OnInit {
       location.questions = [];
     }
 
-    this.db.object('/location/' +  locationId + '/questions/' + location.questions.length).set({
+    this.db.object('games/0/location/' +  locationId + '/questions/' + location.questions.length).set({
       question: '',
       answer: {
         correct: '',
@@ -270,7 +270,7 @@ export class GamemasterMainComponent implements OnInit {
   getUsedIDs() {
     const usedIDs = [];
 
-    this.db.list('/team/').valueChanges().subscribe((table) => {
+    this.db.list('games/0/team/').valueChanges().subscribe((table) => {
       table.forEach((item: Team) => {
           usedIDs.push(item.ID);
       });
@@ -284,10 +284,10 @@ export class GamemasterMainComponent implements OnInit {
    * @author AlexWesterman
    */
   updateQuestion(locationName: string) {
-    const sub = this.db.list('/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
-          this.db.object('/location/' + index + '/questions/').set(this.questions[locationName]);
+          this.db.object('games/0/location/' + index + '/questions/').set(this.questions[locationName]);
           sub.unsubscribe();
         }
       });
@@ -303,7 +303,7 @@ export class GamemasterMainComponent implements OnInit {
   updateTeam(id) {
     this.teams.forEach(element => {
       if (element.ID === id) {
-        this.db.object('/team/' + element.ID).set(element);
+        this.db.object('games/0/team/' + element.ID).set(element);
       }
     });
   }

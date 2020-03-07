@@ -129,7 +129,7 @@ export class LoginMainComponent implements OnInit {
    * @author galexite
    */
   checkTeamAndRedirectPlayer(db: AngularFireDatabase) {
-    db.database.ref('/team/').once('value').then(dataSnapshot => {
+    db.database.ref('games/0/team/').once('value').then(dataSnapshot => {
       dataSnapshot.forEach(team => team.child('/players/').forEach(player => {
         if (player.toJSON().toString() ===
             this.authentication.auth.currentUser.uid) {
@@ -149,7 +149,7 @@ export class LoginMainComponent implements OnInit {
    */
   onJoinTeam() {
     this.authentication.user.subscribe(user => {
-      this.db.database.ref('/team/' + this.teamId + '/players/')
+      this.db.database.ref('games/0/team/' + this.teamId + '/players/')
         .push(user.uid)
         .then(() => this.checkTeamAndRedirectPlayer(this.db))
         .catch(error => alert('Couldn\'t add you to that team: ' + error));
