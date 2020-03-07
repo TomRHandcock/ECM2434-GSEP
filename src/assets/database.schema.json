@@ -4,106 +4,109 @@
   "title": "ExeMarksTheSpot",
   "type": "object",
   "properties": {
-    "gameMaster": {
-      "$comment": "key-value pairs where the key and value equal to the same user UID",
-      "type": "object"
-    },
-    "location": {
-      "$comment": "Locations for the teams to visit",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "$comment": "Description of the location",
-            "type": "string"
-          },
-          "hint": {
-            "$comment": "Hint text for helping players find the location",
-            "type": "string"
-          },
-          "latitude": {
-            "$comment": "The location's WGS-84 latitude in degrees",
-            "type": "number"
-          },
-          "longitude": {
-            "$comment": "The location's WGS-84 longitude in degrees",
-            "type": "number"
-          },
-          "name": {
-            "$comment": "Name of the location",
-            "type": "string"
-          },
-          "questions": {
-            "$comment": "An array of questions for the player to answer once they have scanned this location's QR code",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "answer": {
-                  "type": "object",
-                  "properties": {
-                    "correct": {
-                      "$comment": "The correct answer for this question",
-                      "type": "string"
-                    },
-                    "incorrect0": {
-                      "type": "string"
-                    },
-                    "incorrect1": {
-                      "type": "string"
-                    },
-                    "incorrect2": {
-                      "type": "string"
+    "games": {
+      "ID": "The ID/PIN number for the game",
+      "gameMaster": {
+        "$comment": "key-value pairs where the key and value equal to the same user UID",
+        "type": "object"
+      },
+      "location": {
+        "$comment": "Locations for the teams to visit",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "$comment": "Description of the location",
+              "type": "string"
+            },
+            "hint": {
+              "$comment": "Hint text for helping players find the location",
+              "type": "string"
+            },
+            "latitude": {
+              "$comment": "The location's WGS-84 latitude in degrees",
+              "type": "number"
+            },
+            "longitude": {
+              "$comment": "The location's WGS-84 longitude in degrees",
+              "type": "number"
+            },
+            "name": {
+              "$comment": "Name of the location",
+              "type": "string"
+            },
+            "questions": {
+              "$comment": "An array of questions for the player to answer once they have scanned this location's QR code",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "answer": {
+                    "type": "object",
+                    "properties": {
+                      "correct": {
+                        "$comment": "The correct answer for this question",
+                        "type": "string"
+                      },
+                      "incorrect0": {
+                        "type": "string"
+                      },
+                      "incorrect1": {
+                        "type": "string"
+                      },
+                      "incorrect2": {
+                        "type": "string"
+                      }
                     }
+                  },
+                  "question": {
+                    "$comment": "The question to ask the player",
+                    "type": "string"
                   }
-                },
-                "question": {
-                  "$comment": "The question to ask the player",
-                  "type": "string"
                 }
               }
             }
           }
         }
-      }
-    },
-    "team": {
-      "$comment": "Teams in the game",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "currentTarget": {
-            "$comment": "This team's current target location",
-            "type": "string"
-          },
-          "hintsUsed": {
-            "$comment": "How many hints this team has used",
-            "type": "number"
-          },
-          "locationsCompleted": {
-            "$comment": "Number of locations visited by the team",
-            "type": "number"
-          },
-          "name": {
-            "$comment": "The team name",
-            "type": "string"
-          },
-          "nextTarget": {
-            "$comment": "ID of the team's next location to visit",
-            "type": "number"
-          },
-          "players": {
-            "$comment": "User UIDs of players in this team",
-            "type": "array",
-            "items": {
+      },
+      "team": {
+        "$comment": "Teams in the game",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "currentTarget": {
+              "$comment": "This team's current target location",
               "type": "string"
+            },
+            "hintsUsed": {
+              "$comment": "How many hints this team has used",
+              "type": "number"
+            },
+            "locationsCompleted": {
+              "$comment": "Number of locations visited by the team",
+              "type": "number"
+            },
+            "name": {
+              "$comment": "The team name",
+              "type": "string"
+            },
+            "nextTarget": {
+              "$comment": "ID of the team's next location to visit",
+              "type": "number"
+            },
+            "players": {
+              "$comment": "User UIDs of players in this team",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "score": {
+              "$comment": "The team's current total score",
+              "type": "number"
             }
-          },
-          "score": {
-            "$comment": "The team's current total score",
-            "type": "number"
           }
         }
       }
