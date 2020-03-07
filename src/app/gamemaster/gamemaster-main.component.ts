@@ -73,8 +73,6 @@ export class GamemasterMainComponent implements OnInit {
         let gamemaster = false;
         this.db.list('/gameMaster/').valueChanges().subscribe((gamemasters) => {
           gamemasters.forEach((item: string) => {
-            console.log(loggedInUser.uid, item);
-            console.log(1);
             if (loggedInUser.uid === item) {
               gamemaster = true;
             }
@@ -232,8 +230,13 @@ export class GamemasterMainComponent implements OnInit {
    * Adds a new question to a location in the database
    * @param locationId - the location id
    * @param location - the location object
+   * @author AlexWesterman
    */
   addNewQuestionToLocation(locationId: number, location: Location) {
+    if (!location.questions) {
+      location.questions = [];
+    }
+
     this.db.object('/location/' +  locationId + '/questions/' + location.questions.length).set({
       question: '',
       answer: {
@@ -298,7 +301,6 @@ export class GamemasterMainComponent implements OnInit {
    * @author TomRHandcock, OGWSaunders
    */
   updateTeam(id) {
-    console.log(this.teams);
     this.teams.forEach(element => {
       if (element.ID === id) {
         this.db.object('/team/' + element.ID).set(element);
