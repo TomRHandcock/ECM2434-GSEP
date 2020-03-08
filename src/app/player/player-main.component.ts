@@ -109,14 +109,17 @@ export class PlayerMainComponent implements OnInit {
   checkTeam(user: any) {
     // Check whether they are on a team or not
     this.db.list('games/0/team/').valueChanges().subscribe((teams) => {
+      let currentTeam: Team;
       let isInTeam = false;
-
       teams.forEach((team: Team) => {
-        team.players.forEach((playerID) => {
-          if (user.uid === playerID) {
-            isInTeam = true;
-          }
-        });
+        try {
+          team.players.forEach((playerID) => {
+            if (user.uid === playerID.toString()) {
+              currentTeam = team;
+              isInTeam = true;
+            }
+          });
+        } catch (error) {}
       });
 
       // End as not necessary
@@ -133,14 +136,11 @@ export class PlayerMainComponent implements OnInit {
       }
 
       try {
-        const tID: number = Number(input);
-        const team: Team = teams[tID] as Team;
 
-        this.db.object('games/0/team/' + tID + '/players/' + team.players.length).set(user.uid)
+        this.db.object('games/0/team/' + currentTeam.ID + '/players/' + currentTeam.players.length).set(user.uid)
           .catch((err) => {
             window.alert('A database error occurred! ' + err);
-          })
-        ;
+        });
       } catch (e) {
         window.alert('Team ID must be a number and be an existing team!' + e);
         return;
@@ -298,6 +298,7 @@ export class PlayerMainComponent implements OnInit {
       // Find out the teams current score
       this.db.object('games/0/team/' + this.teamId).valueChanges().subscribe((data) => {
         this.teamData = data;
+        console.log(this.teamData);
         this.updateLocation();
       });
     });
