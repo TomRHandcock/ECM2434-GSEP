@@ -125,10 +125,9 @@ export class PlayerMainComponent implements OnInit {
 
       // End as not necessary
       if (isInTeam) {
-        console.log("Found team");
+        console.log('Found team');
         return;
-      }
-      else {
+      } else {
         window.location.assign('./login');
       }
     });
