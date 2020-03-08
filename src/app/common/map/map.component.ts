@@ -22,6 +22,12 @@ export class MapComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+  add(markerElem: HTMLDivElement, lat: number | any, lon: number | any) {
+    new mapboxgl.Marker(markerElem)
+      .setLngLat([lat, lon])
+      .addTo(this.map);
+  }
+
   /**
    * Runs when the view is rendered, adds the Mapbox map
    * @author TomRHandcock, galexite

@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
 import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {MapComponent} from '../common/map/map.component';
+import * as mapboxgl from 'mapbox-gl';
 
 enum Screen {
   NONE,
@@ -29,7 +31,7 @@ enum DatabaseTables {
   styleUrls: ['./gamemaster-main.component.scss']
 })
 
-export class GamemasterMainComponent implements OnInit {
+export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
    * Component for generating QR Codes
@@ -51,6 +53,8 @@ export class GamemasterMainComponent implements OnInit {
   sortIcon = faSort;
   mapIcon = faMapMarkerAlt;
   qrCodeIcon = faQrcode;
+
+  @ViewChildren(MapComponent) mapComponent: MapComponent;
 
   /**
    * Boolean for whether menu is shown on a screen
@@ -85,7 +89,7 @@ export class GamemasterMainComponent implements OnInit {
   /**
    * The list of lost teams that is shown in a dialog alert in game master
    */
-  lostTeams: string;
+  lostTeams: Array<any>;
 
   /**
    * Whether the QR Code dialog is shown for a location in locations screen
@@ -103,12 +107,11 @@ export class GamemasterMainComponent implements OnInit {
     this.qrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
+    this.lostTeams = [];
 
     this.questions = this.getQuestionsFromDatabase();
     this.getTableFromDatabase(DatabaseTables.Location);
     this.getTableFromDatabase(DatabaseTables.Team);
-
-    this.onLostPlayer();
    }
 
   /**
@@ -141,6 +144,14 @@ export class GamemasterMainComponent implements OnInit {
         window.location.assign('./login');
       }
     });
+  }
+
+  /**
+   * Starts the lost teams procedure, once the map has loaded
+   * @author AlexWesterman
+   */
+  ngAfterViewInit() {
+    this.onLostPlayer();
   }
 
   /**
@@ -262,16 +273,43 @@ export class GamemasterMainComponent implements OnInit {
 
   /**
    * Subscribes the table of lost teams to the game master component
-   *
+   * AlexWesterman - adjusted to use an Array representation for lostTeams
    * @author OGWSaunders
    */
   onLostPlayer() {
-    this.lostTeams = '';
     this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
-        this.lostTeams += 'Team ID:' + lostTeam.ID + ', Latitude: ' + lostTeam.lat + ', Longitude: ' + lostTeam.lon + '\n';
+        this.lostTeams.push(
+          {
+            ID: lostTeam.ID,
+            lat: lostTeam.lat,
+            lon: lostTeam.lon
+          }
+        );
+
+        // Lost players show up on gamemaster login
         this.displayLost = true;
       });
+
+      // Show lost players on the map, if there are any
+      if (this.lostTeams.length > 0) {
+        this.showLostPlayersOnMap();
+      }
+    });
+  }
+
+  /**
+   * Shows lost players on the overview map
+   * @author AlexWesterman
+   */
+  showLostPlayersOnMap() {
+    // Add each lost player as a marker
+    this.lostTeams.forEach((lostTeam) => {
+      const markerElem = document.createElement('div');
+      markerElem.className = 'marker';
+
+      // Getting 'add is not a function' error...
+      this.mapComponent.add(markerElem, lostTeam.lat, lostTeam.lon);
     });
   }
 

@@ -42,11 +42,11 @@
 <div class="container" [ngSwitch]="this.screen">
   <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
-    <app-map></app-map>
+    <app-map id="map"></app-map>
+    <!-- The lost alert popup (Author: OGWSanders) -->
     <div id="lostAlert" *ngIf="this.displayLost">
       <div id="lostAlertDisplay">
         <div id="titleLostDialog"><strong>A Team is Lost</strong></div>
-        <app-map></app-map>
         <div id="locationsText">Locations:<br/>{{this.lostTeams}}</div>
         <button class="button" (click)="this.displayLost = false">Close dialog</button>
       </div>
