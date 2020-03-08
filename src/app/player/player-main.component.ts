@@ -114,6 +114,7 @@ export class PlayerMainComponent implements OnInit {
       teams.forEach((team: Team) => {
         try {
           team.players.forEach((playerID) => {
+            console.log(playerID);
             if (user.uid === playerID.toString()) {
               currentTeam = team;
               isInTeam = true;
@@ -124,26 +125,11 @@ export class PlayerMainComponent implements OnInit {
 
       // End as not necessary
       if (isInTeam) {
+        console.log("Found team");
         return;
       }
-
-      // Ask the user for their team ID
-      const input: string = window.prompt('Please enter your team id: ');
-
-      // User declined
-      if (!input) {
-        return;
-      }
-
-      try {
-
-        this.db.object('games/0/team/' + currentTeam.ID + '/players/' + currentTeam.players.length).set(user.uid)
-          .catch((err) => {
-            window.alert('A database error occurred! ' + err);
-        });
-      } catch (e) {
-        window.alert('Team ID must be a number and be an existing team!' + e);
-        return;
+      else {
+        window.location.assign('./login');
       }
     });
   }

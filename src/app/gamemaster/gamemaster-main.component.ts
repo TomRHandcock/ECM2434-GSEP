@@ -475,15 +475,14 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
           locationID = location.key;
         }
       });
-      if(locationID) {
+      if (locationID) {
         // Found a matching location, update it
-        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((error) => {
-          console.error("Error whilst updating database: " + error);
+        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((dbError) => {
+          console.error('Error whilst updating database: ' + dbError);
         });
-      }
-      else {
+      } else {
         // Not found location, user needs to try again (most likely because the location name changed)
-        console.error("Could not match currently selected location in the database. Please try again");
+        console.error('Could not match currently selected location in the database. Please try again');
       }
     });
     this.displayLocDesc = false;
