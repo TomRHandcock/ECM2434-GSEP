@@ -89,9 +89,14 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   teams: Array<any>;
 
   /**
-   * The list of lost teams that is shown in a dialog alert in game master
+   * The list of lost teams that is shown on the map in game master
    */
   lostTeams: Array<any>;
+
+  /**
+   * The list of lost teams that is shown in a dialog alert in game master
+   */
+  lostTeamsText: string;
 
   /**
    * Whether the QR Code dialog is shown for a location in locations screen
@@ -289,6 +294,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author OGWSaunders
    */
   onLostPlayer() {
+    this.lostTeamsText = 'IDs: ';
     this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
         this.lostTeams.push(
@@ -298,6 +304,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
             lon: lostTeam.lon
           }
         );
+
+        // Add text to the dialog box
+        this.lostTeamsText += lostTeam.ID + ' ';
+        console.log(this.lostTeamsText);
 
         // Lost players show up on gamemaster login
         this.displayLost = true;

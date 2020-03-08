@@ -37,23 +37,39 @@
   </div>
 </nav>
 
-<!-- The container for a shown view (uses ngSwitch to change content as appropriate)
-     (Author: AlexWesterman) -->
+<!---------------------------------------------------------------------------
+  SCREEN CONTAINER
+
+  The container for a shown view
+  @author AlexWesterman
+---------------------------------------------------------------------------->
 <div class="container" [ngSwitch]="this.screen">
+
+  <!---------------------------------------------------------------------------
+    LOST POP UP
+
+    The pop up dialog for notifying the game master that a team is lost
+    @author OGWSaunders
+  ---------------------------------------------------------------------------->
   <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
     <app-map id="map"></app-map>
     <!-- The lost alert popup (Author: OGWSanders) -->
     <div id="lostAlert" *ngIf="this.displayLost">
       <div id="lostAlertDisplay">
-        <div id="titleLostDialog"><strong>A Team is Lost</strong></div>
-        <div id="locationsText">Locations:<br/>{{this.lostTeams}}</div>
+        <div id="titleLostDialog"><strong>Some teams have reported as lost</strong></div>
+        <div id="lostTeamText">Lost Teams:<br/>{{this.lostTeamsText}}</div>
         <button class="button" (click)="this.displayLost = false">Close dialog</button>
       </div>
     </div>
   </section>
 
-  <!-- The locations view (Author: AlexWesterman) -->
+  <!---------------------------------------------------------------------------
+    LOCATIONS
+
+    The screen for
+    @author AlexWesterman
+  ---------------------------------------------------------------------------->
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
     <table class="table questionTable is-fullwidth">
       <thead>
