@@ -5,6 +5,8 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {MapComponent} from '../common/map/map.component';
 import * as mapboxgl from 'mapbox-gl';
+import { LOCATION_INITIALIZED } from '@angular/common';
+import { error } from 'protractor';
 
 enum Screen {
   NONE,
@@ -95,6 +97,16 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * Whether the QR Code dialog is shown for a location in locations screen
    */
   displayLocQr = false;
+
+  /**
+   * Whether the location description dialog is shown
+   */
+  displayLocDesc = false;
+
+  /**
+   * The currently selected location
+   */
+  selectedLocation;
 
   /**
    * Whether the Lost Team dialog is shown in the overview screen
@@ -435,6 +447,46 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       longitude: 0,
       qrCode: ''
     };
+  }
+
+  /**
+   * This method is called when the user selects the "Edit Description" button
+   * for a location.
+   * @param location The location object which has been selected.
+   * @author TomRHandcock
+   */
+  editLocation(location) {
+    this.displayLocDesc = true;
+    this.selectedLocation = location;
+  }
+
+  /**
+   * This method is called when the user presses the "Submit" button in the
+   * edit location dialog of the game master.
+   * @author TomRHandcock
+   */
+  onSubmitEditLocation() {
+    // Find the location we should be editing
+    this.db.database.ref('games/0/location/').once('value').then((locations) => {
+      let locationID;
+      locations.forEach((location) => {
+        // If we find the location, take note of the location ID
+        if (location.child('name').toJSON().toString() === this.selectedLocation.name) {
+          locationID = location.key;
+        }
+      });
+      if(locationID) {
+        // Found a matching location, update it
+        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((error) => {
+          console.error("Error whilst updating database: " + error);
+        });
+      }
+      else {
+        // Not found location, user needs to try again (most likely because the location name changed)
+        console.error("Could not match currently selected location in the database. Please try again");
+      }
+    });
+    this.displayLocDesc = false;
   }
 
   /**

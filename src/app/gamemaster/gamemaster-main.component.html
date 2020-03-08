@@ -81,6 +81,7 @@
           </td>
           <td class="editCell">
             <fa-icon class="locationAction" (click)="this.displayLocQrCode(item.name)" [icon]="qrCodeIcon"></fa-icon>
+            <fa-icon class="locationAction" (click)="this.editLocation(item)" [icon]="editIcon"></fa-icon>
             <fa-icon class="locationAction" (click)="this.deleteLocation(this.numToString(item.name))" [icon]="deleteIcon"></fa-icon>
           </td>
         </tr>
@@ -96,6 +97,14 @@
         <button id="locCopyId" class="button" (click)="this.copyText(this.qrData);">Text String: {{this.qrData}}</button>
         <button class="button" (click)="this.saveQrCode()">Save image</button>
         <button class="button" (click)="this.displayLocQr = false">Close dialog</button>
+      </div>
+    </div>
+
+    <div id="descriptionHolder" *ngIf="this.displayLocDesc">
+      <div id="locationDescDisplay">
+        <h1 class="title is-4">Edit Description</h1>
+        <textarea [(ngModel)]="this.selectedLocation.description" cols="30" rows="10"></textarea>
+        <button class="button" (click)="this.onSubmitEditLocation()">Submit</button>
       </div>
     </div>
   </section>
