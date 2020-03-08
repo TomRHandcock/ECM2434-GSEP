@@ -14,7 +14,7 @@
     <div class="navbar-end">
       <a class="navbar-item" *ngIf="this.isAGamemaster;" style="color:green" (click)="this.goToGamemaster();">Gamemaster Control</a>
       <a class="navbar-item" (click)="this.changeScreen(this.screens.PROGRESS); showMenu = false">Our Progress</a>
-      <a class="navbar-item" style="color:red">I'm Lost</a>
+      <a class="navbar-item" (click)="this.changeScreen(this.screens.IM_LOST); showMenu = false">I'm Lost</a>
       <a class="navbar-item" style="color:red">Help and Support</a>
       <a class="navbar-item" style="color:red">Settings</a>
       <a class="navbar-item" (click)="signOut()">Sign out</a>
@@ -28,13 +28,14 @@
 
     This is the first screen the user sees, presents the map, next location and
     clue information
-    @author galexite, AlexWesterman
+    @author galexite, AlexWesterman, OGWSaunders
   ---------------------------------------------------------------------------->
   <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
     <section class="element map-section" id="mapSection">
       <app-map class="flex-grow"></app-map>
     </section>
+
     <!-- The description of the next location -->
     <section class="element" id="clueSection">
       <div>
@@ -88,6 +89,7 @@
         <h1 class="title is-1">Your Current Progress</h1>
       </div>
     </div>
+
     <!-- The table of entries -->
     <div class="columns">
       <table class="table column is-full flex-grow">
@@ -140,6 +142,45 @@
 
 
   <!---------------------------------------------------------------------------
+    I'M LOST
+
+    The screen for a user to report that they are lost to the gamemaster
+    @author OGWSaunders
+  ---------------------------------------------------------------------------->
+  <main *ngSwitchCase="this.screens.IM_LOST" class="container imLost-container has-navbar-fixed-top">
+    <!-- The title section -->
+    <div class="columns">
+      <div class="column is-full">
+        <h1 class="title is-1">If you are lost, please click the button below and someone will come to find you.</h1>
+      </div>
+    </div>
+    
+    <!-- A button to report to the gamemaster a player's current location -->
+    <br/>
+    <div role="button" class="is-primary button" id="imLostBack" (click)="getLostLocation()">
+      <span class="icon is-small">
+        <fa-icon [icon]="lostIcon"></fa-icon>
+      </span>
+      <span> Report location to <strong>game master</strong></span>
+    </div>
+    <div>
+      <span>*Try to position yourself in an area where you can be spotted easily, and remain with your group.</span>
+    </div>
+
+    <!-- A button to return to the home view -->
+    <div role="button" class="is-primary button" id="imLostBack" (click)="this.changeScreen(this.screens.HOME);">
+      <span class="icon is-small">
+        <fa-icon [icon]="homeIcon"></fa-icon>
+      </span>
+      <span>Back to Home</span>
+    </div>
+
+    <!-- Inform user that their location has been sent to the game master -->
+    <div id="locationReported"></div>
+  </main>
+
+
+  <!---------------------------------------------------------------------------
     QUIZ
 
     The answer screen (Author: AlexWesterman, TomRHandcock)
@@ -153,6 +194,7 @@
     [teamId]="teamId"
     class="container has-navbar-fixed-top">
   </app-quiz>
+
 
   <!---------------------------------------------------------------------------
     FINISHED GAME DIALOG

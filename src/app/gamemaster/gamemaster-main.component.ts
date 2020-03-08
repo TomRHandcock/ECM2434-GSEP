@@ -18,7 +18,8 @@ enum DatabaseTables {
   Player = 'player',
   Location = 'location',
   Gamemaster = 'gamemaster',
-  Team = 'team'
+  Team = 'team',
+  Lost = 'lost'
 }
 
 
@@ -29,9 +30,21 @@ enum DatabaseTables {
 })
 
 export class GamemasterMainComponent implements OnInit {
+
+  /**
+   * Component for generating QR Codes
+   */
   qrComponent: QRCodeComponent = null;
+
+  /**
+   * The qr code data that holds a location as a random number
+   */
   qrData: string = null;
 
+
+  /**
+   * Icons for buttons and actions
+   */
   plusIcon = faPlus;
   editIcon = faPen;
   deleteIcon = faTrashAlt;
@@ -39,14 +52,50 @@ export class GamemasterMainComponent implements OnInit {
   mapIcon = faMapMarkerAlt;
   qrCodeIcon = faQrcode;
 
+  /**
+   * Boolean for whether menu is shown on a screen
+   */
   showMenu = false;
+
+  /**
+   * The set of screens in game master view
+   */
   Screens = Screen;
+
+  /**
+   * The current screen that is in view
+   */
   screen: Screen;
 
+  /**
+   * The list of questions for the questions screen
+   */
   questions: { [loc: string]: Array<Question> };
+
+  /**
+   * The list of locations for the locations screen
+   */
   locations: Array<any>;
+
+  /**
+   * The list of teams for the teams screen
+   */
   teams: Array<any>;
+
+  /**
+   * The list of lost teams that is shown in a dialog alert in game master
+   */
+  lostTeams: string;
+
+  /**
+   * Whether the QR Code dialog is shown for a location in locations screen
+   */
   displayLocQr = false;
+
+  /**
+   * Whether the Lost Team dialog is shown in the overview screen
+   */
+  displayLost = false;
 
   constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
     // myQrData is shown on the Code
@@ -58,6 +107,8 @@ export class GamemasterMainComponent implements OnInit {
     this.questions = this.getQuestionsFromDatabase();
     this.getTableFromDatabase(DatabaseTables.Location);
     this.getTableFromDatabase(DatabaseTables.Team);
+
+    this.onLostPlayer();
    }
 
   /**
@@ -206,6 +257,21 @@ export class GamemasterMainComponent implements OnInit {
       nextTarget: '',
       hintsUsed: 0,
       locationsCompleted: 0
+    });
+  }
+
+  /**
+   * Subscribes the table of lost teams to the game master component
+   *
+   * @author OGWSaunders
+   */
+  onLostPlayer() {
+    this.lostTeams = '';
+    this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
+      lost.forEach((lostTeam: Lost) => {
+        this.lostTeams += 'Team ID:' + lostTeam.ID + ', Latitude: ' + lostTeam.lat + ', Longitude: ' + lostTeam.lon + '\n';
+        this.displayLost = true;
+      });
     });
   }
 
@@ -401,13 +467,15 @@ export class GamemasterMainComponent implements OnInit {
   }
 }
 
+/**
+ * This class creates QR Codes and allows them to be referenced via myQRData.
+ * @author OGWSaunders
+ */
 export class QRCodeComponent {
   public myQrData = 'default';
   randInteger: number = null;
 
   constructor() {
-    // Debug: console.log("Reached QRCode Constructor");
-
     this.createQrCode(999999999);
     this.myQrData = '[' + (this.randInteger).toString() + ']';
   }
@@ -460,4 +528,10 @@ export class Team {
   name: string;
   score: number;
   players: Player[];
+}
+
+export class Lost {
+  ID: number;
+  lat: number;
+  lon: number;
 }

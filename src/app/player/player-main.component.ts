@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 
-import {faCamera, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
+import {faCamera, faGlobe, faHome, faCompass} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {Location, Team} from '../gamemaster/gamemaster-main.component';
@@ -10,7 +10,9 @@ enum Screen {
   ANSWER_QS,
   HOME,
   PROGRESS,
-  QR_SCANNER
+  QR_SCANNER,
+  IM_LOST,
+  SETTINGS
 }
 
 @Component({
@@ -23,6 +25,7 @@ export class PlayerMainComponent implements OnInit {
   scanQrCodeIcon = faCamera;
   visitWebsiteIcon = faGlobe;
   homeIcon = faHome;
+  lostIcon = faCompass;
 
   screens = Screen;
   screen;
@@ -335,4 +338,32 @@ export class PlayerMainComponent implements OnInit {
       this.changeScreen(Screen.HOME);
     }
   }
+
+  /**
+   * Places the location of the current user in the lost section of the database, with
+   * the team ID as reference to which team is reporting as being lost.
+   *
+   * @author OGWSaunders
+   */
+  getLostLocation() {
+    let lat;
+    let lon;
+    navigator.geolocation.getCurrentPosition((position) => {
+      lat = position.coords.latitude;
+      lon = position.coords.longitude;
+      this.db.database.ref('games/0/lost/' + this.teamData.ID).set({
+        ID: this.teamId,
+        lat,
+        lon
+      });
+    });
+
+    document.getElementById('locationReported').innerHTML = '\
+      <div style="background-color:white;">\
+        <strong style="color:red;">\
+          Your location has been reported. Please remain where you are and stay visible.\
+        </strong>\
+      </div>';
+  }
+
 }
