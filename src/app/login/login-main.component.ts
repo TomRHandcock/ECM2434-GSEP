@@ -28,7 +28,7 @@ export class LoginMainComponent implements OnInit {
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
   teamId = '';
-  gameID: string;
+  gameId: string;
 
   constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase, private router: Router) {
     this.screen = Screen.LOGIN;
@@ -42,7 +42,7 @@ export class LoginMainComponent implements OnInit {
     // This function will redirect an already logged in user to the player screen
     this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {
-        this.checkTeamAndRedirectPlayer(this.db);
+        this.changeScreen(Screen.GAME_ID);
       }
     });
   }
@@ -145,7 +145,7 @@ export class LoginMainComponent implements OnInit {
          // We find if they are in that game
          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
            // We found the current user in this game
-           this.gameID = game.child('ID').toJSON().toString();
+           this.gameId = game.child('ID').toJSON().toString();
            // Now we need to find the team the current player is on
            teams = game.child('team');
            teams.forEach((team) => {
@@ -155,7 +155,7 @@ export class LoginMainComponent implements OnInit {
                if (teamPlayer.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
                  // We found the team the player is on
                  console.log('Redirecting to player screen');
-                 this.router.navigate(['/player']);
+                 this.router.navigate(['/game', this.gameId]);
                  return;
                }
              });
@@ -169,7 +169,7 @@ export class LoginMainComponent implements OnInit {
          }
        });
       });
-      if (!this.gameID) {
+      if (!this.gameId) {
         // We haven't found a game with the player in
         console.log('Redirecting to game selection');
         this.screen = Screen.GAME_ID;
@@ -187,15 +187,15 @@ export class LoginMainComponent implements OnInit {
    * @version 2
    */
   onJoinTeam() {
-    this.db.database.ref('games/' + this.gameID + '/team/').once('value')
+    this.db.database.ref('games/' + this.gameId + '/team/').once('value')
     .then(snapshot => {
       if (!snapshot.child(this.teamId).exists()) {
         alert('This team does not exist!');
       } else {
         // Team exists, add the player to the team
         // Get the player's list of the team the user inputted
-        this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId +
-        '/players').once('value').then((data) => {
+        this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId +
+          '/players').once('value').then((data) => {
           const currentCount = data.val();
           // Get the index for the player in the players list
           let index;
@@ -207,7 +207,7 @@ export class LoginMainComponent implements OnInit {
             index = currentCount.length;
           }
           // Insert the player into the team
-          this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index)
+          this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId + '/players/' + index)
             .set(this.afAuth.auth.currentUser.uid).then(() => {
             this.checkTeamAndRedirectPlayer(this.db);
           });
@@ -222,7 +222,7 @@ export class LoginMainComponent implements OnInit {
    */
   onJoinGame() {
     // Add the player to the game, once done, call the check team and redirect player method
-    this.db.database.ref('games/' + this.gameID + '/players/').push(this.afAuth.auth.currentUser.uid).then(() => {
+    this.db.database.ref('games/' + this.gameId + '/players/').push(this.afAuth.auth.currentUser.uid).then(() => {
       this.checkTeamAndRedirectPlayer(this.db);
     }).catch((error) => {
       alert('Unable to add you to the selected team, reason: ' + error);
@@ -248,7 +248,7 @@ export class LoginMainComponent implements OnInit {
           score: 0
         }]
       })
-      .then(() => this.router.navigate(['/gamemaster']))
+      .then(data => this.router.navigate(['/game', data.key, 'gamemaster']))
       .catch(error => alert('Couldn\'t create your game! Try reloading the page. Error: ' + error));
   }
 }

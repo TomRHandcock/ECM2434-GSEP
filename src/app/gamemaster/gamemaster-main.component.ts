@@ -1,12 +1,10 @@
-import {AfterViewInit, Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
-import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {faMapMarkerAlt, faPen, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {Router} from '@angular/router';
-import {MapComponent} from '../common/map/map.component';
-import * as mapboxgl from 'mapbox-gl';
-import { LOCATION_INITIALIZED } from '@angular/common';
-import { error } from 'protractor';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location, Lost, Question, Team} from '../database.schema';
+import {map} from 'rxjs/operators';
 
 enum Screen {
   NONE,
@@ -16,16 +14,6 @@ enum Screen {
   TEAMS,
   QR
 }
-
-// All the keys in the database
-enum DatabaseTables {
-  Player = 'player',
-  Location = 'location',
-  Gamemaster = 'gamemaster',
-  Team = 'team',
-  Lost = 'lost'
-}
-
 
 @Component({
   selector: 'app-gamemaster-main',
@@ -49,7 +37,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * Icons for buttons and actions
    */
-  plusIcon = faPlus;
   editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
@@ -60,6 +47,11 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * Boolean for whether menu is shown on a screen
    */
   showMenu = false;
+
+  /**
+   * The game the user is editing.
+   */
+  gameId = '';
 
   /**
    * The set of screens in game master view
@@ -121,32 +113,40 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   displayLost = false;
 
-  constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
-    // myQrData is shown on the Code
-    this.qrComponent = new QRCodeComponent();
-    this.qrData = this.qrComponent.myQrData;
-
+  constructor(private activatedRoute: ActivatedRoute,
+              private afAuth: AngularFireAuth,
+              private db: AngularFireDatabase,
+              private router: Router) {
     this.screen = this.Screens.NONE;
     this.lostTeams = [];
     this.lostTeamsMarkers = [];
 
     this.questions = this.getQuestionsFromDatabase();
-    this.getTableFromDatabase(DatabaseTables.Location);
-    this.getTableFromDatabase(DatabaseTables.Team);
-   }
+    this.getTableFromDatabase(Location.tableName);
+    this.getTableFromDatabase(Team.tableName);
+  }
+
+  ngOnInit() {
+    // Get the gameId from the current route.
+    const gameIdObservable = this.activatedRoute.paramMap.pipe(map(p => p.get('id')));
+    gameIdObservable.subscribe(id => {
+      this.gameId = id;
+      this.checkUser();
+    });
+  }
 
   /**
    * Called on construction
    * Checks that the user is authorised to be in the gamemaster view, or kicks them out
    * @author TomRHandcock
    */
-  ngOnInit() {
-    this.auth.auth.onAuthStateChanged((loggedInUser) => {
+  checkUser() {
+    this.afAuth.auth.onAuthStateChanged((loggedInUser) => {
       if (loggedInUser) {
         // There is a user logged in
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
-        this.db.list('games/0/gameMaster/').valueChanges().subscribe((gamemasters) => {
+        this.db.list(`games/${this.gameId}/gameMaster/`).valueChanges().subscribe((gamemasters) => {
           gamemasters.forEach((item: string) => {
             if (loggedInUser.uid === item) {
               gamemaster = true;
@@ -154,7 +154,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
           });
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
-            window.location.assign('./player');
+            this.router.navigate(['/game', this.gameId]);
           } else {
             // User is a gamemaster, load the UI
             this.changeScreen(this.Screens.OVERVIEW);
@@ -162,7 +162,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
         });
       } else {
         // No user is logged in, redirect them to login page
-        window.location.assign('./login');
+        this.router.navigate(['/login']);
       }
     });
   }
@@ -184,7 +184,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     // This will loop through each location and get the questions
     const questions: {[loc: string]: Array<Question>} = {};
 
-    this.db.list('games/0/location').valueChanges().subscribe((locations: Location[]) => {
+    this.db.list(`games/${this.gameId}/location`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
         questions[item.name] = item.questions || [];
       });
@@ -199,7 +199,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    * @author TomRHandcock
    */
-  getTableFromDatabase(tableName: DatabaseTables) {
+  getTableFromDatabase(tableName: string) {
     // Get the path for the table
     const path = tableName.toString().toLowerCase();
 
@@ -232,7 +232,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author George White
    */
   signOut() {
-    this.auth.auth.signOut().then(() => this.router.navigate(['login']));
+    this.afAuth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 
   /**
@@ -241,7 +241,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock
    */
   deleteTeam(id: number) {
-    this.db.object('games/0/team/' + id).remove();
+    this.db.object(`games/${this.gameId}/team/` + id).remove();
   }
 
   /**
@@ -280,7 +280,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   addNewTeam() {
     const id = this.generateTeamID();
-    this.db.object('games/0/team/' + id).set({
+    this.db.object(`games/${this.gameId}/team/` + id).set({
       ID: id,
       name: '',
       score: 0,
@@ -299,7 +299,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   onLostPlayer() {
     this.lostTeamsText = 'IDs: ';
-    this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
+    this.db.list(`games/${this.gameId}/lost/`).valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
         this.lostTeams.push(
           {
@@ -340,7 +340,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewQuestion(locationName: string) {
-    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list(`games/${this.gameId}/location/`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
           this.addNewQuestionToLocation(index, item);
@@ -362,7 +362,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       location.questions = [];
     }
 
-    this.db.object('games/0/location/' +  locationId + '/questions/' + location.questions.length).set({
+    this.db.object(`games/${this.gameId}/location/` + locationId + '/questions/' + location.questions.length).set({
       question: '',
       answer: {
         correct: '',
@@ -395,9 +395,9 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   getUsedIDs() {
     const usedIDs = [];
 
-    this.db.list('games/0/team/').valueChanges().subscribe((table) => {
+    this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((table) => {
       table.forEach((item: Team) => {
-          usedIDs.push(item.ID);
+        usedIDs.push(item.ID);
       });
     });
     return usedIDs;
@@ -409,10 +409,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   updateQuestion(locationName: string) {
-    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list(`games/${this.gameId}/location/`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
-          this.db.object('games/0/location/' + index + '/questions/').set(this.questions[locationName]);
+          this.db.object(`games/${this.gameId}/location/` + index + '/questions/').set(this.questions[locationName]);
           sub.unsubscribe();
         }
       });
@@ -421,7 +421,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   updateLocation(locationID: number) {
     console.log(locationID);
-    this.db.object('games/0/location/' + locationID + '/').set(this.locations[locationID]);
+    this.db.object(`games/${this.gameId}/location/` + locationID + '/').set(this.locations[locationID]);
   }
 
   /**
@@ -432,7 +432,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   updateTeam(id) {
     this.teams.forEach(element => {
       if (element.ID === id) {
-        this.db.object('games/0/team/' + element.ID).set(element);
+        this.db.object(`games/${this.gameId}/team/` + element.ID).set(element);
       }
     });
   }
@@ -447,7 +447,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const locIndex: number = this.locations.map((e) => e.name).indexOf(location);
     this.locations.splice(locIndex, 1);
 
-    this.db.object('games/0/location/' + locIndex + '/').remove();
+    this.db.object(`games/${this.gameId}/location/` + locIndex + '/').remove();
   }
 
   /**
@@ -465,7 +465,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       description: ''
     };
 
-    this.db.object('games/0/location/' + this.locations.length).set(newLocation);
+    this.db.object(`games/${this.gameId}/location/` + this.locations.length).set(newLocation);
 
     this.locations.push(newLocation);
   }
@@ -488,7 +488,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   onSubmitEditLocation() {
     // Find the location we should be editing
-    this.db.database.ref('games/0/location/').once('value').then((locations) => {
+    this.db.database.ref(`games/${this.gameId}/location/`).once('value').then((locations) => {
       let locationID;
       locations.forEach((location) => {
         // If we find the location, take note of the location ID
@@ -498,7 +498,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       });
       if (locationID) {
         // Found a matching location, update it
-        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((dbError) => {
+        this.db.database.ref(`games/${this.gameId}/location/` + locationID).set(this.selectedLocation).catch((dbError) => {
           console.error('Error whilst updating database: ' + dbError);
         });
       } else {
@@ -516,14 +516,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   generateQRCode() {
     this.qrComponent = new QRCodeComponent();
     this.qrData = this.qrComponent.myQrData;
-  }
-
-  /**
-   * Redirects to the player view
-   * @author AlexWesterman
-   */
-  gotoPlayerView() {
-    window.location.assign('./player');
   }
 
   /**
@@ -601,47 +593,4 @@ export class QRCodeComponent {
   createQrCode(maxNum: number) {
     this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
-}
-
-// Class definitions, relating to the database
-export class User {
-  ID: string;
-
-  constructor(ID: string) {
-    this.ID = ID;
-  }
-}
-
-export class GameMaster extends User {
-}
-
-export class Player extends User {
-}
-
-export class Location {
-  latitude: number;
-  longitude: number;
-  name: string;
-  qrCode: string;
-  questions: Question[];
-  description: string;
-  hint: string;
-}
-
-export class Question {
-  question: string;
-  answer: { [ans: string]: any };
-}
-
-export class Team {
-  ID: number;
-  name: string;
-  score: number;
-  players: Player[];
-}
-
-export class Lost {
-  ID: number;
-  lat: number;
-  lon: number;
 }

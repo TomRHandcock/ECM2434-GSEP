@@ -12,7 +12,8 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
-      <a class="navbar-item" *ngIf="isAGamemaster" style="color:green" (click)="goToGamemaster()">Gamemaster Control</a>
+      <a *ngIf="isAGamemaster" [routerLink]="['/game', gameId, 'gamemaster']" class="navbar-item" style="color:green">Gamemaster
+        Control</a>
       <a class="navbar-item" (click)="changeScreen(screens.PROGRESS); showMenu = false">Our Progress</a>
       <a class="navbar-item" (click)="changeScreen(screens.IM_LOST); showMenu = false">I'm Lost</a>
       <a class="navbar-item" (click)="signOut()">Sign out</a>

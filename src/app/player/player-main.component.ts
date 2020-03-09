@@ -2,17 +2,17 @@ import {Component, OnInit} from '@angular/core';
 
 import {faCamera, faCompass, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {Router} from '@angular/router';
-import {Location, Team} from '../gamemaster/gamemaster-main.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location, Team, User} from '../database.schema';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {map} from 'rxjs/operators';
 
 enum Screen {
   ANSWER_QS,
   HOME,
   PROGRESS,
   QR_SCANNER,
-  IM_LOST,
-  SETTINGS
+  IM_LOST
 }
 
 @Component({
@@ -28,16 +28,22 @@ export class PlayerMainComponent implements OnInit {
   lostIcon = faCompass;
 
   screens = Screen;
-  screen;
-  user;
-  teamId: string;
-  teamData;
-  finishedQuiz = false;
+  screen = Screen.HOME;
 
   /**
-   * Object ID on the Firebase database for the current location.
+   * Current game ID. Taken from the route.
    */
-  currTargetId = 0;
+  gameId = '';
+
+  /**
+   * This player's team ID.
+   */
+  teamId = '';
+
+  /**
+   * The player's team data.
+   */
+  teamData;
 
   /**
    * Next location for the player to reach.
@@ -52,7 +58,7 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Whether or not the player is a gamemaster (and thus whether they should have access to the gamemaster UI)
    */
-  isAGamemaster: boolean;
+  isAGamemaster = false;
 
   /**
    * Whether or not to show the menu on a mobile device.
@@ -64,17 +70,31 @@ export class PlayerMainComponent implements OnInit {
    */
   locationReported = false;
 
-  constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
-    this.screen = this.screens.HOME;
-    this.user = null;
-    this.isAGamemaster = null;
+  /**
+   * Has the player finished the quiz yet?
+   */
+  finishedQuiz = false;
+
+  constructor(private activatedRoute: ActivatedRoute,
+              private afAuth: AngularFireAuth,
+              private db: AngularFireDatabase,
+              private router: Router) {
+  }
+
+  ngOnInit() {
+    // Get the gameId from the current route.
+    const gameIdObservable = this.activatedRoute.paramMap.pipe(map(p => p.get('id')));
+    gameIdObservable.subscribe(id => {
+      this.gameId = id;
+      this.checkUser();
+    });
   }
 
   /**
    * Runs when the page is loaded
    * @author AlexWesterman
    */
-  ngOnInit() {
+  checkUser() {
     // This function will redirect an already logged in user to the player screen
     this.afAuth.auth.onAuthStateChanged((user: any) => {
       if (user) {
@@ -84,15 +104,7 @@ export class PlayerMainComponent implements OnInit {
     });
 
     // Set some default values to stop the console errors screaming at you
-    this.teamData = {
-      ID: 0,
-      name: '',
-      score: 0,
-      hintsUsed: 0,
-      locationsCompleted: 0,
-      currentTarget: 0,
-      nextTarget: 0
-    };
+    this.teamData = new Team();
     // Then get the actual values
     this.getTeamStats();
   }
@@ -113,12 +125,12 @@ export class PlayerMainComponent implements OnInit {
    */
   checkTeam(user: any) {
     // Check whether they are on a team or not
-    this.db.list('games/0/team/').valueChanges().subscribe((teams) => {
+    this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((teams) => {
       let currentTeam: Team;
       let isInTeam = false;
       teams.forEach((team: Team) => {
         try {
-          team.players.forEach((playerID) => {
+          team.players.forEach((playerID: User) => {
             console.log(playerID);
             if (user.uid === playerID.toString()) {
               currentTeam = team;
@@ -133,7 +145,7 @@ export class PlayerMainComponent implements OnInit {
         console.log('Found team');
         return;
       } else {
-        window.location.assign('./login');
+        this.router.navigate(['/login']);
       }
     });
   }
@@ -167,7 +179,7 @@ export class PlayerMainComponent implements OnInit {
     }
 
     // Check each gamemaster id with this user's
-    this.db.list('games/0/gameMaster/').valueChanges().subscribe((gamemasters) => {
+    this.db.list(`games/${this.gameId}/gameMaster/`).valueChanges().subscribe((gamemasters) => {
       let gamemaster = false;
 
       gamemasters.forEach((item: string) => {
@@ -181,33 +193,20 @@ export class PlayerMainComponent implements OnInit {
   }
 
   /**
-   * Redirects to the gamemaster view, if the user is a gamemaster
-   * An alert will pop up if they are not authorised
-   * @author AlexWesterman
-   */
-  goToGamemaster() {
-    if (this.isAGamemaster) {
-      window.location.assign('./gamemaster');
-    } else {
-      window.alert('You are not authorised to go to the gamemaster control view!');
-    }
-  }
-
-  /**
    * Sets the location variables (such as description) to the player view
    * @author AlexWesterman
    * @author TomRHandcock
    */
   updateLocation() {
-    this.db.database.ref('games/0/location').once('value').then((data) => {
+    this.db.database.ref(`games/${this.gameId}/location`).once('value').then((data) => {
       if (data.val().length <= this.teamData.locationsCompleted) {
         // Team has finished the game
         this.finishedQuiz = true;
       } else {
         // Team hasn't finished the game
-        this.db.object('games/0/location/' + this.teamData.nextTarget).valueChanges().subscribe((location) => {
-          this.currTarget = location as Location;
-        });
+        this.db.object(`games/${this.gameId}/location/${this.teamData.nextTarget}`)
+          .valueChanges()
+          .subscribe(location => this.currTarget = location as Location);
       }
     });
   }
@@ -238,10 +237,10 @@ export class PlayerMainComponent implements OnInit {
 
     // Find out the teams current hints used
     let teamCurrentHints;
-    this.db.database.ref('games/0/team/' + this.teamId + '/hintsUsed').once('value').then((hints) => {
+    this.db.database.ref(`games/${this.gameId}/team/${this.teamId}/hintsUsed`).once('value').then((hints) => {
       teamCurrentHints = hints.toJSON();
       // Add the hint used to the database
-      this.db.database.ref('games/0/team/' + this.teamId + '/hintsUsed').set(teamCurrentHints + 1).then(() => {
+      this.db.database.ref(`games/${this.gameId}/team/${this.teamId}/hintsUsed`).set(teamCurrentHints + 1).then(() => {
         this.changeScreen(this.screens.HOME);
       });
     });
@@ -255,10 +254,10 @@ export class PlayerMainComponent implements OnInit {
   updatePlayerScore(addition: number) {
     let teamCurrentScore;
     // Find out the teams current score
-    this.db.database.ref('games/0/team/' + this.teamId + '/score').once('value').then(data => {
+    this.db.database.ref(`games/${this.gameId}/team/${this.teamId}/score`).once('value').then(data => {
       teamCurrentScore = data.toJSON();
       // Add the score obtained from this round to the score in the database
-      this.db.database.ref('games/0/team/' + this.teamId + '/score').set(teamCurrentScore + addition);
+      this.db.database.ref(`games/${this.gameId}/team/${this.teamId}/score`).set(teamCurrentScore + addition);
     });
   }
 
@@ -268,7 +267,7 @@ export class PlayerMainComponent implements OnInit {
    */
   getTeamStats() {
     // First, find the team's ID by looking for the player within a team
-    this.db.database.ref('games/0/team/').once('value').then((snapshotData) => {
+    this.db.database.ref(`games/${this.gameId}/team/`).once('value').then((snapshotData) => {
       snapshotData.forEach((dataSnapshot) => {
         // Iterate through the players on the team, find out if the current UID and any of the team UIDs match
         dataSnapshot.child('/players/').forEach((player) => {
@@ -286,7 +285,7 @@ export class PlayerMainComponent implements OnInit {
       }
 
       // Find out the teams current score
-      this.db.object('games/0/team/' + this.teamId).valueChanges().subscribe((data) => {
+      this.db.object(`games/${this.gameId}/team/${this.teamId}`).valueChanges().subscribe((data) => {
         this.teamData = data;
         console.log(this.teamData);
         this.updateLocation();
@@ -309,7 +308,7 @@ export class PlayerMainComponent implements OnInit {
     // Update the team's score
     this.teamData.score += finalScore;
     // Update the database values
-    this.db.database.ref('games/0/team/' + this.teamData.ID).set(this.teamData);
+    this.db.database.ref(`games/${this.gameId}/team/${this.teamData.ID}`).set(this.teamData);
     // Update the location view
     this.updateLocation();
     // Go back home
@@ -340,7 +339,7 @@ export class PlayerMainComponent implements OnInit {
     navigator.geolocation.getCurrentPosition(position => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-      this.db.database.ref('games/0/lost/' + this.teamData.ID).set({
+      this.db.database.ref(`games/${this.gameId}/lost/${this.teamData.ID}`).set({
         ID: this.teamId,
         lat,
         lon
