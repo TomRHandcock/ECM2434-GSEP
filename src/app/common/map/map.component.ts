@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 
@@ -10,6 +10,8 @@ import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-
 export class MapComponent implements OnInit, AfterViewInit {
 
   map: mapboxgl.Map;
+  @Input() markers: Array<any>;
+
 
   /**
    * Full screen button that floats top-right of the map.
@@ -39,6 +41,22 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     // Add the campus building GeoJSON dataset
     this.map.on('load', () => this.onMapLoad(this.map));
+
+    this.markers.forEach((center) => {
+      const markerElem = document.createElement('div');
+      markerElem.className = 'marker';
+      markerElem.style.width = '20px';
+      markerElem.style.height = '20px';
+      markerElem.style.backgroundColor = 'red';
+      markerElem.style.borderRadius = '50%';
+      markerElem.style.backgroundSize = 'cover';
+
+      new mapboxgl.Marker(markerElem)
+        .setLngLat([center.lon, center.lat])
+        .addTo(this.map);
+
+      document.getElementById('mapElement').appendChild(markerElem);
+    });
   }
 
 
@@ -70,7 +88,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     map.on('click', 'campus', (event) => {
       new MapboxPopup()
         .setLngLat(event.lngLat)
-        .setHTML(event.features[0].properties.name)
+        .setHTML('<b>' + event.features[0].properties.name + '</b><br>' + event.features[0].properties.description)
         .addTo(this.map);
     });
   }

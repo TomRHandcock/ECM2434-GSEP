@@ -60,6 +60,31 @@
       </div>
     </form>
   </section>
+
+  <!---------------------------------------------------------------------------
+    GAME PIN INPUT
+    
+    This view is for space for the user to input the game pin or create a new
+    game.
+    @author TomRHandcock
+  ---------------------------------------------------------------------------->
+  <section id="gameIdSection" *ngSwitchCase="this.Screens.GAME_ID">
+    <form id="loginForm">
+      <div class="fields">
+        <p class="content">
+          Please join a game or create your own game!
+        </p>
+        <input type="text" name="teamId" placeholder="Game PIN" [(ngModel)]="gameID" required>
+      </div>
+      <div class="formExtras">
+        <input type="submit" (click)="this.onJoinGame()" name="loginSubmit" value="Join game">
+        <button>Create a game</button>
+        <div class="links">
+          <a>Help logging in</a>
+        </div>
+      </div>
+    </form>
+  </section>
   <!-- The privacy policy view (Author: AlexWesterman) -->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
     <div class="policyContainer">

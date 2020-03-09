@@ -1,8 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
 import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {MapComponent} from '../common/map/map.component';
+import * as mapboxgl from 'mapbox-gl';
+import { LOCATION_INITIALIZED } from '@angular/common';
+import { error } from 'protractor';
 
 enum Screen {
   NONE,
@@ -29,7 +33,7 @@ enum DatabaseTables {
   styleUrls: ['./gamemaster-main.component.scss']
 })
 
-export class GamemasterMainComponent implements OnInit {
+export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
    * Component for generating QR Codes
@@ -83,14 +87,34 @@ export class GamemasterMainComponent implements OnInit {
   teams: Array<any>;
 
   /**
+   * The list of lost teams that is shown on the map in game master
+   */
+  lostTeams: Array<any>;
+
+  /**
+   * The list of lost team's markers
+   */
+  lostTeamsMarkers: Array<any>;
+
+  /**
    * The list of lost teams that is shown in a dialog alert in game master
    */
-  lostTeams: string;
+  lostTeamsText: string;
 
   /**
    * Whether the QR Code dialog is shown for a location in locations screen
    */
   displayLocQr = false;
+
+  /**
+   * Whether the location description dialog is shown
+   */
+  displayLocDesc = false;
+
+  /**
+   * The currently selected location
+   */
+  selectedLocation;
 
   /**
    * Whether the Lost Team dialog is shown in the overview screen
@@ -103,12 +127,12 @@ export class GamemasterMainComponent implements OnInit {
     this.qrData = this.qrComponent.myQrData;
 
     this.screen = this.Screens.NONE;
+    this.lostTeams = [];
+    this.lostTeamsMarkers = [];
 
     this.questions = this.getQuestionsFromDatabase();
     this.getTableFromDatabase(DatabaseTables.Location);
     this.getTableFromDatabase(DatabaseTables.Team);
-
-    this.onLostPlayer();
    }
 
   /**
@@ -141,6 +165,14 @@ export class GamemasterMainComponent implements OnInit {
         window.location.assign('./login');
       }
     });
+  }
+
+  /**
+   * Starts the lost teams procedure, once the map has loaded
+   * @author AlexWesterman
+   */
+  ngAfterViewInit() {
+    this.onLostPlayer();
   }
 
   /**
@@ -253,8 +285,8 @@ export class GamemasterMainComponent implements OnInit {
       name: '',
       score: 0,
       players: [],
-      currentTarget: '',
-      nextTarget: '',
+      currentTarget: 0,
+      nextTarget: 0,
       hintsUsed: 0,
       locationsCompleted: 0
     });
@@ -262,16 +294,43 @@ export class GamemasterMainComponent implements OnInit {
 
   /**
    * Subscribes the table of lost teams to the game master component
-   *
+   * AlexWesterman - adjusted to use an Array representation for lostTeams
    * @author OGWSaunders
    */
   onLostPlayer() {
-    this.lostTeams = '';
+    this.lostTeamsText = 'IDs: ';
     this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
-        this.lostTeams += 'Team ID:' + lostTeam.ID + ', Latitude: ' + lostTeam.lat + ', Longitude: ' + lostTeam.lon + '\n';
+        this.lostTeams.push(
+          {
+            ID: lostTeam.ID,
+            lat: lostTeam.lat,
+            lon: lostTeam.lon
+          }
+        );
+
+        // Add text to the dialog box
+        this.lostTeamsText += lostTeam.ID + ' ';
+
+        // Lost players show up on gamemaster login
         this.displayLost = true;
       });
+
+      // Show lost players on the map, if there are any
+      if (this.lostTeams.length > 0) {
+        this.showLostPlayersOnMap();
+      }
+    });
+  }
+
+  /**
+   * Shows lost players on the overview map
+   * @author AlexWesterman
+   */
+  showLostPlayersOnMap() {
+    // Add each lost player as a marker
+    this.lostTeams.forEach((lostTeam) => {
+      this.lostTeamsMarkers.push({lat: lostTeam.lat, lon: lostTeam.lon});
     });
   }
 
@@ -397,6 +456,45 @@ export class GamemasterMainComponent implements OnInit {
       longitude: 0,
       qrCode: ''
     };
+  }
+
+  /**
+   * This method is called when the user selects the "Edit Description" button
+   * for a location.
+   * @param location The location object which has been selected.
+   * @author TomRHandcock
+   */
+  editLocation(location) {
+    this.displayLocDesc = true;
+    this.selectedLocation = location;
+  }
+
+  /**
+   * This method is called when the user presses the "Submit" button in the
+   * edit location dialog of the game master.
+   * @author TomRHandcock
+   */
+  onSubmitEditLocation() {
+    // Find the location we should be editing
+    this.db.database.ref('games/0/location/').once('value').then((locations) => {
+      let locationID;
+      locations.forEach((location) => {
+        // If we find the location, take note of the location ID
+        if (location.child('name').toJSON().toString() === this.selectedLocation.name) {
+          locationID = location.key;
+        }
+      });
+      if (locationID) {
+        // Found a matching location, update it
+        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((dbError) => {
+          console.error('Error whilst updating database: ' + dbError);
+        });
+      } else {
+        // Not found location, user needs to try again (most likely because the location name changed)
+        console.error('Could not match currently selected location in the database. Please try again');
+      }
+    });
+    this.displayLocDesc = false;
   }
 
   /**
