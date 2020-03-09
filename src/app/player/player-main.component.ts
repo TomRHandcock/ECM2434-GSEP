@@ -3,7 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {faCamera, faCompass, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location, Team, User} from '../database.schema';
+import {Location, Team} from '../database.schema';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {map} from 'rxjs/operators';
 
@@ -130,9 +130,9 @@ export class PlayerMainComponent implements OnInit {
       let isInTeam = false;
       teams.forEach((team: Team) => {
         try {
-          team.players.forEach((playerID: User) => {
-            console.log(playerID);
-            if (user.uid === playerID.toString()) {
+          team.players.forEach(playerId => {
+            console.log(playerId);
+            if (user.uid === playerId.toString()) {
               currentTeam = team;
               isInTeam = true;
             }

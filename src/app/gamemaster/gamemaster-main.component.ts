@@ -111,10 +111,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
               private router: Router) {
     this.screen = this.Screens.NONE;
     this.lostTeams = [];
-
-    this.questions = this.getQuestionsFromDatabase();
-    this.getTableFromDatabase(Location.tableName);
-    this.getTableFromDatabase(Team.tableName);
   }
 
   ngOnInit() {
@@ -156,6 +152,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/login']);
       }
     });
+
+    this.questions = this.getQuestionsFromDatabase();
+    this.getTableFromDatabase(Location.tableName);
+    this.getTableFromDatabase(Team.tableName);
   }
 
   /**
@@ -195,7 +195,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const path = tableName.toString().toLowerCase();
 
     // Get the actual contents
-    this.db.list('games/0/' + path + '/').valueChanges().subscribe((table) => {
+    this.db.list(`games/${this.gameId}/${path}`).valueChanges().subscribe((table) => {
+      console.log(table);
       switch (path) {
         case 'location':
           this.locations = table as Location[];
@@ -253,16 +254,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     }
 
     this.updateQuestion(location);
-  }
-
-  /**
-   * Converts a number to a string, for use in HTML
-   * @param num - the number to convert
-   * @return the converted string
-   * @author AlexWesterman
-   */
-  numToString(num: number) {
-    return num.toString();
   }
 
   /**
@@ -333,36 +324,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Generates a new team ID for creating a team
-   * @author OGWSaunders
-   */
-  generateTeamID() {
-    const usedIDs: number[] = this.getUsedIDs();
-    let randID = Math.floor(Math.random() * Math.floor(999));
-
-    while (usedIDs.includes(randID)) {
-      randID = Math.floor(Math.random() * Math.floor(999));
-    }
-
-    return randID;
-  }
-
-  /**
-   * Finds all the currently used team IDs to ensure unique team ID
-   * @author OGWSaunders
-   */
-  getUsedIDs() {
-    const usedIDs = [];
-
-    this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((table) => {
-      table.forEach((item: Team) => {
-        usedIDs.push(item.id);
-      });
-    });
-    return usedIDs;
-  }
-
-  /**
    * Updates the question in the database
    * @param locationName - the location name
    * @author AlexWesterman
@@ -371,7 +332,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const sub = this.db.list(`games/${this.gameId}/location/`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
-          this.db.object(`games/${this.gameId}/location/` + index + '/questions/').set(this.questions[locationName]);
+          this.db.object(`games/${this.gameId}/location/${index}/questions`).set(this.questions[locationName]);
           sub.unsubscribe();
         }
       });
@@ -380,7 +341,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   updateLocation(locationID: number) {
     console.log(locationID);
-    this.db.object(`games/${this.gameId}/location/` + locationID + '/').set(this.locations[locationID]);
+    this.db.object(`games/${this.gameId}/location/${locationID}`).set(this.locations[locationID]);
   }
 
   /**
@@ -424,7 +385,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       description: ''
     };
 
-    this.db.object(`games/${this.gameId}/location/` + this.locations.length).set(newLocation);
+    this.db.object(`games/${this.gameId}/location/${this.locations.length}`).set(newLocation);
 
     this.locations.push(newLocation);
   }
@@ -466,15 +427,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       }
     });
     this.displayLocDesc = false;
-  }
-
-  /**
-   * Generates a new QR code
-   * @author AlexWesterman
-   */
-  generateQRCode() {
-    this.qrComponent = new QRCodeComponent();
-    this.qrData = this.qrComponent.myQrData;
   }
 
   /**
