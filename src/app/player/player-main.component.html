@@ -176,19 +176,17 @@
 
       <!-- A button to report to the gamemaster a player's current location -->
       <div class="button-bar">
-        <div role="button" class="is-warning button" id="imLostBack" (click)="getLostLocation()">
-          <span class="icon is-small">
-            <fa-icon [icon]="lostIcon"></fa-icon>
-          </span>
-          <span>Report my location</span>
-        </div>
-
-        <!-- A button to return to the home view -->
-        <div role="button" class="is-primary button" id="imLostBack" (click)="changeScreen(screens.HOME);">
+        <div (click)="changeScreen(screens.HOME);" class="is-primary button" role="button">
           <span class="icon is-small">
             <fa-icon [icon]="homeIcon"></fa-icon>
           </span>
           <span>Back to Home</span>
+        </div>
+        <div (click)="getLostLocation()" class="is-warning button" role="button">
+          <span class="icon is-small">
+            <fa-icon [icon]="lostIcon"></fa-icon>
+          </span>
+          <span>Report my location</span>
         </div>
       </div>
     </section>
