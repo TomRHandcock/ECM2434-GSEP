@@ -15,8 +15,6 @@
       <a class="navbar-item" *ngIf="isAGamemaster" style="color:green" (click)="goToGamemaster()">Gamemaster Control</a>
       <a class="navbar-item" (click)="changeScreen(screens.PROGRESS); showMenu = false">Our Progress</a>
       <a class="navbar-item" (click)="changeScreen(screens.IM_LOST); showMenu = false">I'm Lost</a>
-      <a class="navbar-item" style="color:red">Help and Support</a>
-      <a class="navbar-item" style="color:red">Settings</a>
       <a class="navbar-item" (click)="signOut()">Sign out</a>
     </div>
   </div>
@@ -85,7 +83,7 @@
   <main *ngSwitchCase="screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
       <section class="element">
         <h1 class="title is-1">Your Current Progress</h1>
-  
+
         <!-- The table of entries -->
         <table class="table">
           <tbody>
@@ -170,13 +168,11 @@
       </p>
 
       <!-- Inform user that their location has been sent to the game master -->
-      <ng-template #locationReported>
-        <div class="notification is-warning">
-          <strong>Your location has been reported.</strong>
-          Stay calm and remain where you are, ideally with your group.
-          Someone will come and help you soon.
-        </div>
-      </ng-template>
+      <div *ngIf="locationReported" class="notification is-warning">
+        <strong>Your location has been reported.</strong>
+        Stay calm and remain where you are, ideally with your group.
+        Someone will come and help you soon.
+      </div>
 
       <!-- A button to report to the gamemaster a player's current location -->
       <div class="button-bar">
