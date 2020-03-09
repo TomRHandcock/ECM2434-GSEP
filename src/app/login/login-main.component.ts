@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { FirebaseDatabase } from '@angular/fire';
-import { typeWithParameters } from '@angular/compiler/src/render3/util';
+import {AngularFireDatabase} from '@angular/fire/database';
 
 enum Screen {
   CREATING_ACCOUNT,
@@ -146,8 +144,7 @@ export class LoginMainComponent implements OnInit {
         // We find if they are in that game
         if (player.toJSON().toString() === this.authentication.auth.currentUser.uid) {
           // We found the current user in this game
-          const gameID = game.child('ID').toJSON().toString();
-          this.gameID = gameID;
+          this.gameID = game.child('ID').toJSON().toString();
           // Now we need to find the team the current player is on
           teams = game.child('team');
           teams.forEach((team) => {
@@ -189,6 +186,14 @@ export class LoginMainComponent implements OnInit {
    * @version 2
    */
   onJoinTeam() {
+    this.db.database.ref('games/' + this.gameID + '/team/').once('value')
+      .then((snapshot => {
+        if (!snapshot.child(this.teamId).exists()) {
+          alert('This team does not exist!');
+          this.changeScreen(this.Screens.TEAM_ID);
+        }
+      }));
+
     // Get the player's list of the team the user inputted
     this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players').once('value').then((data) => {
       const currentCount = data.val();

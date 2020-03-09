@@ -10,7 +10,7 @@ import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-
 export class MapComponent implements OnInit, AfterViewInit {
 
   map: mapboxgl.Map;
-  @Input() markers: Array<any>;
+  @Input() markers: Array<any> = [];
 
 
   /**

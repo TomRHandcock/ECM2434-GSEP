@@ -310,7 +310,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
         );
 
         // Add text to the dialog box
-        this.lostTeamsText += lostTeam.ID + ' ';
+        this.lostTeamsText += lostTeam + ' ';
 
         // Lost players show up on gamemaster login
         this.displayLost = true;
@@ -419,6 +419,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     });
   }
 
+  updateLocation(locationID: number) {
+    console.log(locationID);
+    this.db.object('games/0/location/' + locationID + '/').set(this.locations[locationID]);
+  }
 
   /**
    * This method updates the team details in the database
@@ -442,6 +446,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     // Find the index by name
     const locIndex: number = this.locations.map((e) => e.name).indexOf(location);
     this.locations.splice(locIndex, 1);
+
+    this.db.object('games/0/location/' + locIndex + '/').remove();
   }
 
   /**
@@ -449,13 +455,19 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewLocation() {
-    this.locations[this.locations.length] = {
+    const newLocation = {
       questions: [],
       name: '',
       latitude: 0,
       longitude: 0,
-      qrCode: ''
+      qrCode: '',
+      hint: '',
+      description: ''
     };
+
+    this.db.object('games/0/location/' + this.locations.length).set(newLocation);
+
+    this.locations.push(newLocation);
   }
 
   /**

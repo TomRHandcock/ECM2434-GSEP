@@ -77,6 +77,8 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Description</th>
+          <th>Hint</th>
           <th>Latitude</th>
           <th>Longitude</th>
           <th>Actions</th>
@@ -84,19 +86,13 @@
       </thead>
       <tbody>
         <!-- Loop through all locations and add them to the table -->
-        <tr *ngFor="let item of this.locations">
-          <td class="editCell"
-            contenteditable="true"
-            [(textContent)]="item.name">
-          </td>
-          <td class="editCell"
-            contenteditable="true"
-            [(textContent)]="item.latitude">
-          </td>
-          <td class="editCell"
-            contenteditable="true"
-            [(textContent)]="item.longitude">
-          </td>
+        <tr *ngFor="let item of this.locations; let i = index" [attr.data-index]="i">
+          <td><input type="text" name="locName" [(ngModel)]="item.name" (blur)="this.updateLocation(i)"></td>
+          <td><textarea [(ngModel)]="item.description" (blur)="this.updateLocation(i)"></textarea></td>
+          <td><textarea [(ngModel)]="item.hint" (blur)="this.updateLocation(i)"></textarea></td>
+          <td><input type="text" name="locLat"  [(ngModel)]="item.latitude" (blur)="this.updateLocation(i)"></td>
+          <td><input type="text" name="locLong" [(ngModel)]="item.longitude" (blur)="this.updateLocation(i)"></td>
+
           <td class="editCell">
             <fa-icon class="locationAction" (click)="this.displayLocQrCode(item.name)" [icon]="qrCodeIcon"></fa-icon>
             <fa-icon class="locationAction" (click)="this.editLocation(item)" [icon]="editIcon"></fa-icon>
