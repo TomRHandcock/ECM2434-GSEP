@@ -187,30 +187,31 @@ export class LoginMainComponent implements OnInit {
    */
   onJoinTeam() {
     this.db.database.ref('games/' + this.gameID + '/team/').once('value')
-      .then((snapshot => {
-        if (!snapshot.child(this.teamId).exists()) {
-          alert('This team does not exist!');
-          this.changeScreen(this.Screens.TEAM_ID);
-        }
-      }));
-
-    // Get the player's list of the team the user inputted
-    this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players').once('value').then((data) => {
-      const currentCount = data.val();
-      // Get the index for the player in the players list
-      let index;
-      if (currentCount == null) {
-        // If it is empty start the list at 0
-        index = 0;
+    .then(snapshot => {
+      if (!snapshot.child(this.teamId).exists()) {
+        alert('This team does not exist!');
       } else {
-        // Otherwise, get the length
-        index = currentCount.length;
+        // Team exists, add the player to the team
+        // Get the player's list of the team the user inputted
+        this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId +
+        '/players').once('value').then((data) => {
+          const currentCount = data.val();
+          // Get the index for the player in the players list
+          let index;
+          if (currentCount == null) {
+            // If it is empty start the list at 0
+            index = 0;
+          } else {
+            // Otherwise, get the length
+            index = currentCount.length;
+          }
+          // Insert the player into the team
+          this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index)
+            .set(this.authentication.auth.currentUser.uid).then(() => {
+            this.checkTeamAndRedirectPlayer(this.db);
+          });
+        });
       }
-      // Insert the player into the team
-      this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index)
-      .set(this.authentication.auth.currentUser.uid).then(() => {
-        this.checkTeamAndRedirectPlayer(this.db);
-      });
     });
   }
 
