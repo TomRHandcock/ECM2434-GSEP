@@ -1,6 +1,6 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import {faCamera, faGlobe, faHome, faCompass} from '@fortawesome/free-solid-svg-icons';
+import {faCamera, faCompass, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {Location, Team} from '../gamemaster/gamemaster-main.component';
@@ -58,6 +58,11 @@ export class PlayerMainComponent implements OnInit {
    * Whether or not to show the menu on a mobile device.
    */
   showMenu = false;
+
+  /**
+   * Whether or not to show the location as being reported to the gamemaster.
+   */
+  locationReported = false;
 
   constructor(private db: AngularFireDatabase, private router: Router, private afAuth: AngularFireAuth) {
     this.screen = this.screens.HOME;
@@ -340,6 +345,7 @@ export class PlayerMainComponent implements OnInit {
         lat,
         lon
       });
+      this.locationReported = true;
     });
   }
 
