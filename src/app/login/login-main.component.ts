@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {Router} from '@angular/router';
+import * as shortid from 'shortid';
+import {Game} from '../database.schema';
 
 enum Screen {
   CREATING_ACCOUNT,
@@ -20,7 +22,7 @@ export class LoginMainComponent implements OnInit {
   // So HTML can access it
   Screens = Screen;
 
-  screen: Screen;
+  screen = Screen.LOGIN;
   loginEmail: string;
   loginPassword: string;
   createEmail: string;
@@ -30,8 +32,9 @@ export class LoginMainComponent implements OnInit {
   teamId = '';
   gameId: string;
 
-  constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase, private router: Router) {
-    this.screen = Screen.LOGIN;
+  constructor(private afAuth: AngularFireAuth,
+              private db: AngularFireDatabase,
+              private router: Router) {
   }
 
   /**
@@ -90,10 +93,8 @@ export class LoginMainComponent implements OnInit {
       });
     } catch (error) {
       console.log(error);
-      switch (error.code) {
-        case 'auth/argument-error':
-          alert('Please ensure all fields are filled');
-          break;
+      if (error.code === 'auth/argument-error') {
+        alert('Please ensure all fields are filled');
       }
     }
   }
@@ -114,10 +115,8 @@ export class LoginMainComponent implements OnInit {
           alert('Creation of account failed with reason: ' + reason);
         }
       ).catch(reason => {
-        switch (reason.code) {
-          case 'auth/invalid-email':
-            alert('Invalid email');
-            break;
+        if (reason.code === 'auth/invalid-email') {
+          alert('Invalid email');
         }
       });
     } else {
@@ -138,36 +137,36 @@ export class LoginMainComponent implements OnInit {
     let players;
     db.database.ref('games').once('value').then((games) => {
       // First we get all the games available
-      games.forEach((game) => {
-       players = game.child('players');
-       // For each game we look at the players in that game
-       players.forEach((player) => {
-         // We find if they are in that game
-         if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-           // We found the current user in this game
-           this.gameId = game.child('ID').toJSON().toString();
-           // Now we need to find the team the current player is on
-           teams = game.child('team');
-           teams.forEach((team) => {
-             // Array of players on a team
-             const teamPlayers = team.child('players');
-             teamPlayers.forEach((teamPlayer) => {
-               if (teamPlayer.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-                 // We found the team the player is on
-                 console.log('Redirecting to player screen');
-                 this.router.navigate(['/game', this.gameId]);
-                 return;
-               }
-             });
-           });
-           if (!this.teamId) {
-             // We couldn't find the team the player was on
-             console.log('Redirecting to select team');
-             this.screen = Screen.TEAM_ID;
-             return;
-           }
-         }
-       });
+      games.forEach(game => {
+        players = game.child('players');
+        // For each game we look at the players in that game
+        players.forEach(player => {
+          // We find if they are in that game
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            // We found the current user in this game
+            this.gameId = game.child('id').toJSON().toString();
+            // Now we need to find the team the current player is on
+            teams = game.child('team');
+            teams.forEach((team) => {
+              // Array of players on a team
+              const teamPlayers = team.child('players');
+              teamPlayers.forEach((teamPlayer) => {
+                if (teamPlayer.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+                  // We found the team the player is on
+                  console.log('Redirecting to player screen');
+                  this.router.navigate(['/game', this.gameId]);
+                  return;
+                }
+              });
+            });
+            if (!this.teamId) {
+              // We couldn't find the team the player was on
+              console.log('Redirecting to select team');
+              this.screen = Screen.TEAM_ID;
+              return;
+            }
+          }
+        });
       });
       if (!this.gameId) {
         // We haven't found a game with the player in
@@ -195,7 +194,7 @@ export class LoginMainComponent implements OnInit {
         // Team exists, add the player to the team
         // Get the player's list of the team the user inputted
         this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId +
-          '/players').once('value').then((data) => {
+          '/players').once('value').then(data => {
           const currentCount = data.val();
           // Get the index for the player in the players list
           let index;
@@ -235,20 +234,14 @@ export class LoginMainComponent implements OnInit {
    * @author galexite
    */
   onCreateNewGame() {
-    this.db.database.ref('/games/')
-      .push({
-        gameMaster: [this.afAuth.auth.currentUser.uid],
-        team: [{
-          currentTarget: '',
-          hintsUsed: 0,
-          locationsCompleted: 0,
-          name: 'Gamemaster team',
-          nextTarget: 0,
-          players: [this.afAuth.auth.currentUser.uid],
-          score: 0
-        }]
-      })
-      .then(data => this.router.navigate(['/game', data.key, 'gamemaster']))
+    // The current user's UID.
+    const uid = this.afAuth.auth.currentUser.uid;
+    // The new game ID.
+    const id = shortid.generate();
+
+    this.db.database.ref(`/games/${id}`)
+      .set(new Game(id, uid))
+      .then(() => this.router.navigate(['/game', id, 'gamemaster']))
       .catch(error => alert('Couldn\'t create your game! Try reloading the page. Error: ' + error));
   }
 }

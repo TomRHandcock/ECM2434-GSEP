@@ -66,10 +66,10 @@
       <app-scoreboard></app-scoreboard>
     </div>
     <app-map id="map"
-             [markers]="lostTeamsMarkers">
+             [lostTeams]="lostTeams">
     </app-map>
     <!-- The lost alert popup (Author: OGWSanders) -->
-    <div *ngIf="displayLost" id="lostAlert">
+    <div *ngIf="displayLost" class="holder" id="lostAlert">
       <div id="lostAlertDisplay">
         <div id="titleLostDialog"><strong>Some teams have reported as lost</strong></div>
         <div id="lostTeamText">Lost Teams:<br/>{{lostTeamsText}}</div>
@@ -110,7 +110,7 @@
         <td class="editCell">
           <fa-icon (click)="displayLocQrCode(item.name)" [icon]="qrCodeIcon" class="locationAction"></fa-icon>
           <fa-icon (click)="editLocation(item)" [icon]="editIcon" class="locationAction"></fa-icon>
-          <fa-icon (click)="deleteLocation(numToString(item.name))" [icon]="deleteIcon"
+          <fa-icon (click)="deleteLocation(item.name)" [icon]="deleteIcon"
                    class="locationAction"></fa-icon>
         </td>
       </tr>
@@ -120,7 +120,7 @@
       </tfoot>
     </table>
 
-    <div *ngIf="displayLocQr" id="qrHolder">
+    <div *ngIf="displayLocQr" class="holder" id="qrHolder">
       <div id="locationQrCodeDisplay">
         <qrcode [errorCorrectionLevel]="'M'" [qrdata]="qrData" [width]="300"></qrcode>
         <button (click)="copyText(qrData);" class="button" id="locCopyId">Text String: {{qrData}}</button>
@@ -129,7 +129,7 @@
       </div>
     </div>
 
-    <div *ngIf="displayLocDesc" id="descriptionHolder">
+    <div *ngIf="displayLocDesc" class="holder" id="descriptionHolder">
       <div id="locationDescDisplay">
         <h1 class="title is-4">Edit Description</h1>
         <textarea [(ngModel)]="selectedLocation.description" cols="30" rows="10"></textarea>
@@ -201,13 +201,13 @@
         <th class="is-1">Actions</th>
       </thead>
       <tr *ngFor="let team of teams" class="is-hoverable">
-        <td [(textContent)]="team.ID"></td>
-        <td><input (blur)="updateTeam(team.ID)" [(ngModel)]="team.name" name="teamName" type="text"></td>
-        <td><input (blur)="updateTeam(team.ID)" [(ngModel)]="team.score" name="teamScore" type="number"></td>
+        <td>{{team.id}}</td>
+        <td><input (blur)="updateTeam(team.id)" [(ngModel)]="team.name" name="teamName" type="text"></td>
+        <td><input (blur)="updateTeam(team.id)" [(ngModel)]="team.score" name="teamScore" type="number"></td>
         <td>
           <fa-icon class="teamEdit" [icon]="mapIcon"></fa-icon>
           <fa-icon class="teamEdit" [icon]="editIcon"></fa-icon>
-          <fa-icon (click)="deleteTeam(team.ID)" [icon]="deleteIcon" class="teamEdit"></fa-icon>
+          <fa-icon (click)="deleteTeam(team.id)" [icon]="deleteIcon" class="teamEdit"></fa-icon>
         </td>
       </tr>
       <tfoot>

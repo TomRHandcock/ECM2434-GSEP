@@ -11,8 +11,7 @@ enum Screen {
   OVERVIEW,
   QUESTIONS,
   LOCATIONS,
-  TEAMS,
-  QR
+  TEAMS
 }
 
 @Component({
@@ -31,7 +30,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * The qr code data that holds a location as a random number
    */
   qrData: string = null;
-
 
   /**
    * Icons for buttons and actions
@@ -65,27 +63,22 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * The list of questions for the questions screen
    */
-  questions: { [loc: string]: Array<Question> };
+  questions: { [loc: string]: Question[] };
 
   /**
    * The list of locations for the locations screen
    */
-  locations: Array<any>;
+  locations: Location[];
 
   /**
    * The list of teams for the teams screen
    */
-  teams: Array<any>;
+  teams: Team[];
 
   /**
    * The list of lost teams that is shown on the map in game master
    */
-  lostTeams: Array<any>;
-
-  /**
-   * The list of lost team's markers
-   */
-  lostTeamsMarkers: Array<any>;
+  lostTeams: Lost[];
 
   /**
    * The list of lost teams that is shown in a dialog alert in game master
@@ -118,7 +111,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
               private router: Router) {
     this.screen = this.Screens.NONE;
     this.lostTeams = [];
-    this.lostTeamsMarkers = [];
 
     this.questions = this.getQuestionsFromDatabase();
     this.getTableFromDatabase(Location.tableName);
@@ -176,12 +168,12 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
    * Returns all questions stored in the database, nested by location
-   * @return [loc: string]: Array<Question> - the (location,questions) pair for each location
+   * @return [loc: string]: Question[] - the (location,questions) pair for each location
    * @author AlexWesterman
    */
   getQuestionsFromDatabase() {
     // This will loop through each location and get the questions
-    const questions: {[loc: string]: Array<Question>} = {};
+    const questions: { [loc: string]: Question[] } = {};
 
     this.db.list(`games/${this.gameId}/location`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
@@ -206,10 +198,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     this.db.list('games/0/' + path + '/').valueChanges().subscribe((table) => {
       switch (path) {
         case 'location':
-          this.locations = table;
+          this.locations = table as Location[];
           break;
         case 'team':
-          this.teams = table;
+          this.teams = table as Team[];
           break;
         default:
           console.error(path + ' is not handled!');
@@ -278,17 +270,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock, OGWSaunders
    */
   addNewTeam() {
-    const id = this.generateTeamID();
-    this.db.object(`games/${this.gameId}/team/` + id).set({
-      ID: id,
-      name: '',
-      score: 0,
-      players: [],
-      currentTarget: 0,
-      nextTarget: 0,
-      hintsUsed: 0,
-      locationsCompleted: 0
-    });
+    this.db.database.ref(`games/${this.gameId}/team/`).push(new Team());
   }
 
   /**
@@ -300,36 +282,14 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     this.lostTeamsText = 'IDs: ';
     this.db.list(`games/${this.gameId}/lost/`).valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
-        this.lostTeams.push(
-          {
-            ID: lostTeam.ID,
-            lat: lostTeam.lat,
-            lon: lostTeam.lon
-          }
-        );
+        this.lostTeams.push(lostTeam);
 
         // Add text to the dialog box
-        this.lostTeamsText += lostTeam.ID + ' ';
+        this.lostTeamsText += lostTeam.id + ' ';
 
         // Lost players show up on gamemaster login
         this.displayLost = true;
       });
-
-      // Show lost players on the map, if there are any
-      if (this.lostTeams.length > 0) {
-        this.showLostPlayersOnMap();
-      }
-    });
-  }
-
-  /**
-   * Shows lost players on the overview map
-   * @author AlexWesterman
-   */
-  showLostPlayersOnMap() {
-    // Add each lost player as a marker
-    this.lostTeams.forEach((lostTeam) => {
-      this.lostTeamsMarkers.push({lat: lostTeam.lat, lon: lostTeam.lon});
     });
   }
 
@@ -377,7 +337,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author OGWSaunders
    */
   generateTeamID() {
-    const usedIDs: Array<number> = this.getUsedIDs();
+    const usedIDs: number[] = this.getUsedIDs();
     let randID = Math.floor(Math.random() * Math.floor(999));
 
     while (usedIDs.includes(randID)) {
@@ -396,7 +356,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
     this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((table) => {
       table.forEach((item: Team) => {
-        usedIDs.push(item.ID);
+        usedIDs.push(item.id);
       });
     });
     return usedIDs;
@@ -430,8 +390,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   updateTeam(id) {
     this.teams.forEach(element => {
-      if (element.ID === id) {
-        this.db.object(`games/${this.gameId}/team/` + element.ID).set(element);
+      if (element.id === id) {
+        this.db.object(`games/${this.gameId}/team/` + element.id).set(element);
       }
     });
   }
