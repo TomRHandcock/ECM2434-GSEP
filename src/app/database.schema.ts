@@ -55,7 +55,7 @@ export class Question extends Table {
 export class Team extends Table {
   static tableName = 'team';
 
-  id = 0;
+  id = '';
   currentTarget = '';
   hintsUsed = 0;
   name = '';
@@ -66,7 +66,8 @@ export class Team extends Table {
 
   constructor(name?: string) {
     super();
-    this.name = name || shortid.generate();
+    this.id = shortid.generate();
+    this.name = name || this.id;
   }
 
   addPlayer(uid: string): void {

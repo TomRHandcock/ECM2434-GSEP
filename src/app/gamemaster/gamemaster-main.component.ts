@@ -3,7 +3,7 @@ import {faMapMarkerAlt, faPen, faQrcode, faSort, faTrashAlt} from '@fortawesome/
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location, Lost, Question, Team} from '../database.schema';
+import {Location, Lost, Question, Table, Team} from '../database.schema';
 import {map} from 'rxjs/operators';
 
 enum Screen {
@@ -195,7 +195,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const path = tableName.toString().toLowerCase();
 
     // Get the actual contents
-    this.db.list(`games/${this.gameId}/${path}`).valueChanges().subscribe((table) => {
+    this.db.list(`games/${this.gameId}/${path}`).valueChanges().subscribe((table: Table[]) => {
       console.log(table);
       switch (path) {
         case 'location':
@@ -232,8 +232,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @param id The ID of the team to delete
    * @author TomRHandcock
    */
-  deleteTeam(id: number) {
-    this.db.object(`games/${this.gameId}/team/` + id).remove();
+  deleteTeam(id: string) {
+    this.db.object(`games/${this.gameId}/team/${id}`).remove();
   }
 
   /**
@@ -261,7 +261,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock, OGWSaunders
    */
   addNewTeam() {
-    this.db.database.ref(`games/${this.gameId}/team/`).push(new Team());
+    const team = new Team();
+    this.db.database.ref(`games/${this.gameId}/team/${team.id}`).set(team);
   }
 
   /**
