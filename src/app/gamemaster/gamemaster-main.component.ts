@@ -20,7 +20,6 @@ enum Screen {
   templateUrl: './gamemaster-main.component.html',
   styleUrls: ['./gamemaster-main.component.scss']
 })
-
 export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
