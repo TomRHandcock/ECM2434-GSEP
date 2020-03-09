@@ -53,7 +53,9 @@
   ---------------------------------------------------------------------------->
   <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
     <app-scoreboard></app-scoreboard>
-    <app-map id="map"></app-map>
+    <app-map id="map"
+      [markers]="this.lostTeamsMarkers"
+    ></app-map>
     <!-- The lost alert popup (Author: OGWSanders) -->
     <div id="lostAlert" *ngIf="this.displayLost">
       <div id="lostAlertDisplay">

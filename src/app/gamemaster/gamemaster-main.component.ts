@@ -56,8 +56,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   mapIcon = faMapMarkerAlt;
   qrCodeIcon = faQrcode;
 
-  @ViewChildren(MapComponent) mapComponent: MapComponent;
-
   /**
    * Boolean for whether menu is shown on a screen
    */
@@ -94,6 +92,11 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   lostTeams: Array<any>;
 
   /**
+   * The list of lost team's markers
+   */
+  lostTeamsMarkers: Array<any>;
+
+  /**
    * The list of lost teams that is shown in a dialog alert in game master
    */
   lostTeamsText: string;
@@ -125,6 +128,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
     this.screen = this.Screens.NONE;
     this.lostTeams = [];
+    this.lostTeamsMarkers = [];
 
     this.questions = this.getQuestionsFromDatabase();
     this.getTableFromDatabase(DatabaseTables.Location);
@@ -307,7 +311,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
         // Add text to the dialog box
         this.lostTeamsText += lostTeam.ID + ' ';
-        console.log(this.lostTeamsText);
 
         // Lost players show up on gamemaster login
         this.displayLost = true;
@@ -327,11 +330,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   showLostPlayersOnMap() {
     // Add each lost player as a marker
     this.lostTeams.forEach((lostTeam) => {
-      const markerElem = document.createElement('div');
-      markerElem.className = 'marker';
-
-      // Getting 'add is not a function' error...
-      this.mapComponent.add(markerElem, lostTeam.lat, lostTeam.lon);
+      this.lostTeamsMarkers.push({lat: lostTeam.lat, lon: lostTeam.lon});
     });
   }
 
