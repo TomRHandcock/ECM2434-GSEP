@@ -2,7 +2,7 @@
 <nav class="navbar is-fixed-top" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
-      <span class="navbar-header">{{this.teamData.name}}</span>
+      <span class="navbar-header">{{teamData.name}}</span>
     </div>
     <a class="navbar-burger" role="button" aria-label="Toggle navigation" (click)="showMenu = !showMenu">
       <span aria-hidden="true"></span>
@@ -12,9 +12,9 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
-      <a class="navbar-item" *ngIf="this.isAGamemaster;" style="color:green" (click)="this.goToGamemaster();">Gamemaster Control</a>
-      <a class="navbar-item" (click)="this.changeScreen(this.screens.PROGRESS); showMenu = false">Our Progress</a>
-      <a class="navbar-item" (click)="this.changeScreen(this.screens.IM_LOST); showMenu = false">I'm Lost</a>
+      <a class="navbar-item" *ngIf="isAGamemaster" style="color:green" (click)="goToGamemaster()">Gamemaster Control</a>
+      <a class="navbar-item" (click)="changeScreen(screens.PROGRESS); showMenu = false">Our Progress</a>
+      <a class="navbar-item" (click)="changeScreen(screens.IM_LOST); showMenu = false">I'm Lost</a>
       <a class="navbar-item" style="color:red">Help and Support</a>
       <a class="navbar-item" style="color:red">Settings</a>
       <a class="navbar-item" (click)="signOut()">Sign out</a>
@@ -22,7 +22,7 @@
   </div>
 </nav>
 
-<ng-container [ngSwitch]="this.screen">
+<ng-container [ngSwitch]="screen">
   <!---------------------------------------------------------------------------
     HOME
 
@@ -30,7 +30,7 @@
     clue information
     @author galexite, AlexWesterman, OGWSaunders
   ---------------------------------------------------------------------------->
-  <main *ngSwitchCase="this.screens.HOME" class="container home-container has-navbar-fixed-top">
+  <main *ngSwitchCase="screens.HOME" class="container home-container has-navbar-fixed-top">
     <!-- The map -->
     <section class="element map-section" id="mapSection">
       <app-map class="flex-grow"></app-map>
@@ -40,7 +40,7 @@
     <section class="element" id="clueSection">
       <div>
         <h6 class="is-small is is-uppercase">Next Location</h6>
-        <h3 class="subtitle is-3 next-location">{{this.currTarget.name}}</h3>
+        <h3 class="subtitle is-3 next-location">{{currTarget.name}}</h3>
         <div class="next-info">
           <p class="content">{{currTarget.description}}</p>
           <!-- Only show if hint is unlocked -->
@@ -54,8 +54,8 @@
       </div>
     </section>
 
-    <!-- The QR camera opener (Author: OGWSaunders) -->
-    <button (click)="this.changeScreen(this.screens.QR_SCANNER)" class="button is-primary">
+    <!-- The QR camera opener (Author: galexite, OGWSaunders) -->
+    <button (click)="changeScreen(screens.QR_SCANNER)" class="button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
       </span>
@@ -64,7 +64,7 @@
 
     <!-- The bottom buttons (Author: AlexWesterman) -->
     <div class="button-bar" id="playerButtonBar">
-      <button (click)="this.showHint();" class="button is-primary">
+      <button (click)="showHint()" class="button is-primary">
         <span>Request Hint</span>
       </button>
       <button (click)="openUniWebsite()" class="button is-primary">
@@ -82,38 +82,33 @@
 
     Reached by selecting the item from the navigation bar
   ---------------------------------------------------------------------------->
-  <main *ngSwitchCase="this.screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
-    <!-- The title section -->
-    <div class="columns">
-      <div class="column is-full">
+  <main *ngSwitchCase="screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
+      <section class="element">
         <h1 class="title is-1">Your Current Progress</h1>
-      </div>
-    </div>
+  
+        <!-- The table of entries -->
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="row-heading">Score</td>
+              <td class="row-value">{{teamData.score}}</td>
+            </tr>
 
-    <!-- The table of entries -->
-    <div class="columns">
-      <table class="table column is-full flex-grow">
-        <tbody>
-          <tr>
-            <td class="row-heading">Score</td>
-            <td class="row-value">{{this.teamData.score}}</td>
-          </tr>
-
-          <!-- Some example entries that we may choose to implement -->
-          <tr>
-            <td class="row-heading">Locations Complete</td>
-            <td class="row-value">{{this.teamData.locationsCompleted}}</td>
-          </tr>
-          <tr>
-            <td class="row-heading">Hints Used</td>
-            <td class="row-value">{{this.teamData.hintsUsed}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <!-- Some example entries that we may choose to implement -->
+            <tr>
+              <td class="row-heading">Locations Complete</td>
+              <td class="row-value">{{teamData.locationsCompleted}}</td>
+            </tr>
+            <tr>
+              <td class="row-heading">Hints Used</td>
+              <td class="row-value">{{teamData.hintsUsed}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
     <!-- A button to return back to the home screen -->
-    <div role="button" class="is-primary button" id="progressBack" (click)="this.changeScreen(this.screens.HOME)">
+    <div role="button" class="is-primary is-fullwidth button" id="progressBack" (click)="changeScreen(screens.HOME)">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
@@ -128,11 +123,15 @@
     Available when the user is near a location where they can scan a QR code
     to begin the quiz for that location
     @author OGWSaunders
+
+    Moved to zxing-scanner, use Angular events
+    @author galexite
+    @version 2
   ---------------------------------------------------------------------------->
-  <main *ngSwitchCase="this.screens.QR_SCANNER" class="container qrScanner-container has-navbar-fixed-top">
+  <main *ngSwitchCase="screens.QR_SCANNER" class="container has-navbar-fixed-top">
     <zxing-scanner (scanSuccess)="onQrCodeScanned($event)"></zxing-scanner>
     <!-- A button to return to the home view -->
-    <div role="button" class="is-primary button" id="qrScannerBack" (click)="this.changeScreen(this.screens.HOME);">
+    <div role="button" class="is-primary button" id="qrScannerBack" (click)="changeScreen(screens.HOME)">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
@@ -146,50 +145,72 @@
 
     The screen for a user to report that they are lost to the gamemaster
     @author OGWSaunders
+
+    Re-wrote information paragraphs, used Bulma message boxes, wrap in element
+    such that it is easier to see
+    @author galexite
+    @version 2
   ---------------------------------------------------------------------------->
-  <main *ngSwitchCase="this.screens.IM_LOST" class="container imLost-container has-navbar-fixed-top">
+  <main *ngSwitchCase="screens.IM_LOST" class="container imLost-container has-navbar-fixed-top">
     <!-- The title section -->
-    <div class="columns">
-      <div class="column is-full">
-        <h1 class="title is-1">If you are lost, please click the button below and someone will come to find you.</h1>
+    <section class="element">
+      <h1 class="title is-1">I'm lost</h1>
+
+      <p class="content">
+        If you need assistance, you can report your current location to the
+        game master and someone will come and help you soon. Please ensure
+        you grant access to your current location when prompted.
+      </p>
+
+      <p class="content">
+        In an emergency, however, <strong>this is not a substitute for
+        contacting the emergency services or campus security</strong>.
+        If you or one of your team members needs urgent medical or
+        police assistance you must call 999.
+      </p>
+
+      <!-- Inform user that their location has been sent to the game master -->
+      <ng-template #locationReported>
+        <div class="notification is-warning">
+          <strong>Your location has been reported.</strong>
+          Stay calm and remain where you are, ideally with your group.
+          Someone will come and help you soon.
+        </div>
+      </ng-template>
+
+      <!-- A button to report to the gamemaster a player's current location -->
+      <div class="button-bar">
+        <div role="button" class="is-warning button" id="imLostBack" (click)="getLostLocation()">
+          <span class="icon is-small">
+            <fa-icon [icon]="lostIcon"></fa-icon>
+          </span>
+          <span>Report my location</span>
+        </div>
+
+        <!-- A button to return to the home view -->
+        <div role="button" class="is-primary button" id="imLostBack" (click)="changeScreen(screens.HOME);">
+          <span class="icon is-small">
+            <fa-icon [icon]="homeIcon"></fa-icon>
+          </span>
+          <span>Back to Home</span>
+        </div>
       </div>
-    </div>
-    
-    <!-- A button to report to the gamemaster a player's current location -->
-    <br/>
-    <div role="button" class="is-primary button" id="imLostBack" (click)="getLostLocation()">
-      <span class="icon is-small">
-        <fa-icon [icon]="lostIcon"></fa-icon>
-      </span>
-      <span> Report location to <strong>game master</strong></span>
-    </div>
-    <div>
-      <span>*Try to position yourself in an area where you can be spotted easily, and remain with your group.</span>
-    </div>
-
-    <!-- A button to return to the home view -->
-    <div role="button" class="is-primary button" id="imLostBack" (click)="this.changeScreen(this.screens.HOME);">
-      <span class="icon is-small">
-        <fa-icon [icon]="homeIcon"></fa-icon>
-      </span>
-      <span>Back to Home</span>
-    </div>
-
-    <!-- Inform user that their location has been sent to the game master -->
-    <div id="locationReported"></div>
+    </section>
   </main>
 
 
   <!---------------------------------------------------------------------------
     QUIZ
 
-    The answer screen (Author: AlexWesterman, TomRHandcock)
+    The answer screen
+    @author TomRHandcock, AlexWesterman
+
     Refactored out in to app-quiz
     @author galexite
   ---------------------------------------------------------------------------->
   <app-quiz
     (finalScore)="onQuizFinalScore($event)"
-    *ngSwitchCase="this.screens.ANSWER_QS"
+    *ngSwitchCase="screens.ANSWER_QS"
     [questions]="currTarget.questions"
     [teamId]="teamId"
     class="container has-navbar-fixed-top">
@@ -206,7 +227,7 @@
   <main id="finishedDialog" *ngIf="finishedQuiz">
     <div>
       <h1 class="title is-1">You have finished the game!</h1>
-      <h2 class="title is-2">Your score: {{this.teamData.score}}</h2>
+      <h2 class="title is-2">Your score: {{teamData.score}}</h2>
       <h2 class="title is-2">Head back to the start to see the rankings.</h2>
     </div>
   </main>

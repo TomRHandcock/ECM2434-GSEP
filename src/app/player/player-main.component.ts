@@ -332,24 +332,15 @@ export class PlayerMainComponent implements OnInit {
    * @author OGWSaunders
    */
   getLostLocation() {
-    let lat;
-    let lon;
-    navigator.geolocation.getCurrentPosition((position) => {
-      lat = position.coords.latitude;
-      lon = position.coords.longitude;
+    navigator.geolocation.getCurrentPosition(position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
       this.db.database.ref('games/0/lost/' + this.teamData.ID).set({
         ID: this.teamId,
         lat,
         lon
       });
     });
-
-    document.getElementById('locationReported').innerHTML = '\
-      <div style="background-color:white;">\
-        <strong style="color:red;">\
-          Your location has been reported. Please remain where you are and stay visible.\
-        </strong>\
-      </div>';
   }
 
 }

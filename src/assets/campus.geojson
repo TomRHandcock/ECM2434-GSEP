@@ -12,6 +12,7 @@
                 "amenity": "library",
                 "building": "yes",
                 "name": "Main Library",
+                "description": "The main library for the campus where you can print, borrow books and use computer clusters",
                 "wheelchair": "yes",
                 "id": "way/26683102"
             },
@@ -61,6 +62,7 @@
             "properties": {
                 "building": "university",
                 "name": "Newman Building",
+                "description": "This is the largest collection of lecture theatres on campus, located at the top of Forum hill",
                 "id": "way/27314032"
             },
             "geometry": {
@@ -161,6 +163,7 @@
             "properties": {
                 "building": "university",
                 "name": "Peter Chalk Centre",
+                "description": "The Peter Chalk Centre is a multi-purpose conference centre near the middle of the campus. The Roundhouse Café is also located here.",
                 "id": "way/27314118"
             },
             "geometry": {
@@ -287,6 +290,7 @@
                 "addr:street": "North Park Road",
                 "building": "yes",
                 "name": "Harrison",
+                "description": "Harrison is the home of CEMPS (College of Engineering, Maths and Physical Sciences) of which Computer Science is a part.",
                 "id": "way/27314281"
             },
             "geometry": {
@@ -337,6 +341,7 @@
                 "building": "university",
                 "building:levels": "2",
                 "name": "Innovation Centre",
+                "description": "The Innovation Centre provides a base to many small knowledge based enterprises and to the Department of Computer Science.",
                 "roof:levels": "1",
                 "roof:shape": "hipped",
                 "id": "way/27314451"
@@ -396,6 +401,7 @@
                 "building": "university",
                 "building:levels": "3",
                 "name": "Innovation Centre",
+                "description": "The Innovation Centre provides a base to many small knowledge based enterprises and to the Department of Computer Science.",
                 "roof:levels": "0",
                 "id": "way/27314497"
             },
@@ -533,6 +539,7 @@
                 "addr:street": "Rennes Drive",
                 "building": "university",
                 "name": "Amory",
+                "description": "The Amory is the home of the College of Humanities and the Law School.",
                 "id": "way/27315944"
             },
             "geometry": {
@@ -780,6 +787,7 @@
                 "addr:street": "Stocker Road",
                 "building": "university",
                 "name": "The Forum",
+                "description": "The central building at the heart of the campus; home to the library, the Student's Guild and SID.",
                 "id": "way/162102795"
             },
             "geometry": {
@@ -929,6 +937,7 @@
                 "addr:housename": "INTO",
                 "building": "university",
                 "name": "INTO International Study Centre",
+                "description": "The INTO centre helps international students with their studying and student experience at University.",
                 "id": "way/167907357"
             },
             "geometry": {

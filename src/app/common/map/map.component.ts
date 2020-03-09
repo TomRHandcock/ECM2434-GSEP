@@ -88,7 +88,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     map.on('click', 'campus', (event) => {
       new MapboxPopup()
         .setLngLat(event.lngLat)
-        .setHTML(event.features[0].properties.name)
+        .setHTML('<b>' + event.features[0].properties.name + '</b><br>' + event.features[0].properties.description)
         .addTo(this.map);
     });
   }
