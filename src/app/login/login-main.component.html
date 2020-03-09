@@ -1,5 +1,11 @@
 <main xmlns="http://www.w3.org/1999/html" [ngSwitch]="this.screen">
-  <!-- This is for the login form -->
+  <!---------------------------------------------------------------------------
+    USERNAME AND PASSWORD LOGIN FORM
+
+    Asks the user for their username and password for the game, or allows them
+    to follow a link to create a new account or get help logging in.
+    @author TomRHandcock
+    -------------------------------------------------------------------------->
   <section id="loginSection" *ngSwitchCase="this.Screens.LOGIN">
     <form id="loginForm">
       <div class="fields">
@@ -19,7 +25,14 @@
       </div>
     </form>
   </section>
-  <!-- This is for the account creation form -->
+
+
+  <!---------------------------------------------------------------------------
+    CREATE NEW ACCOUNT FORM
+
+    Allows the user to create a new account for use in the game.
+    @author TomRHandcock
+    -------------------------------------------------------------------------->
   <section id="createSection" *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
     <form id="createForm">
       <div class="fields">
@@ -45,10 +58,11 @@
     @author galexite
     -------------------------------------------------------------------------->
   <section id="teamIdSection" *ngSwitchCase="this.Screens.TEAM_ID">
-    <form id="loginForm">
+    <form id="teamIdForm">
       <div class="fields">
         <p class="content">
-          Please enter your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected with your team!
+          Please enter your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected
+          with your team!
         </p>
         <input type="text" name="teamId" placeholder="Team ID" [(ngModel)]="teamId" required>
       </div>
@@ -61,15 +75,16 @@
     </form>
   </section>
 
+
   <!---------------------------------------------------------------------------
     GAME PIN INPUT
-    
+
     This view is for space for the user to input the game pin or create a new
     game.
     @author TomRHandcock
   ---------------------------------------------------------------------------->
   <section id="gameIdSection" *ngSwitchCase="this.Screens.GAME_ID">
-    <form id="loginForm">
+    <form id="gamePinForm">
       <div class="fields">
         <p class="content">
           Please join a game or create your own game!
@@ -78,14 +93,22 @@
       </div>
       <div class="formExtras">
         <input type="submit" (click)="this.onJoinGame()" name="loginSubmit" value="Join game">
-        <button>Create a game</button>
+        <input (click)="onCreateNewGame()" name="createNewGame" type="button" value="Create a new game...">
         <div class="links">
           <a>Help logging in</a>
         </div>
       </div>
     </form>
   </section>
-  <!-- The privacy policy view (Author: AlexWesterman) -->
+
+
+  <!---------------------------------------------------------------------------
+    PRIVACY POLICY
+
+    This view is for space for the user to input the game pin or create a new
+    game.
+    @author AlexWesterman
+  ---------------------------------------------------------------------------->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
     <div class="policyContainer">
       <!-- The title content -->
@@ -96,7 +119,8 @@
           Due to GDPR we need your permission for us to store data about you for use with this app.
         </p>
         <p class="content">
-          We will need a username for use in leaderboards.</p>
+          We will need a username for use in leaderboards.
+        </p>
         <p class="content">
           We also need access to your location via GPS to track your progress on the map, this data will only be held
           while the app is in use, and once closed will be removed.
