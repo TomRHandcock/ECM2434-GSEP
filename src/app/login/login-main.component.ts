@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {Router} from '@angular/router';
 
 enum Screen {
   CREATING_ACCOUNT,
@@ -29,7 +30,7 @@ export class LoginMainComponent implements OnInit {
   teamId = '';
   gameID: string;
 
-  constructor(public authentication: AngularFireAuth, private db: AngularFireDatabase) {
+  constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase, private router: Router) {
     this.screen = Screen.LOGIN;
   }
 
@@ -39,7 +40,7 @@ export class LoginMainComponent implements OnInit {
    */
   ngOnInit() {
     // This function will redirect an already logged in user to the player screen
-    this.authentication.auth.onAuthStateChanged(user => {
+    this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {
         this.checkTeamAndRedirectPlayer(this.db);
       }
@@ -65,7 +66,7 @@ export class LoginMainComponent implements OnInit {
    */
   onLoginPressed() {
     try {
-      this.authentication.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
+      this.afAuth.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
         () => this.checkTeamAndRedirectPlayer(this.db)
       ).catch((reason) => {
         switch (reason.code) {
@@ -107,7 +108,7 @@ export class LoginMainComponent implements OnInit {
   onCreationPressed() {
     // Check passwords have been entered and match
     if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
-      this.authentication.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
+      this.afAuth.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
         () => this.checkTeamAndRedirectPlayer(this.db),
         reason => {
           alert('Creation of account failed with reason: ' + reason);
@@ -141,31 +142,31 @@ export class LoginMainComponent implements OnInit {
        players = game.child('players');
        // For each game we look at the players in that game
        players.forEach((player) => {
-        // We find if they are in that game
-        if (player.toJSON().toString() === this.authentication.auth.currentUser.uid) {
-          // We found the current user in this game
-          this.gameID = game.child('ID').toJSON().toString();
-          // Now we need to find the team the current player is on
-          teams = game.child('team');
-          teams.forEach((team) => {
-            // Array of players on a team
-            const teamPlayers = team.child('players');
-            teamPlayers.forEach((teamPlayer) => {
-              if (teamPlayer.toJSON().toString() === this.authentication.auth.currentUser.uid) {
-                // We found the team the player is on
-                console.log('Redirecting to player screen');
-                window.location.assign('./player');
-                return;
-              }
-            });
-          });
-          if (!this.teamId) {
-            // We couldn't find the team the player was on
-            console.log('Redirecting to select team');
-            this.screen = Screen.TEAM_ID;
-            return;
-          }
-        }
+         // We find if they are in that game
+         if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+           // We found the current user in this game
+           this.gameID = game.child('ID').toJSON().toString();
+           // Now we need to find the team the current player is on
+           teams = game.child('team');
+           teams.forEach((team) => {
+             // Array of players on a team
+             const teamPlayers = team.child('players');
+             teamPlayers.forEach((teamPlayer) => {
+               if (teamPlayer.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+                 // We found the team the player is on
+                 console.log('Redirecting to player screen');
+                 this.router.navigate(['/player']);
+                 return;
+               }
+             });
+           });
+           if (!this.teamId) {
+             // We couldn't find the team the player was on
+             console.log('Redirecting to select team');
+             this.screen = Screen.TEAM_ID;
+             return;
+           }
+         }
        });
       });
       if (!this.gameID) {
@@ -178,7 +179,7 @@ export class LoginMainComponent implements OnInit {
 
 
   /**
-   * Callback for adding the player's team ID.
+   * Attach the team ID to the user's account to allocate them to a team.
    * @author galexite
    * Modified to make sure Firebase can recognise the 'players' as an Array on a new team.
    * This had to be modified due to the way the "CheckTeam" method in player-main works.
@@ -207,7 +208,7 @@ export class LoginMainComponent implements OnInit {
           }
           // Insert the player into the team
           this.db.database.ref('games/' + this.gameID + '/team/' + this.teamId + '/players/' + index)
-            .set(this.authentication.auth.currentUser.uid).then(() => {
+            .set(this.afAuth.auth.currentUser.uid).then(() => {
             this.checkTeamAndRedirectPlayer(this.db);
           });
         });
@@ -221,11 +222,34 @@ export class LoginMainComponent implements OnInit {
    */
   onJoinGame() {
     // Add the player to the game, once done, call the check team and redirect player method
-    this.db.database.ref('games/' + this.gameID + '/players/').push(this.authentication.auth.currentUser.uid).then(() => {
+    this.db.database.ref('games/' + this.gameID + '/players/').push(this.afAuth.auth.currentUser.uid).then(() => {
       this.checkTeamAndRedirectPlayer(this.db);
     }).catch((error) => {
       alert('Unable to add you to the selected team, reason: ' + error);
     });
+  }
+
+  /**
+   * Called when the user selects the 'Create a new game...' button to allow them to create their
+   * own custom games (and therefore become a gamemaster for this game).
+   * @author galexite
+   */
+  onCreateNewGame() {
+    this.db.database.ref('/games/')
+      .push({
+        gameMaster: [this.afAuth.auth.currentUser.uid],
+        team: [{
+          currentTarget: '',
+          hintsUsed: 0,
+          locationsCompleted: 0,
+          name: 'Gamemaster team',
+          nextTarget: 0,
+          players: [this.afAuth.auth.currentUser.uid],
+          score: 0
+        }]
+      })
+      .then(() => this.router.navigate(['/gamemaster']))
+      .catch(error => alert('Couldn\'t create your game! Try reloading the page. Error: ' + error));
   }
 }
 

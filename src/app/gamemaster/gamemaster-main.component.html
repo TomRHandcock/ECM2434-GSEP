@@ -12,22 +12,32 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
-      <a class="navbar-item" (click)="this.gotoPlayerView();">
+      <a (click)="this.gotoPlayerView();" class="navbar-item">
         Player View
       </a>
-      <a class="navbar-item" (click)="changeScreen(this.Screens.OVERVIEW);">
+      <a (click)="changeScreen(this.Screens.OVERVIEW);"
+         [ngClass]="{'is-active': screen === Screens.OVERVIEW}"
+         class="navbar-item">
         Overview
       </a>
-      <a class="navbar-item" (click)="changeScreen(this.Screens.TEAMS);">
+      <a (click)="changeScreen(this.Screens.TEAMS);"
+         [ngClass]="{'is-active': screen === Screens.TEAMS}"
+         class="navbar-item">
         Teams
       </a>
-      <a class="navbar-item" (click)="changeScreen(this.Screens.QUESTIONS)">
+      <a (click)="changeScreen(this.Screens.QUESTIONS)"
+         [ngClass]="{'is-active': screen === Screens.QUESTIONS}"
+         class="navbar-item">
         Questions
       </a>
-      <a class="navbar-item" (click)="changeScreen(this.Screens.LOCATIONS)">
+      <a (click)="changeScreen(this.Screens.LOCATIONS)"
+         [ngClass]="{'is-active': screen === Screens.LOCATIONS}"
+         class="navbar-item">
         Locations
       </a>
-      <a class="navbar-item" (click)="changeScreen(this.Screens.QR)">
+      <a (click)="changeScreen(this.Screens.QR)"
+         [ngClass]="{'is-active': screen == Screens.QR}"
+         class="navbar-item">
         QR Generation
       </a>
       <a class="navbar-item" (click)="signOut()">
@@ -45,6 +55,7 @@
 ---------------------------------------------------------------------------->
 <div class="container" [ngSwitch]="this.screen">
 
+
   <!---------------------------------------------------------------------------
     LOST POP UP
 
@@ -52,24 +63,32 @@
     @author OGWSaunders
   ---------------------------------------------------------------------------->
   <section class="section" id="overview" *ngSwitchCase="this.Screens.OVERVIEW">
-    <app-scoreboard></app-scoreboard>
+    <div class="">
+      <div class="box">
+        <h5 class="subtitle is-5">Game ID</h5>
+        <h2 class="title is-2">1234</h2>
+      </div>
+      <app-scoreboard></app-scoreboard>
+    </div>
     <app-map id="map"
-      [markers]="this.lostTeamsMarkers"
-    ></app-map>
+             [markers]="this.lostTeamsMarkers">
+    </app-map>
     <!-- The lost alert popup (Author: OGWSanders) -->
     <div id="lostAlert" *ngIf="this.displayLost">
       <div id="lostAlertDisplay">
         <div id="titleLostDialog"><strong>Some teams have reported as lost</strong></div>
         <div id="lostTeamText">Lost Teams:<br/>{{this.lostTeamsText}}</div>
-        <button class="button" (click)="this.displayLost = false">Close dialog</button>
+        <button (click)="this.displayLost = false" class="button is-danger">Close dialog</button>
       </div>
     </div>
   </section>
 
+
   <!---------------------------------------------------------------------------
     LOCATIONS
 
-    The screen for
+    Allows the gamemaster to add and edit locations where they want players to
+    visit.
     @author AlexWesterman
   ---------------------------------------------------------------------------->
   <section class="section" id="locationsView" *ngSwitchCase="this.Screens.LOCATIONS">
