@@ -55,7 +55,7 @@
     </section>
 
     <!-- The QR camera opener (Author: galexite, OGWSaunders) -->
-    <button (click)="changeScreen(screens.QR_SCANNER)" class="button is-primary">
+    <button (click)="changeScreen(screens.QR_SCANNER)" class="buttonElement button is-primary">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
       </span>
@@ -64,10 +64,10 @@
 
     <!-- The bottom buttons (Author: AlexWesterman) -->
     <div class="button-bar" id="playerButtonBar">
-      <button (click)="showHint()" class="button is-primary">
+      <button (click)="showHint()" class="buttonElement button is-primary">
         <span>Request Hint</span>
       </button>
-      <button (click)="openUniWebsite()" class="button is-primary">
+      <button (click)="openUniWebsite()" class="buttonElement button is-primary">
         <span class="icon is-small">
           <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
         </span>
@@ -85,7 +85,7 @@
   <main *ngSwitchCase="screens.PROGRESS" class="container progress-container has-navbar-fixed-top">
       <section class="element">
         <h1 class="title is-1">Your Current Progress</h1>
-  
+
         <!-- The table of entries -->
         <table class="table">
           <tbody>

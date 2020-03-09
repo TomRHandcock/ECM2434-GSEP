@@ -310,7 +310,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
         );
 
         // Add text to the dialog box
-        this.lostTeamsText += lostTeam + ' ';
+        this.lostTeamsText += lostTeam.ID + ' ';
 
         // Lost players show up on gamemaster login
         this.displayLost = true;
