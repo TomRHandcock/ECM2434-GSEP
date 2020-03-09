@@ -2,7 +2,7 @@
 <nav class="navbar is-fixed-top" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
-      <span class="navbar-header">{{teamData.name}}</span>
+      <a (click)="changeScreen(screens.HOME)" class="navbar-header">{{teamData.name}}</a>
     </div>
     <a class="navbar-burger" role="button" aria-label="Toggle navigation" (click)="showMenu = !showMenu">
       <span aria-hidden="true"></span>
