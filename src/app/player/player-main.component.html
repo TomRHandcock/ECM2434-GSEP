@@ -2,7 +2,7 @@
 <nav class="navbar is-fixed-top" role="navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
-      <a (click)="changeScreen(screens.HOME)" class="navbar-header">{{teamData.name}}</a>
+      <a (click)="changeScreen(screens.HOME)" class="navbar-header">{{team.name}}</a>
     </div>
     <a class="navbar-burger" role="button" aria-label="Toggle navigation" (click)="showMenu = !showMenu">
       <span aria-hidden="true"></span>
@@ -12,7 +12,8 @@
   </div>
   <div class="navbar-menu" [ngClass]="showMenu? 'is-active' : ''">
     <div class="navbar-end">
-      <a class="navbar-item" *ngIf="isAGamemaster" style="color:green" (click)="goToGamemaster()">Gamemaster Control</a>
+      <a *ngIf="isAGamemaster" [routerLink]="['/game', gameId, 'gamemaster']" class="navbar-item" style="color:green">Gamemaster
+        Control</a>
       <a class="navbar-item" (click)="changeScreen(screens.PROGRESS); showMenu = false">Our Progress</a>
       <a class="navbar-item" (click)="changeScreen(screens.IM_LOST); showMenu = false">I'm Lost</a>
       <a class="navbar-item" (click)="signOut()">Sign out</a>
@@ -89,17 +90,17 @@
           <tbody>
             <tr>
               <td class="row-heading">Score</td>
-              <td class="row-value">{{teamData.score}}</td>
+              <td class="row-value">{{team.score}}</td>
             </tr>
 
             <!-- Some example entries that we may choose to implement -->
             <tr>
               <td class="row-heading">Locations Complete</td>
-              <td class="row-value">{{teamData.locationsCompleted}}</td>
+              <td class="row-value">{{team.locationsCompleted}}</td>
             </tr>
             <tr>
               <td class="row-heading">Hints Used</td>
-              <td class="row-value">{{teamData.hintsUsed}}</td>
+              <td class="row-value">{{team.hintsUsed}}</td>
             </tr>
           </tbody>
         </table>
@@ -221,7 +222,7 @@
   <main id="finishedDialog" *ngIf="finishedQuiz">
     <div>
       <h1 class="title is-1">You have finished the game!</h1>
-      <h2 class="title is-2">Your score: {{teamData.score}}</h2>
+      <h2 class="title is-2">Your score: {{team.score}}</h2>
       <h2 class="title is-2">Head back to the start to see the rankings.</h2>
     </div>
   </main>

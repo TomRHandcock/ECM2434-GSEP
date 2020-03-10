@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {AngularFireDatabase} from '@angular/fire/database';
+import {Component, Input, OnInit} from '@angular/core';
+import {Team} from '../../database.schema';
 
 @Component({
   selector: 'app-scoreboard',
@@ -8,13 +8,9 @@ import {AngularFireDatabase} from '@angular/fire/database';
 })
 export class ScoreboardComponent implements OnInit {
 
-  teams: Array<any>;
+  @Input() teams: Team[];
 
-  constructor(public db: AngularFireDatabase) {
-    this.db.list('games/0/team/').valueChanges().subscribe((teams) => {
-      this.teams = teams.sort(this.compare);
-      console.log(this.teams);
-    });
+  constructor() {
   }
 
   ngOnInit() {

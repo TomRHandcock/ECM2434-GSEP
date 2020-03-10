@@ -4,10 +4,6 @@
   color: white;
 }
 
-.buttonElement {
-  border: 0.2em solid white;
-}
-
 .navbar-item.is-active {
   background-color: $secondary !important;
   border-bottom: 0.2em solid $primary;
@@ -75,20 +71,7 @@ fa-icon.locationAction:nth-of-type(3):hover::after {
   content:"Delete";
 }
 
-#qrHolder {
-  display: grid;
-  grid-template-rows: 50px auto auto;
-  grid-template-columns: 1fr minmax(350px, 30%) 1fr;
-  z-index: 2;
-  position: absolute;
-  box-sizing: content-box;
-  margin-left: -24px;
-  width: 100%;
-  top: 10vh;
-  padding: 0 24px 48px 0;
-}
-
-#descriptionHolder {
+.holder {
   display: grid;
   grid-template-rows: 50px auto auto;
   grid-template-columns: 1fr minmax(350px, 30%) 1fr;
@@ -178,34 +161,11 @@ fa-icon.locationAction:nth-of-type(3):hover::after {
   text-align: center;
 }
 
-.qr {
-  width: 50vh;
-  margin: 5px auto auto;
-}
-
-.qrPic {
-  border: 2px solid white;
-  height: 50vh;
-}
-
 #overview {
   display: grid;
   grid-template-rows: minmax(400px, 65vh);
   grid-template-columns: minmax(200px, 3fr) 7fr;
   grid-column-gap: 20px;
-}
-
-#lostAlert {
-  display: grid;
-  grid-template-rows: 50px auto auto;
-  grid-template-columns: 1fr minmax(350px, 30%) 1fr;
-  z-index: 2;
-  position: absolute;
-  box-sizing: content-box;
-  margin-left: -24px;
-  width: 100%;
-  top: 10vh;
-  padding: 0 24px 48px 0;
 }
 
 #lostAlertDisplay {
