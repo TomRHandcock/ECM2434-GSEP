@@ -107,7 +107,7 @@
       </section>
 
     <!-- A button to return back to the home screen -->
-    <div role="button" class="is-primary is-fullwidth button" id="progressBack" (click)="changeScreen(screens.HOME)">
+    <div role="button" class=" buttonElement is-primary is-fullwidth button" id="progressBack" (click)="changeScreen(screens.HOME)">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
@@ -130,7 +130,7 @@
   <main *ngSwitchCase="screens.QR_SCANNER" class="container has-navbar-fixed-top">
     <zxing-scanner (scanSuccess)="onQrCodeScanned($event)"></zxing-scanner>
     <!-- A button to return to the home view -->
-    <div role="button" class="is-primary button" id="qrScannerBack" (click)="changeScreen(screens.HOME)">
+    <div role="button" class="buttonElement button is-primary is-fullwidth" id="qrScannerBack" (click)="changeScreen(screens.HOME)">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
