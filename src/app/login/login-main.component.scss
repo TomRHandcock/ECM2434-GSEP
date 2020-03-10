@@ -31,6 +31,28 @@ section {
   }
 }
 
+.policyContainer::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.policyContainer::-webkit-scrollbar:vertical {
+  width: 11px;
+}
+
+.policyContainer::-webkit-scrollbar:horizontal {
+  height: 11px;
+}
+
+.policyContainer::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 2px solid white; /* should match background, can't be transparent */
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.policyContainer {
+  overflow-y: scroll;
+}
+
 form, .policyContainer {
   opacity: 100%;
   width: 100%;
