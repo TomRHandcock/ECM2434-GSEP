@@ -188,7 +188,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
     // Get the actual contents
     this.db.list(`games/${this.gameId}/${path}`).valueChanges().subscribe((table: Table[]) => {
-      console.log(table);
       switch (path) {
         case 'location':
           this.locations = table as Location[];

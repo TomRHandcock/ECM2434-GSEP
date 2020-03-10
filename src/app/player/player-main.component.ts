@@ -41,9 +41,9 @@ export class PlayerMainComponent implements OnInit {
   teamId = '';
 
   /**
-   * The player's team data.
+   * The player's team.
    */
-  teamData;
+  team: Team;
 
   /**
    * Next location for the player to reach.
@@ -104,7 +104,7 @@ export class PlayerMainComponent implements OnInit {
     });
 
     // Set some default values to stop the console errors screaming at you
-    this.teamData = new Team();
+    this.team = new Team();
     // Then get the actual values
     this.getTeamStats();
   }
@@ -199,12 +199,12 @@ export class PlayerMainComponent implements OnInit {
    */
   updateLocation() {
     this.db.database.ref(`games/${this.gameId}/location`).once('value').then((data) => {
-      if (data.val().length <= this.teamData.locationsCompleted) {
+      if (data.val().length <= this.team.locationsCompleted) {
         // Team has finished the game
         this.finishedQuiz = true;
       } else {
         // Team hasn't finished the game
-        this.db.object(`games/${this.gameId}/location/${this.teamData.nextTarget}`)
+        this.db.object(`games/${this.gameId}/location/${this.team.nextTarget}`)
           .valueChanges()
           .subscribe(location => this.currTarget = location as Location);
       }
@@ -285,9 +285,8 @@ export class PlayerMainComponent implements OnInit {
       }
 
       // Find out the teams current score
-      this.db.object(`games/${this.gameId}/team/${this.teamId}`).valueChanges().subscribe((data) => {
-        this.teamData = data;
-        console.log(this.teamData);
+      this.db.object(`games/${this.gameId}/team/${this.teamId}`).valueChanges().subscribe((team: Team) => {
+        this.team = team;
         this.updateLocation();
       });
     });
@@ -302,13 +301,13 @@ export class PlayerMainComponent implements OnInit {
    */
   onQuizFinalScore(finalScore: number) {
     // Add 1 to locations completed
-    this.teamData.locationsCompleted++;
+    this.team.locationsCompleted++;
     // TODO: Randomise the next target to kne not already visited
-    this.teamData.nextTarget++;
+    this.team.nextTarget++;
     // Update the team's score
-    this.teamData.score += finalScore;
+    this.team.score += finalScore;
     // Update the database values
-    this.db.database.ref(`games/${this.gameId}/team/${this.teamData.ID}`).set(this.teamData);
+    this.db.database.ref(`games/${this.gameId}/team/${this.teamId}`).set(this.team);
     // Update the location view
     this.updateLocation();
     // Go back home
@@ -339,8 +338,8 @@ export class PlayerMainComponent implements OnInit {
     navigator.geolocation.getCurrentPosition(position => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-      this.db.database.ref(`games/${this.gameId}/lost/${this.teamData.ID}`).set({
-        ID: this.teamId,
+      this.db.database.ref(`games/${this.gameId}/lost/${this.teamId}`).set({
+        id: this.teamId,
         lat,
         lon
       });
