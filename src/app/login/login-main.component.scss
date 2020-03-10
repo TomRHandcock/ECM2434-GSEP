@@ -103,13 +103,13 @@ form, .policyContainer {
   color: #cccccc;
 }
 
-//The buttons and links at the bottom of the form
+// The buttons and links at the bottom of the form
 .formExtras {
   grid-column: 2/3;
   grid-row: 3/4;
 }
 
-//The buttons
+// The buttons
 input[type="button"], input[type="submit"] {
   background-color: #0078b5;
   border: 0;
@@ -121,6 +121,7 @@ input[type="button"], input[type="submit"] {
   border-radius: 5px;
   padding: 5px 0;
   outline: none;
+  -webkit-appearance: none; // Get rid of the default button style on iOS
 }
 
 .links {
