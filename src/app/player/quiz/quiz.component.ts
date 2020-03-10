@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Question} from '../../gamemaster/gamemaster-main.component';
+import {Question} from '../../database.schema';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireDatabase} from '@angular/fire/database';

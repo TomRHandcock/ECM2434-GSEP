@@ -81,10 +81,6 @@ form, .policyContainer {
   color: #cccccc;
 }
 
-.ng-valid:not(form).ng-dirty {
-  border: 3px solid #3ce03c;
-}
-
 //The buttons and links at the bottom of the form
 .formExtras {
   grid-column: 2/3;
@@ -119,11 +115,3 @@ input[type="button"], input[type="submit"] {
   text-decoration: underline;
 }
 
-.privacyText {
-  padding: 10px;
-}
-
-.privacyTitle {
-  font-size: 26px;
-  text-align: center;
-}

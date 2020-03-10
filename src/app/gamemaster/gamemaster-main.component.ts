@@ -1,55 +1,34 @@
-import {AfterViewInit, Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
-import {faMapMarkerAlt, faPen, faPlus, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {faMapMarkerAlt, faPen, faQrcode, faSort, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {Router} from '@angular/router';
-import {MapComponent} from '../common/map/map.component';
-import * as mapboxgl from 'mapbox-gl';
-import { LOCATION_INITIALIZED } from '@angular/common';
-import { error } from 'protractor';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location, Lost, Question, Table, Team} from '../database.schema';
+import {map} from 'rxjs/operators';
 
 enum Screen {
   NONE,
   OVERVIEW,
   QUESTIONS,
   LOCATIONS,
-  TEAMS,
-  QR
+  TEAMS
 }
-
-// All the keys in the database
-enum DatabaseTables {
-  Player = 'player',
-  Location = 'location',
-  Gamemaster = 'gamemaster',
-  Team = 'team',
-  Lost = 'lost'
-}
-
 
 @Component({
   selector: 'app-gamemaster-main',
   templateUrl: './gamemaster-main.component.html',
   styleUrls: ['./gamemaster-main.component.scss']
 })
-
 export class GamemasterMainComponent implements OnInit, AfterViewInit {
-
-  /**
-   * Component for generating QR Codes
-   */
-  qrComponent: QRCodeComponent = null;
 
   /**
    * The qr code data that holds a location as a random number
    */
   qrData: string = null;
 
-
   /**
    * Icons for buttons and actions
    */
-  plusIcon = faPlus;
   editIcon = faPen;
   deleteIcon = faTrashAlt;
   sortIcon = faSort;
@@ -62,6 +41,11 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   showMenu = false;
 
   /**
+   * The game the user is editing.
+   */
+  gameId = '';
+
+  /**
    * The set of screens in game master view
    */
   Screens = Screen;
@@ -69,37 +53,32 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * The current screen that is in view
    */
-  screen: Screen;
+  screen = Screen.NONE;
 
   /**
    * The list of questions for the questions screen
    */
-  questions: { [loc: string]: Array<Question> };
+  questions: { [loc: string]: Question[] } = {};
 
   /**
    * The list of locations for the locations screen
    */
-  locations: Array<any>;
+  locations: Location[] = [];
 
   /**
    * The list of teams for the teams screen
    */
-  teams: Array<any>;
+  teams: Team[] = [];
 
   /**
    * The list of lost teams that is shown on the map in game master
    */
-  lostTeams: Array<any>;
-
-  /**
-   * The list of lost team's markers
-   */
-  lostTeamsMarkers: Array<any>;
+  lostTeams: Lost[] = [];
 
   /**
    * The list of lost teams that is shown in a dialog alert in game master
    */
-  lostTeamsText: string;
+  lostTeamsText = '';
 
   /**
    * Whether the QR Code dialog is shown for a location in locations screen
@@ -114,39 +93,44 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * The currently selected location
    */
-  selectedLocation;
+  selectedLocation: Location;
 
   /**
    * Whether the Lost Team dialog is shown in the overview screen
    */
   displayLost = false;
 
-  constructor(public db: AngularFireDatabase, public auth: AngularFireAuth, private router: Router) {
-    // myQrData is shown on the Code
-    this.qrComponent = new QRCodeComponent();
-    this.qrData = this.qrComponent.myQrData;
+  constructor(private activatedRoute: ActivatedRoute,
+              private afAuth: AngularFireAuth,
+              private db: AngularFireDatabase,
+              private router: Router) {
+  }
 
-    this.screen = this.Screens.NONE;
-    this.lostTeams = [];
-    this.lostTeamsMarkers = [];
-
-    this.questions = this.getQuestionsFromDatabase();
-    this.getTableFromDatabase(DatabaseTables.Location);
-    this.getTableFromDatabase(DatabaseTables.Team);
-   }
+  /**
+   * Get the current game ID from the current URL upon component init.
+   * @author galexite
+   */
+  ngOnInit() {
+    // Get the gameId from the current route.
+    const gameIdObservable = this.activatedRoute.paramMap.pipe(map(p => p.get('id')));
+    gameIdObservable.subscribe(id => {
+      this.gameId = id;
+      this.checkUser();
+    });
+  }
 
   /**
    * Called on construction
    * Checks that the user is authorised to be in the gamemaster view, or kicks them out
    * @author TomRHandcock
    */
-  ngOnInit() {
-    this.auth.auth.onAuthStateChanged((loggedInUser) => {
+  checkUser() {
+    this.afAuth.auth.onAuthStateChanged((loggedInUser) => {
       if (loggedInUser) {
         // There is a user logged in
         // Check the logged in user's id against the id's of all known gamemasters
         let gamemaster = false;
-        this.db.list('games/0/gameMaster/').valueChanges().subscribe((gamemasters) => {
+        this.db.list(`games/${this.gameId}/gameMaster/`).valueChanges().subscribe((gamemasters) => {
           gamemasters.forEach((item: string) => {
             if (loggedInUser.uid === item) {
               gamemaster = true;
@@ -154,7 +138,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
           });
           // If user is a gamemaster, do nothing else redirect them
           if (!gamemaster) {
-            window.location.assign('./player');
+            this.router.navigate(['/game', this.gameId]);
           } else {
             // User is a gamemaster, load the UI
             this.changeScreen(this.Screens.OVERVIEW);
@@ -162,9 +146,13 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
         });
       } else {
         // No user is logged in, redirect them to login page
-        window.location.assign('./login');
+        this.router.navigate(['/login']);
       }
     });
+
+    this.getQuestionsFromDatabase();
+    this.getTableFromDatabase(Location.tableName);
+    this.getTableFromDatabase(Team.tableName);
   }
 
   /**
@@ -176,21 +164,16 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Returns all questions stored in the database, nested by location
-   * @return [loc: string]: Array<Question> - the (location,questions) pair for each location
+   * Gets all questions stored in the database, nested by location
    * @author AlexWesterman
    */
   getQuestionsFromDatabase() {
     // This will loop through each location and get the questions
-    const questions: {[loc: string]: Array<Question>} = {};
-
-    this.db.list('games/0/location').valueChanges().subscribe((locations: Location[]) => {
+    this.db.list(`games/${this.gameId}/location`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
-        questions[item.name] = item.questions || [];
+        this.questions[item.name] = item.questions || [];
       });
     });
-
-    return questions;
   }
 
   /**
@@ -199,18 +182,18 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    * @author TomRHandcock
    */
-  getTableFromDatabase(tableName: DatabaseTables) {
+  getTableFromDatabase(tableName: string) {
     // Get the path for the table
     const path = tableName.toString().toLowerCase();
 
     // Get the actual contents
-    this.db.list('games/0/' + path + '/').valueChanges().subscribe((table) => {
+    this.db.list(`games/${this.gameId}/${path}`).valueChanges().subscribe((table: Table[]) => {
       switch (path) {
         case 'location':
-          this.locations = table;
+          this.locations = table as Location[];
           break;
         case 'team':
-          this.teams = table;
+          this.teams = table as Team[];
           break;
         default:
           console.error(path + ' is not handled!');
@@ -232,7 +215,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author George White
    */
   signOut() {
-    this.auth.auth.signOut().then(() => this.router.navigate(['login']));
+    this.afAuth.auth.signOut().then(() => this.router.navigate(['login']));
   }
 
   /**
@@ -240,8 +223,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @param id The ID of the team to delete
    * @author TomRHandcock
    */
-  deleteTeam(id: number) {
-    this.db.object('games/0/team/' + id).remove();
+  deleteTeam(id: string) {
+    this.db.object(`games/${this.gameId}/team/${id}`).remove();
   }
 
   /**
@@ -265,31 +248,12 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Converts a number to a string, for use in HTML
-   * @param num - the number to convert
-   * @return the converted string
-   * @author AlexWesterman
-   */
-  numToString(num: number) {
-    return num.toString();
-  }
-
-  /**
    * Adds a new team to the database
-   * @author TomRHandcock, OGWSaunders
+   * @author TomRHandcock, OGWSaunders, galexite
    */
   addNewTeam() {
-    const id = this.generateTeamID();
-    this.db.object('games/0/team/' + id).set({
-      ID: id,
-      name: '',
-      score: 0,
-      players: [],
-      currentTarget: 0,
-      nextTarget: 0,
-      hintsUsed: 0,
-      locationsCompleted: 0
-    });
+    const team = new Team();
+    this.db.database.ref(`games/${this.gameId}/team/${team.id}`).set(team);
   }
 
   /**
@@ -299,38 +263,16 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   onLostPlayer() {
     this.lostTeamsText = 'IDs: ';
-    this.db.list('games/0/lost/').valueChanges().subscribe((lost) => {
+    this.db.list(`games/${this.gameId}/lost/`).valueChanges().subscribe((lost) => {
       lost.forEach((lostTeam: Lost) => {
-        this.lostTeams.push(
-          {
-            ID: lostTeam.ID,
-            lat: lostTeam.lat,
-            lon: lostTeam.lon
-          }
-        );
+        this.lostTeams.push(lostTeam);
 
         // Add text to the dialog box
-        this.lostTeamsText += lostTeam.ID + ' ';
+        this.lostTeamsText += lostTeam.id + ' ';
 
         // Lost players show up on gamemaster login
         this.displayLost = true;
       });
-
-      // Show lost players on the map, if there are any
-      if (this.lostTeams.length > 0) {
-        this.showLostPlayersOnMap();
-      }
-    });
-  }
-
-  /**
-   * Shows lost players on the overview map
-   * @author AlexWesterman
-   */
-  showLostPlayersOnMap() {
-    // Add each lost player as a marker
-    this.lostTeams.forEach((lostTeam) => {
-      this.lostTeamsMarkers.push({lat: lostTeam.lat, lon: lostTeam.lon});
     });
   }
 
@@ -340,7 +282,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewQuestion(locationName: string) {
-    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list(`games/${this.gameId}/location/`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
           this.addNewQuestionToLocation(index, item);
@@ -358,49 +300,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewQuestionToLocation(locationId: number, location: Location) {
-    if (!location.questions) {
-      location.questions = [];
-    }
-
-    this.db.object('games/0/location/' +  locationId + '/questions/' + location.questions.length).set({
-      question: '',
-      answer: {
-        correct: '',
-        incorrect0: '',
-        incorrect1: '',
-        incorrect2: ''
-      }
-    });
-  }
-
-  /**
-   * Generates a new team ID for creating a team
-   * @author OGWSaunders
-   */
-  generateTeamID() {
-    const usedIDs: Array<number> = this.getUsedIDs();
-    let randID = Math.floor(Math.random() * Math.floor(999));
-
-    while (usedIDs.includes(randID)) {
-      randID = Math.floor(Math.random() * Math.floor(999));
-    }
-
-    return randID;
-  }
-
-  /**
-   * Finds all the currently used team IDs to ensure unique team ID
-   * @author OGWSaunders
-   */
-  getUsedIDs() {
-    const usedIDs = [];
-
-    this.db.list('games/0/team/').valueChanges().subscribe((table) => {
-      table.forEach((item: Team) => {
-          usedIDs.push(item.ID);
-      });
-    });
-    return usedIDs;
+    this.db.object(`games/${this.gameId}/location/${locationId}/questions/${location.questions.length}`)
+      .set(new Question());
   }
 
   /**
@@ -409,10 +310,10 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   updateQuestion(locationName: string) {
-    const sub = this.db.list('games/0/location/').valueChanges().subscribe((locations: Location[]) => {
+    const sub = this.db.list(`games/${this.gameId}/location/`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location, index: number) => {
         if (item.name === locationName) {
-          this.db.object('games/0/location/' + index + '/questions/').set(this.questions[locationName]);
+          this.db.object(`games/${this.gameId}/location/${index}/questions`).set(this.questions[locationName]);
           sub.unsubscribe();
         }
       });
@@ -421,7 +322,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   updateLocation(locationID: number) {
     console.log(locationID);
-    this.db.object('games/0/location/' + locationID + '/').set(this.locations[locationID]);
+    this.db.object(`games/${this.gameId}/location/${locationID}`).set(this.locations[locationID]);
   }
 
   /**
@@ -431,8 +332,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   updateTeam(id) {
     this.teams.forEach(element => {
-      if (element.ID === id) {
-        this.db.object('games/0/team/' + element.ID).set(element);
+      if (element.id === id) {
+        this.db.object(`games/${this.gameId}/team/` + element.id).set(element);
       }
     });
   }
@@ -447,7 +348,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const locIndex: number = this.locations.map((e) => e.name).indexOf(location);
     this.locations.splice(locIndex, 1);
 
-    this.db.object('games/0/location/' + locIndex + '/').remove();
+    this.db.object(`games/${this.gameId}/location/` + locIndex + '/').remove();
   }
 
   /**
@@ -455,19 +356,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewLocation() {
-    const newLocation = {
-      questions: [],
-      name: '',
-      latitude: 0,
-      longitude: 0,
-      qrCode: '',
-      hint: '',
-      description: ''
-    };
-
-    this.db.object('games/0/location/' + this.locations.length).set(newLocation);
-
-    this.locations.push(newLocation);
+    this.db.object(`games/${this.gameId}/location/${this.locations.length}`).set(new Location());
   }
 
   /**
@@ -488,7 +377,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    */
   onSubmitEditLocation() {
     // Find the location we should be editing
-    this.db.database.ref('games/0/location/').once('value').then((locations) => {
+    this.db.database.ref(`games/${this.gameId}/location/`).once('value').then((locations) => {
       let locationID;
       locations.forEach((location) => {
         // If we find the location, take note of the location ID
@@ -498,7 +387,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       });
       if (locationID) {
         // Found a matching location, update it
-        this.db.database.ref('games/0/location/' + locationID).set(this.selectedLocation).catch((dbError) => {
+        this.db.database.ref(`games/${this.gameId}/location/` + locationID).set(this.selectedLocation).catch((dbError) => {
           console.error('Error whilst updating database: ' + dbError);
         });
       } else {
@@ -510,35 +399,17 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Generates a new QR code
-   * @author AlexWesterman
-   */
-  generateQRCode() {
-    this.qrComponent = new QRCodeComponent();
-    this.qrData = this.qrComponent.myQrData;
-  }
-
-  /**
-   * Redirects to the player view
-   * @author AlexWesterman
-   */
-  gotoPlayerView() {
-    window.location.assign('./player');
-  }
-
-  /**
    * This method is used to display the QR code for locations
    * @param seed The name of the location (used for the QR seed)
    * @author TomRHandcock
    */
   displayLocQrCode(seed) {
-    this.qrComponent = new QRCodeComponent();
     this.qrData = '[' + seed + ']';
     this.displayLocQr = true;
   }
 
   /**
-   *  This method will copy the argument text to the user's clipboard.
+   * This method will copy the argument text to the user's clipboard.
    * @param str The string to copy to the clipboard.
    * @author TomRHandcock
    */
@@ -575,73 +446,4 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     const img = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
     window.open(img);
   }
-}
-
-/**
- * This class creates QR Codes and allows them to be referenced via myQRData.
- * @author OGWSaunders
- */
-export class QRCodeComponent {
-  public myQrData = 'default';
-  randInteger: number = null;
-
-  constructor() {
-    this.createQrCode(999999999);
-    this.myQrData = '[' + (this.randInteger).toString() + ']';
-  }
-
-  /**
-   * Constructing QR Codes. A random number
-   * is created and used for the QR Code used
-   * within <qrcode> html tags.
-   *
-   * @param maxNum - upper limit for random number
-   * @author OGWSaunders
-   */
-  createQrCode(maxNum: number) {
-    this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
-  }
-}
-
-// Class definitions, relating to the database
-export class User {
-  ID: string;
-
-  constructor(ID: string) {
-    this.ID = ID;
-  }
-}
-
-export class GameMaster extends User {
-}
-
-export class Player extends User {
-}
-
-export class Location {
-  latitude: number;
-  longitude: number;
-  name: string;
-  qrCode: string;
-  questions: Question[];
-  description: string;
-  hint: string;
-}
-
-export class Question {
-  question: string;
-  answer: { [ans: string]: any };
-}
-
-export class Team {
-  ID: number;
-  name: string;
-  score: number;
-  players: Player[];
-}
-
-export class Lost {
-  ID: number;
-  lat: number;
-  lon: number;
 }
