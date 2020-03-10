@@ -1,3 +1,5 @@
+import { accessToken } from 'mapbox-gl';
+
 export const environment = {
   production: true,
   mapbox: {

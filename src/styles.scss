@@ -6,9 +6,8 @@
 body {
   padding: 0;
   margin: 0;
-  // Older browsers
-  // Newer browsers, gradient!
-  background: #0078b5 linear-gradient(to bottom, #0078b5 0%, #006abc 100%);
+  background-color: #0078b5; // Older browsers
+  background: linear-gradient(to bottom, #0078b5 0%, #006abc 100%); // Newer browsers, gradient!
   min-height: 100vh;
   font-family: $family-sans-serif;
 }

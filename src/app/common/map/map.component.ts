@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import {FullscreenControl, Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
-import {Lost} from '../../database.schema';
 
 @Component({
   selector: 'app-map',
@@ -11,11 +10,8 @@ import {Lost} from '../../database.schema';
 export class MapComponent implements OnInit, AfterViewInit {
 
   map: mapboxgl.Map;
+  @Input() markers: Array<any> = [];
 
-  /**
-   * Lost teams to draw on the map (only for the Gamemaster).
-   */
-  @Input() lostTeams: Lost[] = [];
 
   /**
    * Full screen button that floats top-right of the map.
@@ -46,7 +42,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     // Add the campus building GeoJSON dataset
     this.map.on('load', () => this.onMapLoad(this.map));
 
-    this.lostTeams.forEach(center => {
+    this.markers.forEach((center) => {
       const markerElem = document.createElement('div');
       markerElem.className = 'marker';
       markerElem.style.width = '20px';

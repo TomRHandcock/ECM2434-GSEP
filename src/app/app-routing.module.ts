@@ -6,8 +6,8 @@ import {LoginMainComponent} from './login/login-main.component';
 
 
 const routes: Routes = [
-  {path: 'game/:id', component: PlayerMainComponent, pathMatch: 'full'},
-  {path: 'game/:id/gamemaster', component: GamemasterMainComponent},
+  {path: 'player', component: PlayerMainComponent},
+  {path: 'gamemaster', component: GamemasterMainComponent},
   {path: 'login', component: LoginMainComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full'}
 ];
