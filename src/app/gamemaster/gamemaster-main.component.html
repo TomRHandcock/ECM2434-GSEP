@@ -62,8 +62,9 @@
       <div class="box">
         <h5 class="subtitle is-5">Game ID</h5>
         <h2 class="title is-2">{{gameId}}</h2>
+        <p class="content">Take note of this code, as players will need it later to join this game</p>
       </div>
-      <app-scoreboard></app-scoreboard>
+      <app-scoreboard [teams]="this.teams"></app-scoreboard>
     </div>
     <app-map id="map"
              [lostTeams]="lostTeams">

@@ -17,7 +17,7 @@ export class Game extends Table {
 
   id = '';
   gameMaster: { [uid: string]: string } = {};
-  location: Array<Location> = [];
+  location: Location[] = [];
   players: string[] = [];
   team: Team[] = [];
 
@@ -37,19 +37,24 @@ export class Game extends Table {
 export class Location extends Table {
   static tableName = 'location';
 
-  latitude: number;
-  longitude: number;
-  name: string;
-  questions: Question[];
-  description: string;
-  hint: string;
+  latitude = 0.0;
+  longitude = 0.0;
+  name = '';
+  questions: Question[] = [];
+  description = '';
+  hint = '';
 }
 
 export class Question extends Table {
   static tableName = 'location';
 
   question = '';
-  answer: { [ans: string]: any } = {};
+  answer = {
+    correct: '',
+    incorrect0: '',
+    incorrect1: '',
+    incorrect2: ''
+  };
 }
 
 export class Team extends Table {

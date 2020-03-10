@@ -53,32 +53,32 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * The current screen that is in view
    */
-  screen: Screen;
+  screen = Screen.NONE;
 
   /**
    * The list of questions for the questions screen
    */
-  questions: { [loc: string]: Question[] };
+  questions: { [loc: string]: Question[] } = {};
 
   /**
    * The list of locations for the locations screen
    */
-  locations: Location[];
+  locations: Location[] = [];
 
   /**
    * The list of teams for the teams screen
    */
-  teams: Team[];
+  teams: Team[] = [];
 
   /**
    * The list of lost teams that is shown on the map in game master
    */
-  lostTeams: Lost[];
+  lostTeams: Lost[] = [];
 
   /**
    * The list of lost teams that is shown in a dialog alert in game master
    */
-  lostTeamsText: string;
+  lostTeamsText = '';
 
   /**
    * Whether the QR Code dialog is shown for a location in locations screen
@@ -93,7 +93,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   /**
    * The currently selected location
    */
-  selectedLocation;
+  selectedLocation: Location;
 
   /**
    * Whether the Lost Team dialog is shown in the overview screen
@@ -104,10 +104,12 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
               private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
               private router: Router) {
-    this.screen = this.Screens.NONE;
-    this.lostTeams = [];
   }
 
+  /**
+   * Get the current game ID from the current URL upon component init.
+   * @author galexite
+   */
   ngOnInit() {
     // Get the gameId from the current route.
     const gameIdObservable = this.activatedRoute.paramMap.pipe(map(p => p.get('id')));
@@ -148,7 +150,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.questions = this.getQuestionsFromDatabase();
+    this.getQuestionsFromDatabase();
     this.getTableFromDatabase(Location.tableName);
     this.getTableFromDatabase(Team.tableName);
   }
@@ -162,21 +164,16 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Returns all questions stored in the database, nested by location
-   * @return [loc: string]: Question[] - the (location,questions) pair for each location
+   * Gets all questions stored in the database, nested by location
    * @author AlexWesterman
    */
   getQuestionsFromDatabase() {
     // This will loop through each location and get the questions
-    const questions: { [loc: string]: Question[] } = {};
-
     this.db.list(`games/${this.gameId}/location`).valueChanges().subscribe((locations: Location[]) => {
       locations.forEach((item: Location) => {
-        questions[item.name] = item.questions || [];
+        this.questions[item.name] = item.questions || [];
       });
     });
-
-    return questions;
   }
 
   /**
@@ -253,7 +250,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
    * Adds a new team to the database
-   * @author TomRHandcock, OGWSaunders
+   * @author TomRHandcock, OGWSaunders, galexite
    */
   addNewTeam() {
     const team = new Team();
@@ -304,19 +301,8 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewQuestionToLocation(locationId: number, location: Location) {
-    if (!location.questions) {
-      location.questions = [];
-    }
-
-    this.db.object(`games/${this.gameId}/location/` + locationId + '/questions/' + location.questions.length).set({
-      question: '',
-      answer: {
-        correct: '',
-        incorrect0: '',
-        incorrect1: '',
-        incorrect2: ''
-      }
-    });
+    this.db.object(`games/${this.gameId}/location/${locationId}/questions/${location.questions.length}`)
+      .set(new Question());
   }
 
   /**
@@ -371,19 +357,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   addNewLocation() {
-    const newLocation = {
-      questions: [],
-      name: '',
-      latitude: 0,
-      longitude: 0,
-      qrCode: '',
-      hint: '',
-      description: ''
-    };
-
-    this.db.object(`games/${this.gameId}/location/${this.locations.length}`).set(newLocation);
-
-    this.locations.push(newLocation);
+    this.db.object(`games/${this.gameId}/location/${this.locations.length}`).set(new Location());
   }
 
   /**
@@ -436,7 +410,7 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   *  This method will copy the argument text to the user's clipboard.
+   * This method will copy the argument text to the user's clipboard.
    * @param str The string to copy to the clipboard.
    * @author TomRHandcock
    */
