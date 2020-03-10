@@ -22,11 +22,6 @@ enum Screen {
 export class GamemasterMainComponent implements OnInit, AfterViewInit {
 
   /**
-   * Component for generating QR Codes
-   */
-  qrComponent: QRCodeComponent = null;
-
-  /**
    * The qr code data that holds a location as a random number
    */
   qrData: string = null;
@@ -436,7 +431,6 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @author TomRHandcock
    */
   displayLocQrCode(seed) {
-    this.qrComponent = new QRCodeComponent();
     this.qrData = '[' + seed + ']';
     this.displayLocQr = true;
   }
@@ -478,31 +472,5 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
     // Convert canvas to image and open it in a new tab
     const img = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
     window.open(img);
-  }
-}
-
-/**
- * This class creates QR Codes and allows them to be referenced via myQRData.
- * @author OGWSaunders
- */
-export class QRCodeComponent {
-  public myQrData = 'default';
-  randInteger: number = null;
-
-  constructor() {
-    this.createQrCode(999999999);
-    this.myQrData = '[' + (this.randInteger).toString() + ']';
-  }
-
-  /**
-   * Constructing QR Codes. A random number
-   * is created and used for the QR Code used
-   * within <qrcode> html tags.
-   *
-   * @param maxNum - upper limit for random number
-   * @author OGWSaunders
-   */
-  createQrCode(maxNum: number) {
-    this.randInteger = Math.floor(Math.random() * Math.floor(maxNum));
   }
 }
