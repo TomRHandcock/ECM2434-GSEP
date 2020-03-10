@@ -304,16 +304,15 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
   addNewQuestionToLocation(locationId: number, location: Location) {
     // Get the number of questions in the current location
     this.db.database.ref('games/' + this.gameId + '/location/' + locationId).once('value').then((data) => {
-      if(data.child('questions').exists()) {
+      if (data.child('questions').exists()) {
         // If 'questions' already exists, we can just append the question
         this.db.object(`games/${this.gameId}/location/${locationId}/questions/${location.questions.length}`)
         .set(new Question());
-      }
-      else {
+      } else {
         // No questions exist, we need to add a new questions object
         this.db.object('games/' + this.gameId + '/location/' + locationId + '/questions/0').set(new Question());
       }
-    })
+    });
   }
 
   /**
