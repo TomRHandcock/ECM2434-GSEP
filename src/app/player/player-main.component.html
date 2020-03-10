@@ -36,8 +36,8 @@
     </section>
 
     <!-- The description of the next location -->
-    <section class="element" id="clueSection">
-      <div>
+    <section class="element next-location-section" id="clueSection">
+      <div class="next-location">
         <h6 class="is-small is is-uppercase">Next Location</h6>
         <h3 class="subtitle is-3 next-location">{{currTarget.name}}</h3>
         <div class="next-info">
@@ -51,28 +51,28 @@
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- The QR camera opener (Author: galexite, OGWSaunders) -->
-    <button (click)="changeScreen(screens.QR_SCANNER)" class="buttonElement button is-primary">
+      <!-- The QR camera opener (Author: galexite, OGWSaunders) -->
+      <button (click)="changeScreen(screens.QR_SCANNER)" class="button is-primary is-fullwidth">
       <span class="icon is-small">
         <fa-icon [icon]="scanQrCodeIcon"></fa-icon>
       </span>
-      <span>Scan QR code</span>
-    </button>
-
-    <!-- The bottom buttons (Author: AlexWesterman) -->
-    <div class="button-bar" id="playerButtonBar">
-      <button (click)="showHint()" class="buttonElement button is-primary">
-        <span>Request Hint</span>
+        <span>Scan QR code</span>
       </button>
-      <button (click)="openUniWebsite()" class="buttonElement button is-primary">
+
+      <!-- The bottom buttons (Author: AlexWesterman) -->
+      <div class="button-bar" id="playerButtonBar">
+        <button (click)="showHint()" class="button is-primary">
+          <span>Request Hint</span>
+        </button>
+        <button (click)="openUniWebsite()" class="button is-primary">
         <span class="icon is-small">
           <fa-icon [icon]="visitWebsiteIcon"></fa-icon>
         </span>
-        <span>UoE Website</span>
-      </button>
-    </div>
+          <span>UoE Website</span>
+        </button>
+      </div>
+    </section>
   </main>
 
 
@@ -104,15 +104,15 @@
             </tr>
           </tbody>
         </table>
+        <!-- A button to return back to the home screen -->
+        <div (click)="changeScreen(screens.HOME)" class="button is-primary is-fullwidth" id="progressBack"
+             role="button">
+          <span class="icon is-small">
+            <fa-icon [icon]="homeIcon"></fa-icon>
+          </span>
+          <span>Back to Home</span>
+        </div>
       </section>
-
-    <!-- A button to return back to the home screen -->
-    <div role="button" class=" buttonElement is-primary is-fullwidth button" id="progressBack" (click)="changeScreen(screens.HOME)">
-      <span class="icon is-small">
-        <fa-icon [icon]="homeIcon"></fa-icon>
-      </span>
-      <span>Back to Home</span>
-    </div>
   </main>
 
 
@@ -130,7 +130,7 @@
   <main *ngSwitchCase="screens.QR_SCANNER" class="container has-navbar-fixed-top">
     <zxing-scanner (scanSuccess)="onQrCodeScanned($event)"></zxing-scanner>
     <!-- A button to return to the home view -->
-    <div role="button" class="buttonElement button is-primary is-fullwidth" id="qrScannerBack" (click)="changeScreen(screens.HOME)">
+    <div (click)="changeScreen(screens.HOME)" class="button is-primary is-fullwidth" id="qrScannerBack" role="button">
       <span class="icon is-small">
         <fa-icon [icon]="homeIcon"></fa-icon>
       </span>
