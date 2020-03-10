@@ -125,7 +125,7 @@ export class PlayerMainComponent implements OnInit {
    */
   checkTeam(user: any) {
     // Check whether they are on a team or not
-    this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((teams) => {
+    this.db.list(`games/${this.gameId}/team/`).valueChanges().subscribe((teams: Team[]) => {
       let currentTeam: Team;
       let isInTeam = false;
       teams.forEach((team: Team) => {

@@ -4,6 +4,7 @@ import {AngularFireDatabase} from '@angular/fire/database';
 import {Router} from '@angular/router';
 import * as shortid from 'shortid';
 import {Game} from '../database.schema';
+import DataSnapshot = firebase.database.DataSnapshot;
 
 enum Screen {
   CREATING_ACCOUNT,
@@ -29,8 +30,8 @@ export class LoginMainComponent implements OnInit {
   createPassword: string;
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
-  teamId = '';
-  gameId: string;
+  teamId: string = null;
+  gameId: string = null;
 
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
@@ -70,7 +71,7 @@ export class LoginMainComponent implements OnInit {
   onLoginPressed() {
     try {
       this.afAuth.auth.signInWithEmailAndPassword(this.loginEmail, this.loginPassword).then(
-        () => this.checkTeamAndRedirectPlayer(this.db)
+        () => this.checkTeamAndRedirectPlayer()
       ).catch((reason) => {
         switch (reason.code) {
           case 'auth/invalid-email':
@@ -110,7 +111,7 @@ export class LoginMainComponent implements OnInit {
     // Check passwords have been entered and match
     if (this.createPassword === this.createConfirmPassword && this.createPassword && this.createConfirmPassword) {
       this.afAuth.auth.createUserWithEmailAndPassword(this.createEmail, this.createPassword).then(
-        () => this.checkTeamAndRedirectPlayer(this.db),
+        () => this.checkTeamAndRedirectPlayer(),
         reason => {
           alert('Creation of account failed with reason: ' + reason);
         }
@@ -132,48 +133,41 @@ export class LoginMainComponent implements OnInit {
    * @author TomRHandcock
    * @version 2
    */
-  checkTeamAndRedirectPlayer(db: AngularFireDatabase) {
-    let teams;
-    let players;
-    db.database.ref('games').once('value').then((games) => {
-      // First we get all the games available
-      games.forEach(game => {
-        players = game.child('players');
-        // For each game we look at the players in that game
-        players.forEach(player => {
-          // We find if they are in that game
-          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-            // We found the current user in this game
-            this.gameId = game.child('id').toJSON().toString();
-            // Now we need to find the team the current player is on
-            teams = game.child('team');
-            teams.forEach((team) => {
-              // Array of players on a team
-              const teamPlayers = team.child('players');
-              teamPlayers.forEach((teamPlayer) => {
-                if (teamPlayer.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
-                  // We found the team the player is on
-                  console.log('Redirecting to player screen');
-                  this.router.navigate(['/game', this.gameId]);
-                  return;
-                }
-              });
-            });
-            if (!this.teamId) {
-              // We couldn't find the team the player was on
-              console.log('Redirecting to select team');
-              this.screen = Screen.TEAM_ID;
-              return;
+  checkTeamAndRedirectPlayer() {
+    const uid = this.afAuth.auth.currentUser.uid;
+
+    if (!this.gameId) {
+      console.log('gameId was not set, redirecting user to Screen.GAME_ID...');
+      this.screen = Screen.GAME_ID;
+      return;
+    }
+
+    if (this.teamId) {
+      console.log(`Player ${uid}'s team is ${this.teamId} in game ${this.gameId}, redirecting to player view...`);
+      this.router.navigate(['/game', this.gameId]);
+    }
+
+    console.log(`Checking ${uid} is already a member of an team in game ${this.gameId}...`);
+
+    this.db.database.ref(`games/${this.gameId}/team/`)
+      .once('value')
+      .then((teams: DataSnapshot) => {
+        teams.forEach((team: DataSnapshot) => {
+          team.child('players').forEach((player: DataSnapshot) => {
+            if (player.toJSON() as string === uid) {
+              this.teamId = team.child('id').toJSON() as string;
+              console.log(`Found player on team ${this.teamId} in game ${this.gameId}, redirecting to player view...`);
+              this.router.navigate(['/game', this.gameId]);
             }
-          }
+          });
         });
+
+        if (!this.teamId) {
+          console.log('teamId was not set, and couldn\'t find player on a team,' +
+            'so redirecting user to Screen.TEAM_ID...');
+          this.screen = Screen.TEAM_ID;
+        }
       });
-      if (!this.gameId) {
-        // We haven't found a game with the player in
-        console.log('Redirecting to game selection');
-        this.screen = Screen.GAME_ID;
-      }
-    });
   }
 
 
@@ -208,7 +202,7 @@ export class LoginMainComponent implements OnInit {
           // Insert the player into the team
           this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId + '/players/' + index)
             .set(this.afAuth.auth.currentUser.uid).then(() => {
-            this.checkTeamAndRedirectPlayer(this.db);
+            this.checkTeamAndRedirectPlayer();
           });
         });
       }
@@ -224,7 +218,7 @@ export class LoginMainComponent implements OnInit {
     // Add the player to the game, once done, call the check team and redirect player method
     this.db.database.ref(`games/${this.gameId}/players/${uid}`)
       .set(uid)
-      .then(() => this.checkTeamAndRedirectPlayer(this.db))
+      .then(() => this.checkTeamAndRedirectPlayer())
       .catch(error => {
         alert('Unable to add you to the selected team, reason: ' + error);
       });
