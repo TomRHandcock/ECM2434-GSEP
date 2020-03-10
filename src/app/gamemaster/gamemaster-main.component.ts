@@ -298,10 +298,22 @@ export class GamemasterMainComponent implements OnInit, AfterViewInit {
    * @param locationId - the location id
    * @param location - the location object
    * @author AlexWesterman
+   * Fixed a bug where user cannot add the first question to a new location
+   * @author TomRHandcock
    */
   addNewQuestionToLocation(locationId: number, location: Location) {
-    this.db.object(`games/${this.gameId}/location/${locationId}/questions/${location.questions.length}`)
-      .set(new Question());
+    // Get the number of questions in the current location
+    this.db.database.ref('games/' + this.gameId + '/location/' + locationId).once('value').then((data) => {
+      if(data.child('questions').exists()) {
+        // If 'questions' already exists, we can just append the question
+        this.db.object(`games/${this.gameId}/location/${locationId}/questions/${location.questions.length}`)
+        .set(new Question());
+      }
+      else {
+        // No questions exist, we need to add a new questions object
+        this.db.object('games/' + this.gameId + '/location/' + locationId + '/questions/0').set(new Question());
+      }
+    })
   }
 
   /**
