@@ -220,12 +220,14 @@ export class LoginMainComponent implements OnInit {
    * @author TomRHandcock
    */
   onJoinGame() {
+    const uid = this.afAuth.auth.currentUser.uid;
     // Add the player to the game, once done, call the check team and redirect player method
-    this.db.database.ref('games/' + this.gameId + '/players/').push(this.afAuth.auth.currentUser.uid).then(() => {
-      this.checkTeamAndRedirectPlayer(this.db);
-    }).catch((error) => {
-      alert('Unable to add you to the selected team, reason: ' + error);
-    });
+    this.db.database.ref(`games/${this.gameId}/players/${uid}`)
+      .set(uid)
+      .then(() => this.checkTeamAndRedirectPlayer(this.db))
+      .catch(error => {
+        alert('Unable to add you to the selected team, reason: ' + error);
+      });
   }
 
   /**
