@@ -57,6 +57,11 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
    */
   loading = true;
 
+  /**
+   * Whether or not to show the help modal dialog.
+   */
+  showHelpModal = false;
+
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
               private router: Router) {

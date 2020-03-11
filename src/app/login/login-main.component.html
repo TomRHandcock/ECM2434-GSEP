@@ -1,3 +1,47 @@
+<!---------------------------------------------------------------------------
+  HELP LOGGING IN MODAL
+
+  Shown upon pressing a 'Help logging in' link in the main log in form below
+
+  @author galexite
+  -------------------------------------------------------------------------->
+<div [ngClass]="{'is-active': showHelpModal}" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Help logging in</p>
+      <button (click)="showHelpModal = false" aria-label="close" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <h4 class="subtitle is-4">Step 1. Logging in with or without an account</h4>
+      <p class="content">
+        To play the game, you have the choice of creating a new account,
+        logging in using an existing account, or even signing in anonymously.
+        If you intend to create a game, it's best to create an account and use
+        that to sign in such that you can retain gamemaster functionality when
+        you go to sign in from a different browser.
+      </p>
+      <h4 class="subtitle is-4">Step 2. Joining a team, or creating a new game</h4>
+      <p class="content">
+        Once you've chosen how you're logging in, you are asked for your team
+        ID. This is unique to each game, and you can select it from the dropdown
+        list under the game ID header. The gamemaster, usually your tutor or
+        head of department will give you this information and will allocate
+        your team for you.
+      </p>
+      <p class="content">
+        If you want to create your own game, however, simply select the 'Create
+        a New Game...' button instead and proceed to the gamemaster interface.
+      </p>
+      <h4 class="subtitle is-4">Step 3. Have fun!</h4>
+      <p class="content">
+        Thank you for playing our game! We hope you have a good time!
+      </p>
+    </section>
+  </div>
+</div>
+
+
 <main xmlns="http://www.w3.org/1999/html" [ngSwitch]="this.screen">
   <!---------------------------------------------------------------------------
     USERNAME AND PASSWORD LOGIN FORM
@@ -10,7 +54,7 @@
     @author AlexWesterman
     @version 2
     -------------------------------------------------------------------------->
-  <section id="loginSection" *ngSwitchCase="this.Screens.LOGIN">
+  <section *ngSwitchCase="this.Screens.LOGIN" class="form-section" id="loginSection">
     <p style="text-align: center; color: red; font-size: 24px" *ngIf="this.loading">Loading - Please Wait...
       <span class="icon is-medium is-centered loadingSpinner">
         <fa-icon [icon]="spinnerIcon"></fa-icon>
@@ -36,7 +80,7 @@
         <div style="margin: 0.6em 0; text-align: center">Alternatively, sign in anonymously:</div>
         <button (click)="onAnonymousSignIn()">Sign in without Account</button>
         <div class="links">
-          <a>Help logging in</a>
+          <a (click)="showHelpModal = true">Help logging in</a>
         </div>
       </div>
     </form>
@@ -49,17 +93,18 @@
     Allows the user to create a new account for use in the game.
     @author TomRHandcock
     -------------------------------------------------------------------------->
-  <section id="createSection" *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
+  <section *ngSwitchCase="this.Screens.CREATING_ACCOUNT" class="form-section" id="createSection">
     <form id="createForm">
       <div class="fields">
         <input type="text" name="email" placeholder="Email" [(ngModel)]="createEmail">
         <input type="password" name="password" placeholder="Password" [(ngModel)]="createPassword">
-        <input type="password" name="confirmPassword" placeholder="Confirm Password" [(ngModel)]="createConfirmPassword">
+        <input type="password" name="confirmPassword" placeholder="Confirm Password"
+               [(ngModel)]="createConfirmPassword">
       </div>
       <div class="formExtras">
         <input type="submit" (click)="onCreationPressed()" name="createSubmit" value="Create Account">
         <div class="links">
-          <a>Help logging in</a>
+          <a (click)="showHelpModal = true">Help logging in</a>
         </div>
       </div>
     </form>
@@ -77,7 +122,7 @@
     @author AlexWesterman
     @version 2
     -------------------------------------------------------------------------->
-  <section id="teamIdSection" *ngSwitchCase="this.Screens.TEAM_ID">
+  <section *ngSwitchCase="this.Screens.TEAM_ID" class="form-section" id="teamIdSection">
     <form id="teamIdForm">
       <div class="fields">
         <p class="content">
@@ -102,7 +147,7 @@
         </div>
         <input (click)="onCreateNewGame()" name="createNewGame" type="button" value="Create a new game">
         <div class="links">
-          <a>Help logging in</a>
+          <a (click)="showHelpModal = true">Help logging in</a>
         </div>
       </div>
     </form>
@@ -115,7 +160,7 @@
     game.
     @author AlexWesterman
   ---------------------------------------------------------------------------->
-  <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
+  <section *ngSwitchCase="this.Screens.PRIVACY_POLICY" class="form-section" id="privacyPolicy">
     <div class="policyContainer">
       <!-- The title content -->
       <!-- The text content -->
