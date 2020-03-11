@@ -81,6 +81,11 @@ export class PlayerMainComponent implements OnInit {
    */
   finishedQuiz = false;
 
+  /**
+   * The override for the QR scanner (will usually be empty, unless needed)
+   */
+  qrOverride = '';
+
   constructor(private activatedRoute: ActivatedRoute,
               private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
@@ -327,6 +332,8 @@ export class PlayerMainComponent implements OnInit {
    */
   onQrCodeScanned(qrCode: string) {
     if (qrCode === '[' + this.currTarget.name + ']') {
+      // Will go to next location, so reset the hint system when the user comes back
+      this.isShowingHint = false;
       this.changeScreen(Screen.ANSWER_QS);
     } else {
       alert('This isn\'t the right QR code for this location! Are you in the right place?');
@@ -360,12 +367,7 @@ export class PlayerMainComponent implements OnInit {
    */
   toggleDropDown() {
     console.log(this.dropDownActive);
-    if (this.dropDownActive) {
-      this.dropDownActive = false;
-
-    } else {
-      this.dropDownActive = true;
-    }
+    this.dropDownActive = !this.dropDownActive;
     console.log(this.dropDownActive);
   }
 
@@ -406,5 +408,13 @@ export class PlayerMainComponent implements OnInit {
       });
 
     this.leaveTeam();
+  }
+
+  /**
+   * Reads the override input for the QR scanner
+   * @author AlexWesterman
+   */
+  onQrCodeOverride() {
+    this.onQrCodeScanned(this.qrOverride);
   }
 }

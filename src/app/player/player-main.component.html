@@ -87,7 +87,7 @@
 
       <!-- The bottom buttons (Author: AlexWesterman) -->
       <div class="button-bar" id="playerButtonBar">
-        <button (click)="showHint()" class="button is-primary">
+        <button [disabled]="this.isShowingHint" (click)="showHint()" class="button is-primary">
           <span>Request Hint</span>
         </button>
         <button (click)="openUniWebsite()" class="button is-primary">
@@ -151,9 +151,14 @@
     Moved to zxing-scanner, use Angular events
     @author galexite
     @version 2
+
+    yLVpl4Mq
+    t7ji2eaO
   ---------------------------------------------------------------------------->
   <main *ngSwitchCase="screens.QR_SCANNER" class="container has-navbar-fixed-top">
     <zxing-scanner (scanSuccess)="onQrCodeScanned($event)"></zxing-scanner>
+    <input type="text" name="qrManual" class="button is-primary is-fullwidth" placeholder="Override (if the QR code is not there, enter the QR code manually)" >
+    <button class="button is-primary is-fullwidth" (click)="onQrCodeOverride()" [ngModel]="this.qrOverride">Enter override code</button>
     <!-- A button to return to the home view -->
     <div (click)="changeScreen(screens.HOME)" class="button is-primary is-fullwidth" id="qrScannerBack" role="button">
       <span class="icon is-small">
