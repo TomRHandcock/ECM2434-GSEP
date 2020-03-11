@@ -23,13 +23,18 @@
         <p class="loginFeedback" *ngIf="loginError == 'Email not found'">User not found</p>
         <p class="loginFeedback" *ngIf="loginError == 'Argument Error'">Ensure all fields are filled</p>
         <p class="loginFeedback" *ngIf="loginError == 'Invalid Email'">Invalid Email</p>
-        <input type="email" name="email" placeholder="Email" [(ngModel)]="loginEmail" pattern="[a-z|A-Z|0-9]+@[a-z|A-Z|0-9]+\.[a-z|.]{2,}$" required>
+        <input [(ngModel)]="loginEmail" name="email" pattern="[a-z|A-Z|0-9]+@[a-z|A-Z|0-9]+\.[a-z|.]{2,}$"
+               placeholder="Email"
+               required type="email">
         <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword" required>
+        <input (click)="onLoginPressed()" name="loginSubmit" type="submit" value="Login">
+        <input (click)="changeScreen(this.Screens.PRIVACY_POLICY)" name="createAccount" type="button"
+               value="Create Account">
+
       </div>
       <div class="formExtras">
+        <div style="margin: 0.6em 0; text-align: center">Alternatively, sign in anonymously:</div>
         <button (click)="onAnonymousSignIn()">Sign in without Account</button>
-        <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
-        <input type="button" (click)="changeScreen(this.Screens.PRIVACY_POLICY)" name="createAccount" value="Create Account">
         <div class="links">
           <a>Help logging in</a>
         </div>
