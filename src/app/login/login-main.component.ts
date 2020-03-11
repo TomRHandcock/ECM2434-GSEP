@@ -33,6 +33,11 @@ export class LoginMainComponent implements OnInit {
   teamId: string = null;
   gameId: string = null;
 
+  /**
+   * A list of all teams in the database
+   */
+  teams: Array<any>;
+
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
               private router: Router) {
@@ -49,6 +54,8 @@ export class LoginMainComponent implements OnInit {
         this.changeScreen(Screen.GAME_ID);
       }
     });
+
+    this.findTeams();
   }
 
   /**
@@ -248,6 +255,38 @@ export class LoginMainComponent implements OnInit {
       .set(new Game(id, uid))
       .then(() => this.router.navigate(['/game', id, 'gamemaster']))
       .catch(error => alert('Couldn\'t create your game! Try reloading the page. Error: ' + error));
+  }
+
+  /**
+   * Find all teams in the database
+   * @author AlexWesterman
+   */
+  findTeams() {
+    const teams = [];
+
+    // Loop through all games and find all teams
+    this.db.list('/games/').valueChanges().subscribe((games: any) => {
+      games.forEach((game: any) => {
+        // If there are not teams, ignore
+        if (game.team) {
+          // Legacy support - works for existing data that is an Array
+          if (game.team.forEach) {
+            game.team.forEach((team: any) => {
+              teams.push(team.id);
+            });
+          } else {
+            // New support - key,value data structure
+            for (const teamID of Object.keys(game.team)) {
+              teams.push(teamID);
+            }
+          }
+        }
+      });
+    });
+
+    console.log(teams, teams.length);
+
+    this.teams = teams;
   }
 }
 

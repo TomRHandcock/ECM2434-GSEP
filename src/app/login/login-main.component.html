@@ -62,10 +62,12 @@
     <form id="teamIdForm">
       <div class="fields">
         <p class="content">
-          Please enter your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected
+          Please find your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected
           with your team!
         </p>
-        <input type="text" name="teamId" placeholder="Team ID" [(ngModel)]="teamId" required>
+        <select [(ngModel)]="teamId" name="teamSelect" class="is-primary allTeams">
+          <option *ngFor="let team of this.teams" [value]="team" [selected]="teamId == team">{{team}}</option>
+        </select>
       </div>
       <div class="formExtras">
         <input type="submit" (click)="onJoinTeam()" name="loginSubmit" value="Join team">
