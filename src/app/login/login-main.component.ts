@@ -4,7 +4,7 @@ import {AngularFireDatabase} from '@angular/fire/database';
 import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import * as shortid from 'shortid';
-import {Game, Team} from '../database.schema';
+import {Game} from '../database.schema';
 import {isNullOrUndefined} from 'util';
 import DataSnapshot = firebase.database.DataSnapshot;
 
@@ -290,18 +290,8 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
         foundGames[game.id] = [];
         // If there are not teams, ignore
         if (game.team) {
-          // Legacy support - works for existing data that is an Array
-          if (game.team.forEach) {
-            game.team.forEach((team: Team) => {
-              foundGames[game.id].push({teamId: team.id, teamName: team.name});
-              console.log(game.id, foundGames[game.id]);
-              console.log(team.id, team.name);
-            });
-          } else {
-            // New support - key,value data structure
-            for (const teamId of Object.keys(game.team)) {
-              foundGames[game.id].push({teamId, teamName: game.team[teamId].name});
-            }
+          for (const teamId of Object.keys(game.team)) {
+            foundGames[game.id].push({teamId, teamName: game.team[teamId].name});
           }
         }
       });
