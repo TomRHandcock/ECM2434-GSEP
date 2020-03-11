@@ -61,17 +61,17 @@ form, .policyContainer {
 
   @media screen and (min-width: 1025px) {
     grid-template-columns: 50px auto 50px;
-    grid-template-rows: 75px auto 120px 30px;
+    grid-template-rows: 75px auto 180px 30px;
   }
 
   @media screen and (max-width: 400px) {
     grid-template-columns: 20px auto 20px;
-    grid-template-rows: 75px auto 120px 30px;
+    grid-template-rows: 75px auto 180px 30px;
   }
 
   @media screen and (min-width: 401px) and (max-width: 1024px) {
     grid-template-columns: 50px auto 50px;
-    grid-template-rows: 75px auto 120px 30px;
+    grid-template-rows: 75px auto 180px 30px;
   }
 }
 
@@ -110,6 +110,20 @@ form, .policyContainer {
 }
 
 // The buttons
+button {
+  background-color: #0078b5;
+  border: 0;
+  width: 100%;
+  color: white;
+  font-family: 'karla', sans-serif;
+  font-size: 24px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  padding: 5px 0;
+  outline: none;
+  -webkit-appearance: none; // Get rid of the default button style on iOS
+}
+
 input[type="button"], input[type="submit"] {
   background-color: #0078b5;
   border: 0;

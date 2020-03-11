@@ -29,8 +29,8 @@ export class ScoreboardComponent implements OnInit {
     this.db.list('games/' + this.gameId + '/team').valueChanges().subscribe((teams) => {
       // Remove the game masters' team
       teams.forEach((element, index) => {
-        if(element.name == 'Gamemaster team') {
-          teams.splice(index,1);
+        if (element.name === 'Gamemaster team') {
+          teams.splice(index, 1);
         }
       });
       // Sort the teams

@@ -100,6 +100,15 @@ export class LoginMainComponent implements OnInit {
     }
   }
 
+  onAnonymousSignIn() {
+    this.afAuth.auth.signInAnonymously().then(() => {
+      this.checkTeamAndRedirectPlayer();
+    }).catch((reason) => {
+      alert('Anonymous Sign in failed, error: ' + reason.code);
+      console.log(reason);
+    });
+  }
+
   /**
    * Callback for when the account creation form is submitted, it first
    * verifies the inputted user credentials and then creates the user

@@ -17,6 +17,7 @@
         <input type="password" name="password" placeholder="Password" [(ngModel)]="loginPassword" required>
       </div>
       <div class="formExtras">
+        <button (click)="onAnonymousSignIn()">Sign in without Account</button>
         <input type="submit" (click)="onLoginPressed()" name="loginSubmit" value="Login">
         <input type="button" (click)="changeScreen(this.Screens.PRIVACY_POLICY)" name="createAccount" value="Create Account">
         <div class="links">
