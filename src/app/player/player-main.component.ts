@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {faCamera, faCompass, faGlobe, faHome} from '@fortawesome/free-solid-svg-icons';
+import {faCamera, faCompass, faGlobe, faHome, faAngleDown} from '@fortawesome/free-solid-svg-icons';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location, Team} from '../database.schema';
@@ -26,9 +26,15 @@ export class PlayerMainComponent implements OnInit {
   visitWebsiteIcon = faGlobe;
   homeIcon = faHome;
   lostIcon = faCompass;
+  dropDownIcon = faAngleDown;
 
   screens = Screen;
   screen = Screen.HOME;
+
+  /**
+   * Dropdwon list is down or not
+   */
+  dropDownActive = false;
 
   /**
    * Current game ID. Taken from the route.
@@ -347,4 +353,11 @@ export class PlayerMainComponent implements OnInit {
     });
   }
 
+  toggleDropDown() {
+    if (this.dropDownActive) {
+      this.dropDownActive = false;
+    } else {
+      this.dropDownActive = true;
+    }
+  }
 }

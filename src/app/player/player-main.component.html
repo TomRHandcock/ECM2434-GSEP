@@ -16,6 +16,34 @@
         Control</a>
       <a class="navbar-item" (click)="changeScreen(screens.PROGRESS); showMenu = false">Our Progress</a>
       <a class="navbar-item" (click)="changeScreen(screens.IM_LOST); showMenu = false">I'm Lost</a>
+      
+      <div class="dropdown navbar-item">
+
+        <div class="dropdown-trigger">
+          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown()">
+            <span>Settings</span>
+            <span class="icon is-small">
+              <fa-icon [icon]="dropDownIcon"></fa-icon>
+            </span>
+          </button>
+        </div>
+
+        <div  class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div *ngIf="dropDownActive" class="dropdown-content">
+            <a class="dropdown-item" (click)="leaveTeam()">
+              Leave Team
+            </a>
+            <a class="dropdown-item" (click)="leaveGame()">
+              Leave Game
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="navbar-item, dropdown-menu">
+        <a class="dropdown-item">Settings</a>
+      </div>
       <a class="navbar-item" (click)="signOut()">Sign out</a>
     </div>
   </div>
