@@ -19,7 +19,7 @@ export class Game extends Table {
   gameMaster: { [uid: string]: string } = {};
   location: Location[] = [];
   players: string[] = [];
-  team: Team[] = [];
+  team: { [id: string]: Team } = {};
 
   constructor(id: string, gameMasterUid: string) {
     super();

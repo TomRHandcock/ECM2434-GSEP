@@ -76,48 +76,32 @@
     <form id="teamIdForm">
       <div class="fields">
         <p class="content">
-          Please find your Team's unique <i>Team ID</i>. Your tutor will give this to you to help you get connected
-          with your team!
+          If you are joining an existing game, please select the unique team ID you've been given.
         </p>
-        <select [(ngModel)]="teamId" name="teamSelect" class="is-primary allTeams">
-          <option *ngFor="let team of this.teams" [value]="team" [selected]="teamId == team">{{team}}</option>
+        <select [(ngModel)]="selectedTeam" class="is-primary allTeams" name="teamSelect">
+          <ng-container *ngFor="let gameId of objectKeys(games)">
+            <optgroup label="Game {{gameId}}">
+              <option *ngFor="let team of games[gameId]"
+                      [selected]="teamId == team.teamId"
+                      [value]="gameId + '\t' + team.teamId">
+                {{team.teamId}} ({{team.teamName}})
+              </option>
+            </optgroup>
+          </ng-container>
         </select>
-      </div>
-      <div class="formExtras">
         <input type="submit" (click)="onJoinTeam()" name="loginSubmit" value="Join team">
-        <div class="links">
-          <a>Help logging in</a>
-        </div>
-      </div>
-    </form>
-  </section>
-
-
-  <!---------------------------------------------------------------------------
-    GAME PIN INPUT
-
-    This view is for space for the user to input the game pin or create a new
-    game.
-    @author TomRHandcock
-  ---------------------------------------------------------------------------->
-  <section id="gameIdSection" *ngSwitchCase="this.Screens.GAME_ID">
-    <form id="gamePinForm">
-      <div class="fields">
-        <p class="content">
-          Please join a game or create your own game!
-        </p>
-        <input [(ngModel)]="gameId" name="teamId" placeholder="Game PIN" required type="text">
       </div>
       <div class="formExtras">
-        <input type="submit" (click)="this.onJoinGame()" name="loginSubmit" value="Join game">
-        <input (click)="onCreateNewGame()" name="createNewGame" type="button" value="Create a new game...">
+        <div style="text-align: center; margin: 0.6em 0">
+          Or, if you'd like to create a new game:
+        </div>
+        <input (click)="onCreateNewGame()" name="createNewGame" type="button" value="Create a new game">
         <div class="links">
           <a>Help logging in</a>
         </div>
       </div>
     </form>
   </section>
-
 
   <!---------------------------------------------------------------------------
     PRIVACY POLICY

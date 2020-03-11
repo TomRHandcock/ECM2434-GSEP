@@ -87,7 +87,7 @@ form, .policyContainer {
   text-align: center;
 }
 
-.fields > input {
+.fields > input[type=email], .fields > input[type=password], .fields > select {
   margin-bottom: 20px;
   border: 3px solid #cccccc;
   border-radius: 7px;
@@ -99,7 +99,9 @@ form, .policyContainer {
   color: #0078b5;
   padding: 5px 10px;
   outline: none;
-}::placeholder {
+}
+
+::placeholder {
   color: #cccccc;
 }
 
@@ -110,6 +112,10 @@ form, .policyContainer {
 
 .loadingSpinner {
   animation: spin 2s infinite linear;
+}
+
+.fields > select {
+  height: 2.1em;
 }
 
 // The buttons and links at the bottom of the form

@@ -4,15 +4,15 @@ import {AngularFireDatabase} from '@angular/fire/database';
 import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import * as shortid from 'shortid';
-import {Game} from '../database.schema';
+import {Game, Team} from '../database.schema';
+import {isNullOrUndefined} from 'util';
 import DataSnapshot = firebase.database.DataSnapshot;
 
 enum Screen {
   CREATING_ACCOUNT,
   PRIVACY_POLICY,
   LOGIN,
-  TEAM_ID,
-  GAME_ID
+  TEAM_ID
 }
 
 @Component({
@@ -23,6 +23,7 @@ enum Screen {
 export class LoginMainComponent implements OnInit, AfterViewInit {
   // So HTML can access it
   Screens = Screen;
+  objectKeys = Object.keys;
 
   screen = Screen.LOGIN;
   loginEmail: string;
@@ -31,15 +32,25 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
   createPassword: string;
   createConfirmPassword: string;
   loginError: LoginError = LoginError.None;
+  /**
+   * A list of all games and their teams in the database
+   */
+  games: { [gameId: string]: [{ teamId: string, teamName: string }] };
+
   teamId: string = null;
   gameId: string = null;
 
   spinnerIcon = faSpinner;
 
   /**
-   * A list of all teams in the database
+   * Called on selecting a team from the drop down list. Unmarshals the selected team's data.
+   * @param newTeamData string containing the game ID and team ID
    */
-  teams: Array<any>;
+  set selectedTeam(newTeamData: string) {
+    const data = newTeamData.split('\t');
+    this.gameId = data[0];
+    this.teamId = data[1];
+  }
 
   /**
    * Whether the view is still loading or not
@@ -67,7 +78,7 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
     // This function will redirect an already logged in user to the player screen
     this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {
-        this.changeScreen(Screen.GAME_ID);
+        this.changeScreen(Screen.TEAM_ID);
       }
     });
 
@@ -171,12 +182,6 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
   checkTeamAndRedirectPlayer() {
     const uid = this.afAuth.auth.currentUser.uid;
 
-    if (!this.gameId) {
-      console.log('gameId was not set, redirecting user to Screen.GAME_ID...');
-      this.screen = Screen.GAME_ID;
-      return;
-    }
-
     if (this.teamId) {
       console.log(`Player ${uid}'s team is ${this.teamId} in game ${this.gameId}, redirecting to player view...`);
       this.router.navigate(['/game', this.gameId]);
@@ -215,49 +220,41 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
    * @version 2
    */
   onJoinTeam() {
-    console.log(this.gameId, this.teamId);
-    this.db.database.ref('games/' + this.gameId + '/team/').once('value')
-    .then(snapshot => {
-      if (!snapshot.child(this.teamId).exists()) {
-        alert('This team does not exist!');
-      } else {
-        // Team exists, add the player to the team
-        // Get the player's list of the team the user inputted
-        this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId +
-          '/players').once('value').then(data => {
-          const currentCount = data.val();
-          // Get the index for the player in the players list
-          let index;
-          if (currentCount == null) {
-            // If it is empty start the list at 0
-            index = 0;
-          } else {
+    const uid = this.afAuth.auth.currentUser.uid;
+    console.log(`Trying to join game ${this.gameId} on team ${this.teamId}...`);
+
+    this.db.database.ref(`games/${this.gameId}/team/`).once('value')
+      .then(snapshot => {
+        if (!snapshot.child(this.teamId).exists()) {
+          alert('This team does not exist!');
+        } else {
+          // Team exists, add the player to the team
+          this.db.database.ref(`games/${this.gameId}/players/${uid}`)
+            .set(uid)
+            .catch(error => {
+              alert('Unable to add you to the selected game, reason: ' + error);
+            });
+          // Get the player's list of the team the user inputted
+          this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId +
+            '/players').once('value').then(data => {
+            const currentCount = data.val();
+            // Get the index for the player in the players list
+            let index;
+            if (currentCount == null) {
+              // If it is empty start the list at 0
+              index = 0;
+            } else {
             // Otherwise, get the length
             index = currentCount.length;
           }
           // Insert the player into the team
-          this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId + '/players/' + index)
-            .set(this.afAuth.auth.currentUser.uid).then(() => {
-            this.checkTeamAndRedirectPlayer();
-          });
+            this.db.database.ref('games/' + this.gameId + '/team/' + this.teamId + '/players/' + index)
+              .set(uid).then(() => {
+              this.checkTeamAndRedirectPlayer();
+            });
         });
       }
     });
-  }
-
-  /**
-   * Callback for joining a game
-   * @author TomRHandcock
-   */
-  onJoinGame() {
-    const uid = this.afAuth.auth.currentUser.uid;
-    // Add the player to the game, once done, call the check team and redirect player method
-    this.db.database.ref(`games/${this.gameId}/players/${uid}`)
-      .set(uid)
-      .then(() => this.checkTeamAndRedirectPlayer())
-      .catch(error => {
-        alert('Unable to add you to the selected team, reason: ' + error);
-      });
   }
 
   /**
@@ -282,29 +279,34 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
    * @author AlexWesterman
    */
   findTeams() {
-    const teams = [];
+    const foundGames = {};
 
     // Loop through all games and find all teams
     this.db.list('/games/').valueChanges().subscribe((games: any) => {
-      games.forEach((game: any) => {
+      games.forEach((game: Game) => {
+        if (isNullOrUndefined(game.id)) {
+          return; // We don't want to add an undefined entry to this list!
+        }
+        foundGames[game.id] = [];
         // If there are not teams, ignore
         if (game.team) {
           // Legacy support - works for existing data that is an Array
           if (game.team.forEach) {
-            game.team.forEach((team: any) => {
-              teams.push(team.id);
+            game.team.forEach((team: Team) => {
+              foundGames[game.id].push({teamId: team.id, teamName: team.name});
+              console.log(game.id, foundGames[game.id]);
+              console.log(team.id, team.name);
             });
           } else {
             // New support - key,value data structure
-            for (const teamID of Object.keys(game.team)) {
-              teams.push(teamID);
+            for (const teamId of Object.keys(game.team)) {
+              foundGames[game.id].push({teamId, teamName: game.team[teamId].name});
             }
           }
         }
       });
     });
-
-    this.teams = teams;
+    this.games = foundGames;
   }
 }
 
