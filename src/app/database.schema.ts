@@ -30,7 +30,7 @@ export class Game extends Table {
     const team = new Team('Gamemaster team');
     team.addPlayer(gameMasterUid);
 
-    this.team = [team];
+    this.team[team.id] = team;
   }
 }
 

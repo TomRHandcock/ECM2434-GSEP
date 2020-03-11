@@ -5,8 +5,18 @@
     Asks the user for their username and password for the game, or allows them
     to follow a link to create a new account or get help logging in.
     @author TomRHandcock
+
+    Added in a loading element and simple spinner to let the user know the screen may change
+    @author AlexWesterman
+    @version 2
     -------------------------------------------------------------------------->
   <section id="loginSection" *ngSwitchCase="this.Screens.LOGIN">
+    <p style="text-align: center; color: red; font-size: 24px" *ngIf="this.loading">Loading - Please Wait...
+      <span class="icon is-medium is-centered loadingSpinner">
+        <fa-icon [icon]="spinnerIcon"></fa-icon>
+      </span>
+    </p>
+
     <form id="loginForm">
       <div class="fields">
         <p class="loginFeedback" *ngIf="loginError == 'Password Incorrect'">Incorrect password</p>
@@ -57,6 +67,10 @@
     Displayed when the user has not yet joined a team (whether they have just
     registered or have logged in).
     @author galexite
+
+    Now displays team ids as a drop-down box
+    @author AlexWesterman
+    @version 2
     -------------------------------------------------------------------------->
   <section id="teamIdSection" *ngSwitchCase="this.Screens.TEAM_ID">
     <form id="teamIdForm">

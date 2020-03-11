@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import * as shortid from 'shortid';
 import {Game} from '../database.schema';
@@ -19,7 +20,7 @@ enum Screen {
   templateUrl: './login-main.component.html',
   styleUrls: ['./login-main.component.scss']
 })
-export class LoginMainComponent implements OnInit {
+export class LoginMainComponent implements OnInit, AfterViewInit {
   // So HTML can access it
   Screens = Screen;
 
@@ -33,10 +34,17 @@ export class LoginMainComponent implements OnInit {
   teamId: string = null;
   gameId: string = null;
 
+  spinnerIcon = faSpinner;
+
   /**
    * A list of all teams in the database
    */
   teams: Array<any>;
+
+  /**
+   * Whether the view is still loading or not
+   */
+  loading = true;
 
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
@@ -44,10 +52,18 @@ export class LoginMainComponent implements OnInit {
   }
 
   /**
-   * Runs when the page is loaded
-   * @author TomRHandcock
+   * Runs when the page is loaded and finds all teams
+   * @author AlexWesterman
    */
   ngOnInit() {
+    this.findTeams();
+  }
+
+  /**
+   * Runs after the view loads and, if the player is logged in, transfers them to the game ID screen
+   * @author TomRHandcock, AlexWesterman
+   */
+  ngAfterViewInit() {
     // This function will redirect an already logged in user to the player screen
     this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {
@@ -55,7 +71,10 @@ export class LoginMainComponent implements OnInit {
       }
     });
 
-    this.findTeams();
+    setTimeout(() => {
+      this.loading = false;
+    }, 500
+    );
   }
 
   /**
@@ -196,6 +215,7 @@ export class LoginMainComponent implements OnInit {
    * @version 2
    */
   onJoinTeam() {
+    console.log(this.gameId, this.teamId);
     this.db.database.ref('games/' + this.gameId + '/team/').once('value')
     .then(snapshot => {
       if (!snapshot.child(this.teamId).exists()) {
@@ -283,8 +303,6 @@ export class LoginMainComponent implements OnInit {
         }
       });
     });
-
-    console.log(teams, teams.length);
 
     this.teams = teams;
   }
