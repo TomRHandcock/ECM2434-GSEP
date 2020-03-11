@@ -331,6 +331,7 @@ export class PlayerMainComponent implements OnInit {
    * @author galexite
    */
   onQrCodeScanned(qrCode: string) {
+    console.log(qrCode, '[' + this.currTarget.name + ']');
     if (qrCode === '[' + this.currTarget.name + ']') {
       // Will go to next location, so reset the hint system when the user comes back
       this.isShowingHint = false;
@@ -415,6 +416,6 @@ export class PlayerMainComponent implements OnInit {
    * @author AlexWesterman
    */
   onQrCodeOverride() {
-    this.onQrCodeScanned(this.qrOverride);
+    this.onQrCodeScanned('[' + this.qrOverride + ']');
   }
 }
