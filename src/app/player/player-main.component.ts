@@ -353,11 +353,58 @@ export class PlayerMainComponent implements OnInit {
     });
   }
 
+  /**
+   * Toggle visibility of drop down menu
+   *
+   * @author OGWSaunders
+   */
   toggleDropDown() {
+    console.log(this.dropDownActive);
     if (this.dropDownActive) {
       this.dropDownActive = false;
+
     } else {
       this.dropDownActive = true;
     }
+    console.log(this.dropDownActive);
+  }
+
+  /**
+   * Remove a player from their team in the current game
+   *
+   * @author OGWSaunders
+   */
+  leaveTeam() {
+    let playerIndex = 0;
+    this.db.database.ref(`games/${this.gameId}/team/${this.teamId}`).once('value').then((children) => {
+      children.child('/players/').forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            this.db.database.ref(`games/${this.gameId}/team/${this.teamId}/players/${playerIndex}`).remove();
+          }
+          playerIndex += 1;
+        });
+      });
+
+  }
+
+  /**
+   * Remove a player from their current game and team
+   *
+   * @author OGWSaunders
+   */
+  leaveGame() {
+    let playerIndex = 0;
+    this.db.database.ref(`games/${this.gameId}`).once('value').then((children) => {
+      children.child('/players/').forEach((player) => {
+          // Once we find one, make a note of the team ID
+          if (player.toJSON().toString() === this.afAuth.auth.currentUser.uid) {
+            this.db.database.ref(`games/${this.gameId}/players/${playerIndex}`).remove();
+          }
+          playerIndex += 1;
+        });
+      });
+
+    this.leaveTeam();
   }
 }
