@@ -137,8 +137,13 @@ export class LoginMainComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Allow user to sign in anonymously and catch any sign-in errors caused by this
+   * @author galexite
+   */
   onAnonymousSignIn() {
     this.afAuth.auth.signInAnonymously().then(() => {
+      this.teamId = null;
       this.checkTeamAndRedirectPlayer();
     }).catch((reason) => {
       alert('Anonymous Sign in failed, error: ' + reason.code);

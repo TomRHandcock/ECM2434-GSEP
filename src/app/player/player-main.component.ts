@@ -345,36 +345,62 @@ export class PlayerMainComponent implements OnInit {
   /**
    * Places the location of the current user in the lost section of the database, with
    * the team ID as reference to which team is reporting as being lost.
-   *
    * @author OGWSaunders
    */
   getLostLocation() {
-    navigator.geolocation.getCurrentPosition(position => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-      this.db.database.ref(`games/${this.gameId}/lost/${this.teamId}`).set({
-        id: this.teamId,
-        lat,
-        lon
-      });
-      this.locationReported = true;
+    const options = {enableHighAccuracy: true, timeout: 60000};
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.showLocation, this.errorHandler, options);
+    } else {
+      console.log('Geolocation is not supported by your browser.');
+    }
+  }
+
+  /**
+   * Callback function to retrieve user coordinates and update database.
+   * Only called if location service successfully found
+   * @param position User's position
+   * @author OGWSaunders
+   */
+  showLocation(position) {
+    // Get coordinates
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    this.locationReported = true;
+
+    // Add to database
+    this.db.database.ref(`games/${this.gameId}/lost/${this.teamId}`).set({
+      id: this.teamId,
+      lat,
+      lon
     });
   }
 
   /**
+   * Handles 2/4 of the possible errors created by geolocation.
+   * Note that the geolocation service is very temperamental so error code
+   * 2 is likely to be called often.
+   * @param err The error from geolocation
+   * @author OGWSaunders
+   */
+  errorHandler(err) {
+    if (err.code === 1) {
+       console.log('Error - Access Denied. An API key may have expired.');
+    } else if (err.code === 2) {
+       console.log('Position is unavailable. The location provider is inaccessible. (External Issue)');
+    }
+ }
+
+  /**
    * Toggle visibility of drop down menu
-   *
    * @author OGWSaunders
    */
   toggleDropDown() {
-    console.log(this.dropDownActive);
     this.dropDownActive = !this.dropDownActive;
-    console.log(this.dropDownActive);
   }
 
   /**
    * Remove a player from their team in the current game
-   *
    * @author OGWSaunders
    */
   leaveTeam() {
@@ -393,7 +419,6 @@ export class PlayerMainComponent implements OnInit {
 
   /**
    * Remove a player from their current game and team
-   *
    * @author OGWSaunders
    */
   leaveGame() {

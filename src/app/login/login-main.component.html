@@ -52,14 +52,14 @@
   <section id="createSection" *ngSwitchCase="this.Screens.CREATING_ACCOUNT">
     <form id="createForm">
       <div class="fields">
-        <input type="text" name="email" placeholder="Email" [(ngModel)]="createEmail">
+        <input type="email" name="email" placeholder="Email" [(ngModel)]="createEmail">
         <input type="password" name="password" placeholder="Password" [(ngModel)]="createPassword">
         <input type="password" name="confirmPassword" placeholder="Confirm Password" [(ngModel)]="createConfirmPassword">
       </div>
       <div class="formExtras">
         <input type="submit" (click)="onCreationPressed()" name="createSubmit" value="Create Account">
         <div class="links">
-          <a>Help logging in</a>
+          <a (click)="changeScreen(this.Screens.LOGIN)">Return to Login Page</a>
         </div>
       </div>
     </form>
@@ -102,7 +102,7 @@
         </div>
         <input (click)="onCreateNewGame()" name="createNewGame" type="button" value="Create a new game">
         <div class="links">
-          <a>Help logging in</a>
+          <a (click)="changeScreen(this.Screens.LOGIN)">Return to Login Page</a>
         </div>
       </div>
     </form>
@@ -117,10 +117,10 @@
   ---------------------------------------------------------------------------->
   <section id="privacyPolicy" *ngSwitchCase="this.Screens.PRIVACY_POLICY">
     <div class="policyContainer">
-      <!-- The title content -->
-      <!-- The text content -->
       <div class="fields">
+        <!-- The title content -->
         <h2 class="title is-2">Privacy Policy</h2>
+        <!-- The text content -->
         <p class="content">
           Due to GDPR we need your permission for us to store data about you for use with this app.
         </p>
