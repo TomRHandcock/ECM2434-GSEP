@@ -1,5 +1,8 @@
 # Exe Marks the Spot (ECM2434)
 
+An web based scavenger hunt game designed to introduce first year students
+to the University of Exeter campus during Fresher's Week.
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.24.
 
 ## Development server
