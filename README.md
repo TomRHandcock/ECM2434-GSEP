@@ -6,6 +6,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
+To test the app on a phone or other device from your personal computer,
+you can specify the `--host` argument to allow other devices to connect on
+the given IP address. To serve the app on all hosts, for example, you can
+use `--host 0.0.0.0`.
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
@@ -14,13 +19,16 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+## Firebase deployment
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+To deploy to Firebase Hosting, you'll need to be logged in to the FirebaseCLI, which you have to install seperate to Angular's CLI.
 
-## Running end-to-end tests
+Run `npm install -g firebase-tools` to install this CLI program.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+To log in to firebase, run `firebase login`.
+
+To deploy, you'll need to have run `ng build --prod` to build a productioncopy of the app first, then run `firebase deploy`. You may have to follow
+the instructions given to you by the CLI if you have not set up the targetFirebase project to deploy to before running the command again.
 
 ## Further help
 
