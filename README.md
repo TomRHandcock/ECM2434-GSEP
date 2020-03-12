@@ -27,7 +27,8 @@ Run `npm install -g firebase-tools` to install this CLI program.
 
 To log in to firebase, run `firebase login`.
 
-To deploy, you'll need to have run `ng build --prod` to build a productioncopy of the app first, then run `firebase deploy`. You may have to follow
+To deploy, you'll need to have run `ng build --prod` to build a production
+copy of the app first, then run `firebase deploy`. You may have to follow
 the instructions given to you by the CLI if you have not set up the targetFirebase project to deploy to before running the command again.
 
 ## Further help
